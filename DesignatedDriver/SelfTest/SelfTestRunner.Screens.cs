@@ -21,6 +21,7 @@ public static partial class SelfTestRunner
         public Window Window => _window ??= new Window();
         public bool IsBusy => false;
         public Task RunAsync(Func<CancellationToken, Task> work) => Task.CompletedTask;
+        public Task RunPickAsync(Func<CancellationToken, Task> work) => Task.CompletedTask;
         public void Navigate(Screen screen, int? pullRequest = null) { }
         public void NavigateToScan(string? folder, string ownerAndName) { }
         public void NavigateToSetup(string? folder, string ownerAndName, ScanFacts? facts = null) { }

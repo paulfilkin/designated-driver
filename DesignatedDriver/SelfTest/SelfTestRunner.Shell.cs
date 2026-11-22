@@ -76,5 +76,17 @@ public static partial class SelfTestRunner
         check(!HeldReload.GivesWay(runningIsReload: true, scan, scan), "Leaving a screen: a reload of the same screen is not stopped");
         check(!HeldReload.GivesWay<object>(runningIsReload: false, null, scan), "Leaving a screen: a user action is never stopped");
         check(!HeldReload.GivesWay<object>(runningIsReload: true, null, scan), "Leaving a screen: a reload with no screen named is not stopped");
+
+        // Picking another pull request on Review while one loads: the latest pick wins, and an action is never interrupted.
+        check(BusyRules.OnRequest(null, WorkKind.Pick) == WorkStart.Start && BusyRules.OnRequest(null, WorkKind.Action) == WorkStart.Start && BusyRules.OnRequest(null, WorkKind.Reload) == WorkStart.Start,
+            "Busy rules: with nothing running, anything starts");
+        check(BusyRules.OnRequest(WorkKind.Pick, WorkKind.Pick) == WorkStart.StopRunningFirst && BusyRules.OnRequest(WorkKind.Reload, WorkKind.Pick) == WorkStart.StopRunningFirst,
+            "Busy rules: a pick stops a pick or a reload that is loading, rather than being turned away");
+        check(BusyRules.OnRequest(WorkKind.Reload, WorkKind.Action) == WorkStart.StopRunningFirst && BusyRules.OnRequest(WorkKind.Pick, WorkKind.Action) == WorkStart.StopRunningFirst,
+            "Busy rules: an action stops a reload or a pick, so a click is never lost to a load");
+        check(BusyRules.OnRequest(WorkKind.Action, WorkKind.Pick) == WorkStart.Refuse && BusyRules.OnRequest(WorkKind.Action, WorkKind.Action) == WorkStart.Refuse,
+            "Busy rules: nothing stops an action; a pick or another action while one runs is refused");
+        check(BusyRules.OnRequest(WorkKind.Action, WorkKind.Reload) == WorkStart.Drop && BusyRules.OnRequest(WorkKind.Pick, WorkKind.Reload) == WorkStart.Drop && BusyRules.OnRequest(WorkKind.Reload, WorkKind.Reload) == WorkStart.Drop,
+            "Busy rules: a reload asked for while busy is dropped here, and held by the screen until the work ends");
     }
 }
