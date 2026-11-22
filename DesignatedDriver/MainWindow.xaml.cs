@@ -252,6 +252,13 @@ public partial class MainWindow : Window, IShell
         if (_screens[Screen.Scan] is ScanScreen scan) scan.ScanTarget(folder, ownerAndName);
     }
 
+    /// <summary>Clone a particular repository as it is: shows Repositories with the clone card open for it.</summary>
+    public void NavigateToClone(string ownerAndName)
+    {
+        Navigate(Screen.Repositories);
+        if (_screens[Screen.Repositories] is RepositoriesScreen repositories) repositories.ShowClone(ownerAndName);
+    }
+
     /// <summary>
     /// Back in front after a while away: reload the screen on show, unless work is already running. Coming back
     /// from one of the tool's own dialogs doesn't count: a confirmation closing would otherwise start a refresh

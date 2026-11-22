@@ -24,6 +24,7 @@ public static partial class SelfTestRunner
         public Task RunPickAsync(Func<CancellationToken, Task> work) => Task.CompletedTask;
         public void Navigate(Screen screen, int? pullRequest = null) { }
         public void NavigateToScan(string? folder, string ownerAndName) { }
+        public void NavigateToClone(string ownerAndName) { }
         public void NavigateToSetup(string? folder, string ownerAndName, ScanFacts? facts = null) { }
         public void EditRepository(RepositorySettings? repository) { }
         public bool ShowDialog(Window dialog) => false;

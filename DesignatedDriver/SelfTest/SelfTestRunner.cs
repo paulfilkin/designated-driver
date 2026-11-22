@@ -57,6 +57,7 @@ public static partial class SelfTestRunner
             RepositoryFilterChecks(Check);
             WindowPlacementChecks(Check);
             ScanNextStepChecks(Check);
+            CloneAsIsChecks(Check);
         }
         catch (Exception ex)
         {

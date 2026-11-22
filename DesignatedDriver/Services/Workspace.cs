@@ -1,3 +1,4 @@
+using System.IO;
 using DesignatedDriver.Core;
 using DesignatedDriver.Models;
 
@@ -125,6 +126,57 @@ public sealed class Workspace
     }
 
     public void ReadManifest() => Manifest = Current.HasFolder ? Manifest.Load(Current.Folder) : null;
+
+    /// <summary>
+    /// Clones a repository that already exists on GitHub and adds it to the list as it is, making it current. Only
+    /// gh reads and git clone run: nothing changes on GitHub or in the repository. The clone uses the protocol and SSH
+    /// host from Settings, the alias found for the signed-in login rather than the repository's owner, which may be an
+    /// organisation. A clone of a repository set up to the convention has its hooks pointed at, as adding a clone
+    /// promises; that is local configuration only.
+    /// </summary>
+    public async Task<RepositorySettings> CloneAndAddAsync(string ownerAndName, string parentFolder, CancellationToken ct)
+    {
+        var name = ownerAndName.Trim().Trim('/');
+        var parts = name.Split('/');
+        if (parts.Length != 2 || parts.Any(p => p.Trim().Length == 0)) throw new InvalidOperationException(string.Format(Resources.Strings.Clone_NameInvalid, name));
+        if (parentFolder.Trim().Length == 0) throw new InvalidOperationException(Resources.Strings.Setup_ParentMissing);
+        if (Settings.Find(name) is { HasFolder: true } known) throw new InvalidOperationException(string.Format(Resources.Strings.Clone_AlreadyKnown, known.OwnerAndName, known.Folder));
+
+        var details = await GitHub.RepositoryDetailsAsync(name, ct).ConfigureAwait(false)
+            ?? throw new InvalidOperationException(string.Format(Resources.Strings.Scan_RepositoryNotFound, name));
+        if (!details.IsNamed(name)) throw new InvalidOperationException(string.Format(Resources.Strings.Scan_RepositoryMoved, name, details.FullName));
+        // GitHub's spelling of the owner and name, whatever case was typed.
+        var fullName = details.FullName.Length > 0 ? details.FullName : name;
+        var owner = fullName.Split('/')[0];
+        var repoName = fullName.Split('/')[1];
+
+        var folder = Path.Combine(parentFolder.Trim(), repoName);
+        if (Directory.Exists(folder) && Directory.EnumerateFileSystemEntries(folder).Any())
+            throw new InvalidOperationException(string.Format(Resources.Strings.Setup_FolderNotEmpty, folder));
+        Directory.CreateDirectory(parentFolder.Trim());
+
+        var login = await GitHub.LoginAsync(ct).ConfigureAwait(false);
+        var (protocol, host) = await ResolveTransportAsync(login, ct).ConfigureAwait(false);
+        await Git.CloneAsync(RemoteUrl.For(protocol, host, fullName), folder, ct).ConfigureAwait(false);
+
+        var repository = new RepositorySettings
+        {
+            Folder = folder,
+            Owner = owner,
+            Name = repoName,
+            DefaultBranch = details.DefaultBranch.Length > 0 ? details.DefaultBranch : RepositorySettings.DefaultDefaultBranch,
+        };
+        // A repository set up to the convention says in its manifest what it checks; its hooks are pointed at.
+        if (Manifest.Load(folder) is { } manifest)
+        {
+            repository.SelfTestCommand = manifest.SelfTestCommand;
+            if (manifest.RequiredCheck.Length > 0) repository.RequiredCheck = manifest.RequiredCheck;
+            if (Directory.Exists(Path.Combine(folder, ConventionFiles.HooksFolder)))
+                await Git.SetHooksPathInAsync(folder, ConventionFiles.HooksFolder, ct).ConfigureAwait(false);
+        }
+        SaveRepository(repository);
+        return repository;
+    }
 
     /// <summary>
     /// How to clone and push: the tool's setting when chosen, else gh's own protocol for github.com, else HTTPS; and for SSH

@@ -129,8 +129,12 @@ public partial class ScanScreen : ScreenBase
         AddButton.Visibility = facts.HasClone && facts.IsGitRepository && facts.OriginIsGitHub && !known ? Visibility.Visible : Visibility.Collapsed;
         SetUpButton.Visibility = report.Verdict == ScanVerdict.Convertible ? Visibility.Visible : Visibility.Collapsed;
         OpenCheckButton.Visibility = report.Verdict == ScanVerdict.AlreadySetUp && current ? Visibility.Visible : Visibility.Collapsed;
+        // A repository scanned by name, with no clone here and not in the list, can be cloned and worked on as it is.
+        bool canClone = ScanRules.CanCloneAsIs(facts, known);
+        CloneButton.Visibility = canClone ? Visibility.Visible : Visibility.Collapsed;
+        if (canClone && report.Verdict == ScanVerdict.Convertible) NextStepText.Text += " " + Strings.Scan_Next_CloneToo;
         ActionRow.Visibility = SetUpButton.Visibility == Visibility.Visible || OpenCheckButton.Visibility == Visibility.Visible || AddButton.Visibility == Visibility.Visible
-            ? Visibility.Visible : Visibility.Collapsed;
+            || CloneButton.Visibility == Visibility.Visible ? Visibility.Visible : Visibility.Collapsed;
 
         FindingsPanel.Children.Clear();
         foreach (var severity in Enum.GetValues<ScanSeverity>())
@@ -195,6 +199,12 @@ public partial class ScanScreen : ScreenBase
     }
 
     private void OpenCheck_Click(object sender, RoutedEventArgs e) => Shell.Navigate(Screen.Check);
+
+    private void Clone_Click(object sender, RoutedEventArgs e)
+    {
+        if (_facts is null || _facts.OwnerAndName.Length == 0) return;
+        Shell.NavigateToClone(_facts.OwnerAndName);
+    }
 
     private void Add_Click(object sender, RoutedEventArgs e)
     {

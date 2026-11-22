@@ -40,6 +40,8 @@ The tool clones and pushes with git itself, over HTTPS or SSH, and never lets gh
 
 Start the tool.  The first screen is **Repositories**.  You can add a clone you already have, scan any folder or repository to see what setting it up would involve, or press **Set up a repository**.  The set-up works on a new repository or one that already exists.
 
+To work on a repository that is already on GitHub without changing it, press **Clone a repository**, give its owner/name and a parent folder, and press **Clone**.  Only `git clone` and reads from GitHub run.  The clone is added to the list as the current repository, with the default branch from GitHub and, if it was set up to the convention, the self-test command and required check from its manifest.  Settings then opens for it, to add the board.  Scan offers the same as **Clone and work on it as it is** after a scan by name.
+
 The wizard has three pages:
 
 1. **Where.**  A new repository, an existing folder on this machine, or an existing repository on GitHub.  Owner, name, description, visibility, the folder, the language (detected from an existing folder), the project to build, and the self-test command if the project has one.  An existing folder or repository is scanned here when you press Next; a blocker stops you, warnings are shown.  A repository that is already on GitHub keeps its visibility: the wizard shows it and you can't change it, since set-up never changes an existing repository's visibility.  Opened from Scan's **Apply the convention**, the page arrives filled in from the scan: owner, name, description, visibility, language and project.
@@ -54,8 +56,8 @@ What the repository already has is kept.  Its own issue forms stay, and the conv
 
 | Screen | What it does |
 |---|---|
-| Repositories | The repositories the tool knows; filter by text or by your GitHub stars; add, switch, scan, check, remove |
-| Scan | A read-only look at any folder or repository against the convention, ending with the next step: apply the convention, open Check, or fix the blockers.  **Work on it in Designated Driver** adds a scanned clone to the Repositories list |
+| Repositories | The repositories the tool knows; filter by text or by your GitHub stars; add, clone as it is, switch, scan, check, remove |
+| Scan | A read-only look at any folder or repository against the convention, ending with the next step: apply the convention, open Check, or fix the blockers.  **Work on it in Designated Driver** adds a scanned clone to the Repositories list; **Clone and work on it as it is** clones a repository scanned by name |
 | Set up a repository | The wizard, for a new repository or an existing one |
 | Status | Prerequisites, the repository, what the plan allows, the branch, open pull requests and issues, Dependabot alerts, Actions minutes, and two board actions |
 | Check | What has drifted from the convention; tick and Apply |

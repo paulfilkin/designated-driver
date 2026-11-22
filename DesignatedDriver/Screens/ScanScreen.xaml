@@ -66,6 +66,8 @@
                             AutomationProperties.Name="{x:Static res:Strings.Scan_OpenCheck}" AutomationProperties.HelpText="{x:Static res:Strings.Scan_OpenCheckHelp}"/>
                     <Button x:Name="AddButton" Content="{x:Static res:Strings.Scan_AddToList}" Style="{StaticResource SecondaryButton}" Margin="0,0,10,0" Click="Add_Click" Visibility="Collapsed"
                             AutomationProperties.Name="{x:Static res:Strings.Scan_AddToList}" AutomationProperties.HelpText="{x:Static res:Strings.Scan_AddToListHelp}"/>
+                    <Button x:Name="CloneButton" Content="{x:Static res:Strings.Scan_CloneAsIs}" Style="{StaticResource SecondaryButton}" Margin="0,0,10,0" Click="Clone_Click" Visibility="Collapsed"
+                            AutomationProperties.Name="{x:Static res:Strings.Scan_CloneAsIs}" AutomationProperties.HelpText="{x:Static res:Strings.Scan_CloneAsIsHelp}"/>
                 </StackPanel>
                 <StackPanel x:Name="FindingsPanel" AutomationProperties.Name="{x:Static res:Strings.Scan_ResultCard}" AutomationProperties.LiveSetting="Polite"/>
             </StackPanel>

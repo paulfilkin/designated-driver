@@ -137,6 +137,12 @@ public sealed class ScanReport
 /// </summary>
 public static class ScanRules
 {
+    /// <summary>
+    /// True when a repository scanned by name can be cloned and worked on as it is: it was found on GitHub under
+    /// that name, there is no clone here, and it isn't in the list already.
+    /// </summary>
+    public static bool CanCloneAsIs(ScanFacts f, bool known) => !f.HasClone && f.RemoteFound && f.OwnerAndName.Length > 0 && !known;
+
     public static ScanReport Assess(ScanFacts f)
     {
         var findings = new List<ScanFinding>();
