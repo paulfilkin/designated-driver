@@ -408,7 +408,8 @@ public partial class MainWindow : Window, IShell
             _busyTimer.Stop();
             _busySince.Stop();
             Mouse.OverrideCursor = null;
-            BusyStrip.Visibility = Visibility.Collapsed;
+            // Hidden keeps the strip's space, so the page doesn't move up under the pointer.
+            BusyStrip.Visibility = Visibility.Hidden;
         }
 
         // A pick or action that cancelled this work starts next; the held reload then waits for it to end.

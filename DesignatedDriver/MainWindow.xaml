@@ -58,8 +58,9 @@
             </Grid>
         </Border>
 
-        <!-- Busy strip, edged top and bottom in the logo's gold -->
-        <Border x:Name="BusyStrip" Grid.Row="1" Background="{StaticResource PrimarySofterBrush}" BorderBrush="{StaticResource GoldBrush}" BorderThickness="0,1,0,1" Padding="18,6" Visibility="Collapsed">
+        <!-- Busy strip, edged top and bottom in the logo's gold. Hidden, not collapsed, when idle: its row keeps its height,
+             so the page below never moves when work starts or ends, and a held click can't slide onto another list item. -->
+        <Border x:Name="BusyStrip" Grid.Row="1" Background="{StaticResource PrimarySofterBrush}" BorderBrush="{StaticResource GoldBrush}" BorderThickness="0,1,0,1" Padding="18,6" Visibility="Hidden">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
