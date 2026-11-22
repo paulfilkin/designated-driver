@@ -61,6 +61,16 @@
                 <!-- The ways on from the verdict as real buttons, so the next step is where the eye lands. Each has a line
                      beside it saying what it does, on screen as well as for screen readers, and the buttons share a width. -->
                 <StackPanel x:Name="ActionRow" Margin="0,10,0,0" Grid.IsSharedSizeScope="True">
+                    <!-- A scan by name that found a clone beside the known ones: scanning that folder comes first. -->
+                    <Grid x:Name="ScanCloneChoice" Margin="0,0,0,8" Visibility="Collapsed">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="ChoiceButton"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="ScanCloneButton" Content="{x:Static res:Strings.Scan_ScanNearbyClone}" Style="{StaticResource ModernButton}" Click="ScanClone_Click"
+                                AutomationProperties.Name="{x:Static res:Strings.Scan_ScanNearbyClone}"/>
+                        <TextBlock x:Name="ScanCloneText" Grid.Column="1" Style="{StaticResource HelperText}" TextWrapping="Wrap" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                    </Grid>
                     <Grid x:Name="SetUpChoice" Margin="0,0,0,8" Visibility="Collapsed">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="ChoiceButton"/>

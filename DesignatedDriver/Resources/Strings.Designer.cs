@@ -1372,6 +1372,12 @@ public static class Strings
     /// <summary>Owner and name, for example paulfilkin/example. Reads GitHub only, so it shows fewer fa...</summary>
     public static string Scan_NameHelp => Get("Scan_NameHelp");
 
+    /// <summary>A clone of it is at {0}, beside the clones already in the list. Scanning that folder re...</summary>
+    public static string Scan_NearbyClone => Get("Scan_NearbyClone");
+
+    /// <summary>A clone of {0} was found beside the known clones, at {1}, from its .git\config.</summary>
+    public static string Scan_NearbyCloneNote => Get("Scan_NearbyCloneNote");
+
     /// <summary>Next step: none needed. Check shows anything that has drifted since; Status shows where...</summary>
     public static string Scan_Next_AlreadySetUp_Current => Get("Scan_Next_AlreadySetUp_Current");
 
@@ -1380,6 +1386,9 @@ public static class Strings
 
     /// <summary>Next step: none needed. --check &lt;folder&gt; shows anything that has drifted since.</summary>
     public static string Scan_Next_AlreadySetUp_Text => Get("Scan_Next_AlreadySetUp_Text");
+
+    /// <summary>Have a clone kept elsewhere? Scan its folder instead.</summary>
+    public static string Scan_Next_CloneElsewhere => Get("Scan_Next_CloneElsewhere");
 
     /// <summary>Next step: bring this repository into the convention. The set-up wizard opens with it c...</summary>
     public static string Scan_Next_Convertible => Get("Scan_Next_Convertible");
@@ -1395,6 +1404,9 @@ public static class Strings
 
     /// <summary>Next step: fix the blockers above, then scan again.</summary>
     public static string Scan_Next_NotConvertible => Get("Scan_Next_NotConvertible");
+
+    /// <summary>Next step: scan the clone at {0}. It reads the clone as well as GitHub, and offers addi...</summary>
+    public static string Scan_Next_ScanNearbyClone => Get("Scan_Next_ScanNearbyClone");
 
     /// <summary>No project file was recognised near the root. The wizard will ask for a build command a...</summary>
     public static string Scan_NoLanguage => Get("Scan_NoLanguage");
@@ -1467,6 +1479,12 @@ public static class Strings
 
     /// <summary>Scan the chosen repository. Nothing is changed.</summary>
     public static string Scan_RunHelp => Get("Scan_RunHelp");
+
+    /// <summary>Scan the clone</summary>
+    public static string Scan_ScanNearbyClone => Get("Scan_ScanNearbyClone");
+
+    /// <summary>Scans {0}: the clone as well as its repository on GitHub. Nothing is changed.</summary>
+    public static string Scan_ScanNearbyCloneHelp => Get("Scan_ScanNearbyCloneHelp");
 
     /// <summary>{0}, scanned {1}</summary>
     public static string Scan_ScannedAt => Get("Scan_ScannedAt");
