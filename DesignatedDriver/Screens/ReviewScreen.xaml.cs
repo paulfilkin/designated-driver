@@ -143,7 +143,8 @@ public partial class ReviewScreen : ScreenBase
         if (_rebuilding) return;
         if (PullRequestList.SelectedItem is not ListBoxItem { Tag: GhPullRequest pr }) return;
         if (ReferenceEquals(pr, _selected)) return;
-        _ = Shell.RunAsync(ct => ShowDetailAsync(pr, ct));
+        // Only a load: a newer pick takes its place rather than being turned away.
+        _ = Shell.RunPickAsync(ct => ShowDetailAsync(pr, ct));
     }
 
     private async Task ShowDetailAsync(GhPullRequest pr, CancellationToken ct)

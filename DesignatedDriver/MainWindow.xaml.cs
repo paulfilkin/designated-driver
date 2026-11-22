@@ -219,9 +219,9 @@ public partial class MainWindow : Window, IShell
     /// </summary>
     private void Reload(ScreenBase view)
     {
-        if (!IsBusy) { _ = RunAsync(view.RefreshAsync, isReload: true, view); return; }
+        if (!IsBusy) { _ = RunAsync(view.RefreshAsync, WorkKind.Reload, view); return; }
         _heldReload.Hold(view, DateTime.UtcNow);
-        if (HeldReload.GivesWay(_runningReload, _runningView, view) && !_cts!.IsCancellationRequested)
+        if (HeldReload.GivesWay(_runningKind is WorkKind.Reload or WorkKind.Pick, _runningView, view) && !_cts!.IsCancellationRequested)
         {
             Workspace.Runner.Note(string.Format(Strings.Activity_ReloadLeft, ScreenTitleOf(_runningView!)));
             _stoppedForLeave = true;
@@ -267,7 +267,7 @@ public partial class MainWindow : Window, IShell
         if (ScreenHost.Content is ScreenBase view && view.ReloadsOnReturn && view.IsOlderThan(StaleAfter))
         {
             Workspace.Runner.Note(Strings.Activity_ReloadOnReturn);
-            _ = RunAsync(view.RefreshAsync, isReload: true, view);
+            _ = RunAsync(view.RefreshAsync, WorkKind.Reload, view);
         }
     }
 
@@ -292,13 +292,16 @@ public partial class MainWindow : Window, IShell
     private int _dialogDepth;
     private bool _deactivatedForOwnDialog;
     private bool _dialogShownSinceActivation;
-    private bool _runningReload;
-    /// <summary>The screen the running reload belongs to; null for a user action.</summary>
+    /// <summary>What the running work is; null when nothing runs.</summary>
+    private WorkKind? _runningKind;
+    /// <summary>The screen the running reload or pick belongs to; null for a user action.</summary>
     private ScreenBase? _runningView;
-    /// <summary>The running reload was stopped because its screen was left; that note replaces "Cancelled".</summary>
+    /// <summary>The running work was stopped because its screen was left, or for a newer pick; no "Cancelled" note.</summary>
     private bool _stoppedForLeave;
-    private bool _actionWaiting;
-    private TaskCompletionSource _runningDone = new();
+    /// <summary>What is waiting for the running work to stop, and the ticket that lets only the latest of those start.</summary>
+    private WorkKind? _waitingKind;
+    private int _ticket;
+    private TaskCompletionSource _runningDone = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private readonly HeldReload<ScreenBase> _heldReload = new();
 
     [System.Runtime.InteropServices.DllImport("user32.dll")]
@@ -326,35 +329,46 @@ public partial class MainWindow : Window, IShell
 
     // Busy work
 
-    public Task RunAsync(Func<CancellationToken, Task> work) => RunAsync(work, isReload: false, null);
+    public Task RunAsync(Func<CancellationToken, Task> work) => RunAsync(work, WorkKind.Action, null);
+
+    public Task RunPickAsync(Func<CancellationToken, Task> work) => RunAsync(work, WorkKind.Pick, ScreenHost.Content as ScreenBase);
 
     /// <summary>
-    /// Runs work with the busy strip shown. A reload that the tool started by itself gives way to a user action:
-    /// the reload is cancelled and the action runs, so a click is never lost to a refresh that happened to be
-    /// running. A second user action while one runs is not queued; the user is told. A screen reload asked for
-    /// while busy is held by <see cref="Reload"/> and runs when the work ends, after any user action waiting to start.
-    /// A reload names its screen, so leaving that screen can stop it.
+    /// Runs work with the busy strip shown, following <see cref="BusyRules"/>. A reload the tool started by itself, or
+    /// a pick that only loads what was picked, gives way to a pick or a user action: it is cancelled and the new work
+    /// runs, so a click is never lost to a load and the latest pick wins. A pick or an action while an action runs is
+    /// not queued; the user is told. A screen reload asked for while busy is held by <see cref="Reload"/> and runs when
+    /// the work ends, after anything waiting to start. A reload or pick names its screen, so leaving that screen can stop it.
     /// </summary>
-    private async Task RunAsync(Func<CancellationToken, Task> work, bool isReload, ScreenBase? view)
+    private async Task RunAsync(Func<CancellationToken, Task> work, WorkKind kind, ScreenBase? view)
     {
         if (_cts is not null)
         {
-            if (isReload) return;
-            if (!_runningReload)
+            // What runs next is what is waiting, if anything is; otherwise what is running now.
+            switch (BusyRules.OnRequest(_waitingKind ?? _runningKind, kind))
             {
-                ShowInfo(Strings.Busy_TryAgain);
-                return;
+                case WorkStart.Drop:
+                    return;
+                case WorkStart.Refuse:
+                    ShowInfo(Strings.Busy_TryAgain);
+                    return;
+                default:
+                    int ticket = ++_ticket;
+                    _waitingKind = kind;
+                    // A newer pick replaces the one loading without a "Cancelled" line each time.
+                    if (kind == WorkKind.Pick && _runningKind == WorkKind.Pick) _stoppedForLeave = true;
+                    _cts.Cancel();
+                    while (_cts is not null) await _runningDone.Task;
+                    if (ticket != _ticket) return;
+                    _waitingKind = null;
+                    break;
             }
-            _actionWaiting = true;
-            _cts.Cancel();
-            await _runningDone.Task;
-            _actionWaiting = false;
         }
         _cts = new CancellationTokenSource();
-        _runningReload = isReload;
-        _runningView = isReload ? view : null;
+        _runningKind = kind;
+        _runningView = kind == WorkKind.Action ? null : view;
         _stoppedForLeave = false;
-        _runningDone = new TaskCompletionSource();
+        _runningDone = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         _runningCommand = "";
         _busySince.Restart();
         BusyText.Text = Strings.Busy_Working;
@@ -381,6 +395,7 @@ public partial class MainWindow : Window, IShell
         {
             _cts.Dispose();
             _cts = null;
+            _runningKind = null;
             _runningView = null;
             _runningDone.TrySetResult();
             _busyTimer.Stop();
@@ -389,9 +404,9 @@ public partial class MainWindow : Window, IShell
             BusyStrip.Visibility = Visibility.Collapsed;
         }
 
-        // A user action that cancelled this reload starts next; the held reload then waits for it to end.
-        if (!_actionWaiting && _heldReload.Take(ScreenHost.Content as ScreenBase, v => v.LastLoadBegan) is { } next)
-            _ = RunAsync(next.RefreshAsync, isReload: true, next);
+        // A pick or action that cancelled this work starts next; the held reload then waits for it to end.
+        if (_waitingKind is null && _heldReload.Take(ScreenHost.Content as ScreenBase, v => v.LastLoadBegan) is { } next)
+            _ = RunAsync(next.RefreshAsync, WorkKind.Reload, next);
     }
 
     private void CancelButton_Click(object sender, RoutedEventArgs e) => _cts?.Cancel();
