@@ -24,5 +24,5 @@ jobs:
         if: env.PROJECT_TOKEN != ''
         uses: actions/add-to-project@v2.0.1
         with:
-          project-url: https://github.com/users/paulfilkin/projects/5
+          project-url: https://github.com/users/paulfilkin/projects/8
           github-token: ${{ env.PROJECT_TOKEN }}
