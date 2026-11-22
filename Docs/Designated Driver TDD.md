@@ -300,6 +300,8 @@ All four phases were built on 20 November 2026 and released as v0.1.0, with two 
 
 **Picks give way** (5).  Picking a pull request on Review only loads its files, but it ran as a user action, so a second pick within a second was refused with "Something is still running" after the busy strip had cleared.  Work is now a reload, a pick or an action (`BusyRules`): a pick or an action stops a running reload or pick and starts once it has stopped, so the latest pick is the one shown; nothing stops an action, and a pick while one runs is still refused.  Only the latest of several waiting requests starts.
 
+**The busy strip keeps its space** (5).  The strip sat in an auto-height row and was collapsed when idle, so every start of work pushed the page down by its height and every end pulled it back.  On Review that moved the list under a held click: clicking a pull request started loading its files, the strip appeared, and the list selected the row that slid under the pointer, whose pick then stopped the first.  The strip is now hidden rather than collapsed when idle, so its row keeps its height and nothing below it moves.
+
 ### 12.3 Releases
 
 | Version | Date | What it added |
