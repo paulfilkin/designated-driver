@@ -38,6 +38,7 @@ public static partial class SelfTestRunner
             SettingsChecks(Check);
             ManifestChecks(Check);
             CapabilityChecks(Check);
+            OrganisationWordingChecks(Check);
             ConventionChecks(Check);
             ScanSampleChecks(Check);
             ScanRuleChecks(Check);

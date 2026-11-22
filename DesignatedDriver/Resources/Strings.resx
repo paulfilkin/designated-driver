@@ -702,6 +702,7 @@ The clone and the repository on GitHub are not touched.</value></data>
   <data name="Scan_NotAdmin" xml:space="preserve"><value>The signed-in account is not an admin of {0} ({1}). Set-up changes settings, labels and rules, which need admin.</value></data>
   <data name="Scan_Fork" xml:space="preserve"><value>The repository is a fork. Pull requests and rules behave differently on forks, and nothing in the convention is designed for them.</value></data>
   <data name="Scan_Organisation" xml:space="preserve"><value>The repository belongs to an organisation ({0}). The tool is designed for a personal account; the commands are the same, but the board will be organisation-owned.</value></data>
+  <data name="Scan_OrganisationBoardLinked" xml:space="preserve"><value>The repository belongs to an organisation ({0}). The tool is designed for a personal account; the commands are the same, and the organisation's board already linked is used as it is.</value></data>
   <data name="Scan_DirtyTree" xml:space="preserve"><value>The working tree has {0} uncommitted change(s). Set-up commits the convention files, so commit or discard them first.</value></data>
   <data name="Scan_MergeInProgress" xml:space="preserve"><value>A merge is in progress. Finish or abandon it before setting up.</value></data>
   <data name="Scan_DefaultBranchNotMain" xml:space="preserve"><value>The default branch is {0}, not main. The convention honours it: the files, hooks and workflows will name {0}.</value></data>
@@ -748,6 +749,7 @@ The clone and the repository on GitHub are not touched.</value></data>
   <data name="Scan_CodeOwnersUnavailable" xml:space="preserve"><value>Required code owner review: not available. CODEOWNERS is written anyway, so it takes effect if the repository goes public.</value></data>
   <data name="Scan_PushProtectionUnavailable" xml:space="preserve"><value>Secret scanning push protection: not available. The CI workflow's committed-secrets check stands in.</value></data>
   <data name="Scan_CodeScanningUnavailable" xml:space="preserve"><value>Code scanning (CodeQL): not available. No CodeQL workflow is written.</value></data>
+  <data name="Scan_OrganisationSecurity" xml:space="preserve"><value>Secret scanning push protection and code scanning on an organisation's private repository depend on the organisation's GitHub Advanced Security licence, which the tool doesn't read. Set-up doesn't turn them on and writes no CodeQL workflow; the CI workflow's committed-secrets check stands in.</value></data>
   <data name="Scan_AlreadySetUp" xml:space="preserve"><value>Set up to convention v{0} on {1}.</value></data>
   <data name="Scan_VisibilityPublic" xml:space="preserve"><value>Public repository: every GitHub feature the convention uses is available.</value></data>
   <data name="Scan_VisibilityPrivate" xml:space="preserve"><value>Private repository. Plan: {0}.</value></data>
