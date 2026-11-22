@@ -174,9 +174,22 @@ public partial class SubmitScreen : ScreenBase
             if (needsPush) await Workspace.Git.PushAsync(_status.Branch, !_status.HasUpstream, ct);
             var (number, url) = await Workspace.GitHub.CreatePullRequestAsync(title, body, ct);
             Shell.Announce(string.Format(Strings.Submit_Created, number, url));
+            await AddToBoardAsync(number, url, ct);
             await MoveToReviewAsync(issueNumber, ct);
             await RefreshAsync(ct);
         });
+    }
+
+    /// <summary>
+    /// Puts the pull request just opened on the board with the signed-in account, as Start work does for the issues it
+    /// creates, so the board has it without a token or Auto-add (issue 68). Adding an item already there changes
+    /// nothing. A failure is noted, not raised: the pull request is already open.
+    /// </summary>
+    private async Task AddToBoardAsync(int number, string url, CancellationToken ct)
+    {
+        if (Workspace.Board is not { } board || number <= 0) return;
+        try { await Workspace.GitHub.AddToBoardAsync(board, url, ct); }
+        catch (CommandFailedException ex) { Workspace.Runner.Note(string.Format(Strings.Submit_BoardFailed, number, ex.Message)); }
     }
 
     /// <summary>

@@ -381,6 +381,7 @@ Go ahead?</value></data>
   <data name="Submit_Created" xml:space="preserve"><value>Opened pull request #{0}: {1}</value></data>
   <data name="Submit_NoReviewColumn" xml:space="preserve"><value>The board has no {0} column, so the card wasn't moved to it.</value></data>
   <data name="Submit_ReviewMoveFailed" xml:space="preserve"><value>Issue #{0}'s card couldn't be moved to {1}: {2}</value></data>
+  <data name="Submit_BoardFailed" xml:space="preserve"><value>Pull request #{0} couldn't be added to the board: {1}</value></data>
   <data name="Submit_Checks" xml:space="preserve"><value>Checks</value></data>
   <data name="Submit_CheckNow" xml:space="preserve"><value>Check now</value></data>
   <data name="Submit_NoChecksYet" xml:space="preserve"><value>No checks have started yet. GitHub usually starts them within a minute; this screen looks again every 15 seconds.</value></data>
@@ -1009,10 +1010,10 @@ Fix the cause and press Retry. Steps already done are not repeated.</value></dat
   <data name="Status_ActionsRepository" xml:space="preserve"><value>About {0} billable minute(s) in this repository's {1} run(s).</value></data>
   <data name="Status_ActionsNeedsUserScope" xml:space="preserve"><value>The account-wide figure needs the user scope: {0}</value></data>
   <data name="Status_ActionsFree" xml:space="preserve"><value>Public repository: Actions minutes are free here, so none are counted.</value></data>
-  <data name="Status_AddMissing" xml:space="preserve"><value>Add missing issues to the board</value></data>
-  <data name="Status_AddMissingHelp" xml:space="preserve"><value>Put every open issue that isn't on the board onto it. GitHub's automation gives it Todo.</value></data>
-  <data name="Status_AddMissingNone" xml:space="preserve"><value>Every open issue is already on the board.</value></data>
-  <data name="Status_AddMissingDone" xml:space="preserve"><value>{0} issue(s) added to the board.</value></data>
+  <data name="Status_AddMissing" xml:space="preserve"><value>Add missing issues and pull requests</value></data>
+  <data name="Status_AddMissingHelp" xml:space="preserve"><value>Put every open issue and pull request that isn't on the board onto it, a bot's pull requests included. GitHub's automation gives each Todo.</value></data>
+  <data name="Status_AddMissingNone" xml:space="preserve"><value>Every open issue and pull request is already on the board.</value></data>
+  <data name="Status_AddMissingDone" xml:space="preserve"><value>{0} issue(s) and {1} pull request(s) added to the board.</value></data>
   <data name="Status_SetToken" xml:space="preserve"><value>Set board token</value></data>
   <data name="Status_SetTokenHelp" xml:space="preserve"><value>Store a classic token with the repo and project scopes as the PROJECT_TOKEN secret, so the board workflow can add issues and pull requests.</value></data>
   <data name="Status_TokenStored" xml:space="preserve"><value>The token is stored as the repository secret PROJECT_TOKEN. It was not written anywhere else.</value></data>

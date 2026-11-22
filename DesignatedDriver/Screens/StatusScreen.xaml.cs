@@ -331,8 +331,8 @@ public partial class StatusScreen : ScreenBase
         if (Workspace.Board is not { } board) return;
         _ = Shell.RunAsync(async ct =>
         {
-            int added = await Workspace.GitHub.AddMissingIssuesToBoardAsync(board, ct);
-            Shell.ShowInfo(added == 0 ? Strings.Status_AddMissingNone : string.Format(Strings.Status_AddMissingDone, added));
+            var (issues, pullRequests) = await Workspace.GitHub.AddMissingToBoardAsync(board, ct);
+            Shell.ShowInfo(issues + pullRequests == 0 ? Strings.Status_AddMissingNone : string.Format(Strings.Status_AddMissingDone, issues, pullRequests));
         });
     }
 

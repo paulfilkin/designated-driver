@@ -2191,16 +2191,16 @@ public static class Strings
     /// <summary>About {0} billable minute(s) in this repository&apos;s {1} run(s).</summary>
     public static string Status_ActionsRepository => Get("Status_ActionsRepository");
 
-    /// <summary>Add missing issues to the board</summary>
+    /// <summary>Add missing issues and pull requests</summary>
     public static string Status_AddMissing => Get("Status_AddMissing");
 
-    /// <summary>{0} issue(s) added to the board.</summary>
+    /// <summary>{0} issue(s) and {1} pull request(s) added to the board.</summary>
     public static string Status_AddMissingDone => Get("Status_AddMissingDone");
 
-    /// <summary>Put every open issue that isn&apos;t on the board onto it. GitHub&apos;s automation gives it Todo.</summary>
+    /// <summary>Put every open issue and pull request that isn&apos;t on the board onto it, a bot&apos;s pull req...</summary>
     public static string Status_AddMissingHelp => Get("Status_AddMissingHelp");
 
-    /// <summary>Every open issue is already on the board.</summary>
+    /// <summary>Every open issue and pull request is already on the board.</summary>
     public static string Status_AddMissingNone => Get("Status_AddMissingNone");
 
     /// <summary>Against main</summary>
@@ -2415,6 +2415,9 @@ public static class Strings
 
     /// <summary>This branch is {0} commit(s) behind {1}. Update it first, so the pull request starts cu...</summary>
     public static string Submit_Behind => Get("Submit_Behind");
+
+    /// <summary>Pull request #{0} couldn&apos;t be added to the board: {1}</summary>
+    public static string Submit_BoardFailed => Get("Submit_BoardFailed");
 
     /// <summary>Description</summary>
     public static string Submit_Body => Get("Submit_Body");
