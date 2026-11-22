@@ -53,6 +53,16 @@ public static class ScanReportText
         _ => canKeepAsIs ? Strings.Scan_Next_ConvertibleOrKeep : Strings.Scan_Next_Convertible,
     };
 
+    /// <summary>
+    /// The next step after a scan by name. A clone found beside the known ones is the one to scan; with none found and
+    /// cloning offered, a clone kept elsewhere can still be scanned by its folder. A scan of a clone keeps the step as it is.
+    /// </summary>
+    public static string NextStepForName(string nextStep, ScanFacts f, AsItIsRoute route)
+        => f.HasClone ? nextStep
+         : f.NearbyClone.Length > 0 ? string.Format(Strings.Scan_Next_ScanNearbyClone, f.NearbyClone)
+         : route == AsItIsRoute.Clone ? nextStep + " " + Strings.Scan_Next_CloneElsewhere
+         : nextStep;
+
     /// <summary>The "as it is" button's label and the line beside it, for the route and whether it marks the repository as keeping its own conventions.</summary>
     public static (string Label, string Help) AsItIsButton(AsItIsRoute route, bool keepsOwn) => (route, keepsOwn) switch
     {

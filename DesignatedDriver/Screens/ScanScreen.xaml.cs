@@ -132,12 +132,18 @@ public partial class ScanScreen : ScreenBase
         _asItIs = ScanRules.AsItIs(facts, report.Verdict, known);
         _keepsOwn = ScanRules.KeepsOwnAsItIs(report.Verdict);
         bool convertible = report.Verdict == ScanVerdict.Convertible;
-        NextStepText.Text = ScanReportText.NextStep(report.Verdict, current, canKeepAsIs: convertible && _asItIs != AsItIsRoute.None);
+        NextStepText.Text = ScanReportText.NextStepForName(
+            ScanReportText.NextStep(report.Verdict, current, canKeepAsIs: convertible && _asItIs != AsItIsRoute.None), facts, _asItIs);
+        // A scan by name that found a clone beside the known ones offers scanning that folder first.
+        bool nearby = !facts.HasClone && facts.NearbyClone.Length > 0;
+        ScanCloneChoice.Visibility = nearby ? Visibility.Visible : Visibility.Collapsed;
+        ScanCloneText.Text = nearby ? string.Format(Strings.Scan_ScanNearbyCloneHelp, facts.NearbyClone) : "";
+        AutomationProperties.SetHelpText(ScanCloneButton, ScanCloneText.Text);
         SetUpChoice.Visibility = convertible ? Visibility.Visible : Visibility.Collapsed;
         OpenCheckChoice.Visibility = report.Verdict == ScanVerdict.AlreadySetUp && current ? Visibility.Visible : Visibility.Collapsed;
         ShowAsItIs();
-        ActionRow.Visibility = SetUpChoice.Visibility == Visibility.Visible || OpenCheckChoice.Visibility == Visibility.Visible || AsItIsChoice.Visibility == Visibility.Visible
-            ? Visibility.Visible : Visibility.Collapsed;
+        ActionRow.Visibility = ScanCloneChoice.Visibility == Visibility.Visible || SetUpChoice.Visibility == Visibility.Visible
+            || OpenCheckChoice.Visibility == Visibility.Visible || AsItIsChoice.Visibility == Visibility.Visible ? Visibility.Visible : Visibility.Collapsed;
 
         FindingsPanel.Children.Clear();
         foreach (var severity in Enum.GetValues<ScanSeverity>())
@@ -213,6 +219,13 @@ public partial class ScanScreen : ScreenBase
     }
 
     private void OpenCheck_Click(object sender, RoutedEventArgs e) => Shell.Navigate(Screen.Check);
+
+    /// <summary>Scans the clone found beside the known ones, by its folder.</summary>
+    private void ScanClone_Click(object sender, RoutedEventArgs e)
+    {
+        if (_facts is null || _facts.NearbyClone.Length == 0) return;
+        ScanTarget(_facts.NearbyClone, "");
+    }
 
     private void AsItIs_Click(object sender, RoutedEventArgs e)
     {
