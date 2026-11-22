@@ -274,6 +274,9 @@ public static class Strings
     /// <summary>Leave the full stop off the end of the summary.</summary>
     public static string Commit_Check_SummaryTrailingFullStop => Get("Commit_Check_SummaryTrailingFullStop");
 
+    /// <summary>and</summary>
+    public static string Common_And => Get("Common_And");
+
     /// <summary>Cancel</summary>
     public static string Common_Cancel => Get("Common_Cancel");
 
@@ -1201,7 +1204,7 @@ public static class Strings
     /// <summary>Type the repository as owner/name, for example paulfilkin/example.</summary>
     public static string Scan_BadName => Get("Scan_BadName");
 
-    /// <summary>Board {0} ({1}) is linked and has Todo, In Progress and Done.</summary>
+    /// <summary>Board {0} ({1}) is linked and has {2}. {3} is used to pick up work and {4} for work und...</summary>
     public static string Scan_BoardUsable => Get("Scan_BoardUsable");
 
     /// <summary>Clone and work on it as it is</summary>
@@ -1666,7 +1669,7 @@ public static class Strings
     /// <summary>The limit must be a whole number of at least 1.</summary>
     public static string Setup_BehindLimitInvalid => Get("Setup_BehindLimitInvalid");
 
-    /// <summary>Board {0} ({1}) is linked and has Todo, In Progress and Done.</summary>
+    /// <summary>Board {0} ({1}) is linked and has {2}. {3} is used to pick up work and {4} for work und...</summary>
     public static string Setup_BoardIs => Get("Setup_BoardIs");
 
     /// <summary>Board token</summary>

@@ -283,7 +283,10 @@ public static class ScanRules
         var usable = f.LinkedBoards.FirstOrDefault(b => ConventionBoard.HasRequiredColumns(b.StatusOptions));
         if (usable is not null)
         {
-            Add(ScanSeverity.Ok, ScanCode.BoardUsable, SetupStep.Board, string.Format(Strings.Scan_BoardUsable, usable.Number, usable.Title));
+            // The board's own columns, as it spells them, and which of them the workflow screens use.
+            var columns = BoardColumns.Match(usable.StatusOptions);
+            Add(ScanSeverity.Ok, ScanCode.BoardUsable, SetupStep.Board,
+                string.Format(Strings.Scan_BoardUsable, usable.Number, usable.Title, TextList.And(usable.StatusOptions), columns.Ready, columns.InProgress));
         }
         else
         {
