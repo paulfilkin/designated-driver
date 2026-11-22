@@ -1429,6 +1429,12 @@ public static class Strings
     /// <summary>The repository belongs to an organisation ({0}). The tool is designed for a personal ac...</summary>
     public static string Scan_Organisation => Get("Scan_Organisation");
 
+    /// <summary>The repository belongs to an organisation ({0}). The tool is designed for a personal ac...</summary>
+    public static string Scan_OrganisationBoardLinked => Get("Scan_OrganisationBoardLinked");
+
+    /// <summary>Secret scanning push protection and code scanning on an organisation&apos;s private reposito...</summary>
+    public static string Scan_OrganisationSecurity => Get("Scan_OrganisationSecurity");
+
     /// <summary>{0} other label(s) are left alone.</summary>
     public static string Scan_OtherLabels => Get("Scan_OtherLabels");
 

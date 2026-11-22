@@ -126,7 +126,9 @@ public static partial class DriftRules
             }
             else
             {
-                Add("pushprotection", SetupStep.PushProtection, DriftKind.NotAvailable, Strings.Scan_PushProtectionUnavailable, ticked: false);
+                // An organisation's private repository: its licence decides, not a personal plan (issue 58).
+                Add("pushprotection", SetupStep.PushProtection, DriftKind.NotAvailable,
+                    f.IsOrganisationPrivate ? Strings.Scan_OrganisationSecurity : Strings.Scan_PushProtectionUnavailable, ticked: false);
             }
             if (caps.Rulesets)
             {

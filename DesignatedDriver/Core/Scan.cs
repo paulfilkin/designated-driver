@@ -16,6 +16,7 @@ public enum ScanCode
     // Warnings
     Fork, Organisation, DirtyTree, MergeInProgress, DefaultBranchNotMain, ExistingFilesKept, ExistingBoardOtherColumns,
     HooksPathElsewhere, RulesAlreadyApply, NoLanguage, LabelsBothPresent, FormAppliesRenamedLabel, ReleasesElsewhere, CompetingWorkflows, NearbyClone,
+    OrganisationSecurity,
     // Changes
     InitGit, CreateRepository, MergeSettings, Features, CreateLabels, RecolourLabels, RenameLabels, CreateBoard, WriteFiles, PointHooks,
     DependabotAlerts, DependabotUpdates, SecretScanning, CreateRuleset, UpdateConvention, AppendWorkflowSection,
@@ -109,6 +110,13 @@ public sealed class ScanFacts
     public string MovedTo => Details is not null && OwnerAndName.Length > 0 && !Details.IsNamed(OwnerAndName) ? Details.FullName : "";
     public bool RemoteFound => Details is not null && MovedTo.Length == 0;
     public bool IsPublic => Details?.IsPublic ?? false;
+    /// <summary>True when an organisation owns the repository, from either read of it.</summary>
+    public bool IsOrganisationOwned => (Details?.OwnerIsOrganization ?? false) || (View?.IsInOrganization ?? false);
+    /// <summary>
+    /// A private repository an organisation owns: push protection and code scanning there depend on the organisation's
+    /// GitHub Advanced Security licence, which the tool doesn't read, rather than on a personal plan.
+    /// </summary>
+    public bool IsOrganisationPrivate => IsOrganisationOwned && !IsPublic;
     public string DefaultBranch => string.IsNullOrEmpty(Details?.DefaultBranch) ? RepositorySettings.DefaultDefaultBranch : Details!.DefaultBranch;
     public bool IsEmptyRepository => HasClone && IsGitRepository ? !HasCommits : View?.IsEmpty ?? false;
     public Capabilities? Capabilities => Details is null ? null : Capabilities.From(PlanName, IsPublic, BranchRulesStatus);
@@ -270,7 +278,13 @@ public static class ScanRules
         bool admin = d.ViewerIsAdmin || (f.View?.IsAdmin ?? false);
         if (!admin) Add(ScanSeverity.Blocker, ScanCode.NotAdmin, SetupStep.None, string.Format(Strings.Scan_NotAdmin, f.OwnerAndName, f.View?.ViewerPermission ?? ""));
         if (d.Fork) Add(ScanSeverity.Warning, ScanCode.Fork, SetupStep.None, Strings.Scan_Fork);
-        if (d.OwnerIsOrganization || (f.View?.IsInOrganization ?? false)) Add(ScanSeverity.Warning, ScanCode.Organisation, SetupStep.Board, string.Format(Strings.Scan_Organisation, d.Owner?.Login ?? ""));
+        // The board clause only matters when set-up would create one: a usable board already linked is used as it is.
+        if (f.IsOrganisationOwned)
+        {
+            bool boardLinked = f.LinkedBoards.Any(b => ConventionBoard.HasRequiredColumns(b.StatusOptions));
+            Add(ScanSeverity.Warning, ScanCode.Organisation, boardLinked ? SetupStep.None : SetupStep.Board,
+                string.Format(boardLinked ? Strings.Scan_OrganisationBoardLinked : Strings.Scan_Organisation, d.Owner?.Login ?? ""));
+        }
         if (!f.DefaultBranch.Equals(RepositorySettings.DefaultDefaultBranch, StringComparison.Ordinal))
             Add(ScanSeverity.Warning, ScanCode.DefaultBranchNotMain, SetupStep.Files, string.Format(Strings.Scan_DefaultBranchNotMain, f.DefaultBranch));
 
@@ -335,6 +349,11 @@ public static class ScanRules
         {
             if (!d.SecretScanningOn || !d.PushProtectionOn) Add(ScanSeverity.Change, ScanCode.SecretScanning, SetupStep.Security, Strings.Scan_SecretScanning);
         }
+        else if (f.IsOrganisationPrivate)
+        {
+            // Not a personal plan's limit: the organisation's licence decides, and set-up leaves both alone.
+            Add(ScanSeverity.Warning, ScanCode.OrganisationSecurity, SetupStep.Security, Strings.Scan_OrganisationSecurity);
+        }
         else
         {
             Add(ScanSeverity.NotAvailable, ScanCode.PushProtectionUnavailable, SetupStep.Security, Strings.Scan_PushProtectionUnavailable);
@@ -353,7 +372,7 @@ public static class ScanRules
             Add(ScanSeverity.NotAvailable, ScanCode.RulesetsUnavailable, SetupStep.Ruleset, Strings.Scan_RulesetsUnavailable);
         }
         if (!caps.CodeOwners) Add(ScanSeverity.NotAvailable, ScanCode.CodeOwnersUnavailable, SetupStep.Files, Strings.Scan_CodeOwnersUnavailable);
-        if (!caps.CodeScanning) Add(ScanSeverity.NotAvailable, ScanCode.CodeScanningUnavailable, SetupStep.Files, Strings.Scan_CodeScanningUnavailable);
+        if (!caps.CodeScanning && !f.IsOrganisationPrivate) Add(ScanSeverity.NotAvailable, ScanCode.CodeScanningUnavailable, SetupStep.Files, Strings.Scan_CodeScanningUnavailable);
 
         // A repository that already publishes releases another way keeps the release workflow off (the wizard unticks it).
         var releaseReasons = ReleaseEvidence.Reasons(f);
