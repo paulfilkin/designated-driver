@@ -18,7 +18,7 @@ public enum ScanCode
     HooksPathElsewhere, RulesAlreadyApply, NoLanguage,
     // Changes
     InitGit, CreateRepository, MergeSettings, Features, CreateLabels, RecolourLabels, CreateBoard, WriteFiles, PointHooks,
-    DependabotAlerts, DependabotUpdates, SecretScanning, CreateRuleset, UpdateConvention,
+    DependabotAlerts, DependabotUpdates, SecretScanning, CreateRuleset, UpdateConvention, AppendWorkflowSection,
     // Not available on this plan
     RulesetsUnavailable, CodeOwnersUnavailable, PushProtectionUnavailable, CodeScanningUnavailable,
     // Already in place, or information
@@ -73,6 +73,8 @@ public sealed class ScanFacts
     public List<GhWorkflow> Workflows { get; set; } = [];
     public Manifest? Manifest { get; set; }
     public string PlanName { get; set; } = "";
+    /// <summary>Whether the clone's CONTRIBUTING.md has the convention's section on how a change gets in; null when there is no file or it wasn't read.</summary>
+    public bool? ContributingHasWorkflowSection { get; set; }
 
     // Derived
     public bool OriginIsGitHub => IsGitHubUrl(OriginUrl);
@@ -304,6 +306,7 @@ public static class ScanRules
         }
         if (toWrite.Count > 0) Add(ScanSeverity.Change, ScanCode.WriteFiles, SetupStep.Files, string.Format(Strings.Scan_WriteFiles, toWrite.Count), string.Join("\n", toWrite));
         if (kept.Count > 0) Add(ScanSeverity.Warning, ScanCode.ExistingFilesKept, SetupStep.Files, string.Format(Strings.Scan_ExistingFilesKept, kept.Count), string.Join("\n", kept));
+        if (f.ContributingHasWorkflowSection == false) Add(ScanSeverity.Change, ScanCode.AppendWorkflowSection, SetupStep.Files, Strings.Scan_AppendWorkflowSection);
 
         if (f.IsEmptyRepository) Add(ScanSeverity.Ok, ScanCode.EmptyRepository, SetupStep.Files, string.Format(Strings.Scan_EmptyRepository, f.DefaultBranch));
         else if ((f.HasClone && f.IsGitRepository) || f.RemoteFound) Add(ScanSeverity.Ok, ScanCode.HasHistory, SetupStep.Files, Strings.Scan_HasHistory);

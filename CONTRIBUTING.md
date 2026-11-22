@@ -14,7 +14,7 @@ New to Git or to this repository?  `Docs\Working with Git.md` gives the commands
 
 ## 2. How a change gets into main
 
-Nobody pushes to `main`.  Every change arrives through a pull request, passes the automatic checks and is approved.  On a public repository GitHub enforces this; on a private one the hooks refuse the push and the Guard workflow reports anything that slips through (section 3).
+Nobody pushes to `main`.  Every change arrives through a pull request, passes the automatic checks and is approved.  On a public repository GitHub enforces this; on a private one the local hooks in `.githooks\` refuse the push, and the Guard workflow reports anything that slips through.
 
 Every change starts from an issue.  Open one with the **Feature** or **Bug** form on the repository's Issues tab.  The form adds the type label (`feature`, `bug`); add `docs` or `chore` where they fit, and `blocked` while an issue is waiting on something else.  An issue is ready to work on once it has acceptance criteria and isn't labelled `blocked`.
 
@@ -33,6 +33,8 @@ The [project board](https://github.com/users/paulfilkin/projects/5) shows every 
 6. The automatic checks run.  Fix anything they report.
 7. The reviewer reviews.  Answer every comment, either with a change or a reply, and resolve the conversation.
 8. The pull request is merged with **Squash and merge**, which makes it one commit on `main`.  The branch is then deleted and the issue closed.
+
+`Docs\Working with Git.md` gives the commands for each of these steps.
 
 ## 3. What the automatic checks do
 

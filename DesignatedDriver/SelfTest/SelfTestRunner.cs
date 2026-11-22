@@ -708,6 +708,20 @@ public static partial class SelfTestRunner
         var missing = new ScanFacts { OwnerAndName = "paulfilkin/no-such-repository", RemoteLookedUp = true, Details = null };
         check(ScanRules.Assess(missing) is { Verdict: ScanVerdict.NotConvertible } mr && mr.Has(ScanCode.RepositoryNotFound), "Scan: a repository GitHub doesn't return is a blocker");
 
+        // The convention's section on how a change gets in: in its CONTRIBUTING.md, and added to a kept one that lacks it.
+        var sectionValues = ConventionContent.ValuesFor(DotNetAnswers(), new BoardReference("paulfilkin", 7));
+        var guideText = ConventionContent.Render(ConventionFiles.All.First(c => c.Path == "CONTRIBUTING.md"), DotNetAnswers(), sectionValues);
+        check(System.Text.RegularExpressions.Regex.Matches(guideText, "How a change gets into").Count == 1 && guideText.Contains("## 2. How a change gets into main\n\nNobody pushes", StringComparison.Ordinal)
+            && guideText.Contains("## 3. What the automatic checks do", StringComparison.Ordinal) && !ConventionContent.HasUnfilled(guideText) && !guideText.Contains("(section 3)", StringComparison.Ordinal),
+            "Workflow section: the convention's CONTRIBUTING.md has it as section 2, filled, once");
+        var appended = WorkflowSection.AppendTo("# Ours\n\nBuild with make.\n\n\n", sectionValues);
+        check(appended.StartsWith("# Ours\n\nBuild with make.\n\n## How a change gets into main\n", StringComparison.Ordinal) && appended.EndsWith("for each of these steps.\n", StringComparison.Ordinal)
+            && WorkflowSection.IsIn(appended) && WorkflowSection.IsIn("### 4. How a change gets into develop\n") && !WorkflowSection.IsIn("We describe how a change gets into main below.\n"),
+            "Workflow section: added at the end as a level-two heading after one blank line, and found by its heading at any level, numbered or not");
+        var withGuide = Clone(fresh);
+        withGuide.ContributingHasWorkflowSection = false;
+        check(ScanRules.Assess(withGuide).Has(ScanCode.AppendWorkflowSection) && !ScanRules.Assess(fresh).Has(ScanCode.AppendWorkflowSection), "Scan: a kept CONTRIBUTING.md without the section reports that it would be added; one with it, or none, doesn't");
+
         // Warnings and the create path.
         var fork = Clone(fresh);
         fork.Details = Fresh();

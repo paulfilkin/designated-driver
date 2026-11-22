@@ -319,6 +319,9 @@ public static class Strings
     /// <summary>Dependabot security updates are off.</summary>
     public static string Drift_UpdatesOff => Get("Drift_UpdatesOff");
 
+    /// <summary>CONTRIBUTING.md has no section on how a change gets in. Applying adds the convention&apos;s ...</summary>
+    public static string Drift_WorkflowSectionMissing => Get("Drift_WorkflowSectionMissing");
+
     /// <summary>The command failed: {0} {1}</summary>
     public static string Error_CommandFailed => Get("Error_CommandFailed");
 
@@ -1143,6 +1146,9 @@ public static class Strings
 
     /// <summary>Set up to convention v{0} on {1}.</summary>
     public static string Scan_AlreadySetUp => Get("Scan_AlreadySetUp");
+
+    /// <summary>CONTRIBUTING.md is kept, and the convention&apos;s section on how a change gets in (issue fi...</summary>
+    public static string Scan_AppendWorkflowSection => Get("Scan_AppendWorkflowSection");
 
     /// <summary>The repository is archived. Unarchive it on GitHub before setting it up.</summary>
     public static string Scan_Archived => Get("Scan_Archived");

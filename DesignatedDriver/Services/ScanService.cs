@@ -52,6 +52,14 @@ public sealed class ScanService(Workspace workspace)
         facts.MergeInProgress = await Git.IsMergeInProgressInAsync(folder, ct).ConfigureAwait(false);
         facts.HooksPath = await Git.HooksPathInAsync(folder, ct).ConfigureAwait(false);
         facts.Files = await Git.ListFilesInAsync(folder, ct).ConfigureAwait(false);
+
+        // A kept CONTRIBUTING.md gets the convention's section on how a change gets in, unless it already has it.
+        var contributing = Path.Combine(folder, WorkflowSection.ContributingPath);
+        if (File.Exists(contributing))
+        {
+            try { facts.ContributingHasWorkflowSection = WorkflowSection.IsIn(await File.ReadAllTextAsync(contributing, ct).ConfigureAwait(false)); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* unreadable: not known */ }
+        }
     }
 
     private async Task ReadGitHubAsync(ScanFacts facts, CancellationToken ct)
