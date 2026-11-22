@@ -10,7 +10,7 @@
     <AssemblyName>DesignatedDriver</AssemblyName>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>icon.ico</ApplicationIcon>
-    <Version>0.2.6</Version>
+    <Version>0.3.0</Version>
     <Authors>multifarious</Authors>
     <Company>multifarious</Company>
     <Product>Designated Driver</Product>

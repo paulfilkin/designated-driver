@@ -24,13 +24,16 @@
 
 Building software with an AI coding assistant is fast.  It is also easy to end up with commits straight on `main`, branches nobody remembers, pull requests that close nothing, and a project board that no longer matches the code.
 
-Designated Driver keeps the discipline so you don't have to.  Every change starts as an issue, happens on a branch named for it, arrives through a pull request that closes it, passes its checks, and is tidied away afterwards.  You and your assistant do the work; the app makes sure it gets home.
+Many people building this way have never run a project on GitHub, and nobody has shown them how issues, branches, reviews and releases fit together.  Invite someone else to work on it with you, and the gaps show at once: who is working on what, which change is ready, and what is safe to merge.
+
+Designated Driver puts those controls in place and keeps them there.  Every change starts as an issue, happens on a branch named for it, arrives through a pull request that closes it, passes its checks, and is tidied away afterwards.  The rules hold for everyone who works on the repository, not only you: the board shows who is doing what, the required check and the review stop unfinished work reaching `main`, and the guides show a newcomer how it all works.  You and your assistant do the work; the app makes sure it gets home.
 
 ## What it does
 
 - **Sets a repository up in one go.**  A new repository, a folder on your machine, or one already on GitHub: labels, a project board, issue forms, a pull request template, CI with a required check, a guard workflow, local Git hooks and Dependabot, plus a ruleset, push protection and CodeQL on public repositories.  You see the whole plan before anything changes.
 - **Keeps it there.**  Check compares a repository with the convention, file by file and setting by setting, shows what has drifted, and puts right what you tick.
 - **Walks the daily workflow.**  Start work writes or picks an issue and makes its branch.  Save and share commits with the message checks and pushes.  Submit opens the pull request with its `Closes #n` line filled in.  Review merges.  Tidy up takes you back to `main`.
+- **Ready for more than one person.**  Contributors get the same issue forms, branch names, checks and review as you, a contributing guide that says how changes get in, and a Git guide with the commands for each step.
 - **Hides nothing.**  It runs `git` and `gh` and nothing else, and every command appears in the activity panel with its output.  No token is ever stored: the GitHub CLI holds your sign-in.
 - **Works on the Free plan.**  Where GitHub offers no ruleset, as on a private repository on the Free plan, local hooks and the guard workflow stand in for it.  Public repositories get GitHub's own protection on top.
 
