@@ -67,7 +67,8 @@ public sealed class ScanService(Workspace workspace)
         facts.PlanName = workspace.PlanName;
 
         facts.Details = await GitHub.RepositoryDetailsAsync(name, ct).ConfigureAwait(false);
-        if (facts.Details is null) return;
+        // A renamed or transferred repository answers to its old name; nothing more is read from the one it leads to.
+        if (facts.Details is null || facts.MovedTo.Length > 0) return;
 
         try { facts.View = await GitHub.RepositoryAsync(name, GhRepository.ScanFields, ct).ConfigureAwait(false); }
         catch (CommandFailedException) { /* the REST answer carries most of it */ }
