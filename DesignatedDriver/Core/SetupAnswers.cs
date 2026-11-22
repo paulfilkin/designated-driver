@@ -45,6 +45,8 @@ public sealed class SetupAnswers
     public int BehindLimit { get; set; } = 10;
     public List<string> Checklist { get; set; } = [.. ChecklistItems.DefaultIds];
     public List<string> Topics { get; set; } = [];
+    /// <summary>Workflows other than the convention's to remove in the set-up pull request, ticked in the wizard; a one-off, not kept in the manifest.</summary>
+    public List<string> RemoveWorkflows { get; set; } = [];
     /// <summary>True when a board token was given, so the plan includes the secret step.</summary>
     public bool HasBoardToken { get; set; }
     /// <summary>https or ssh for the clone and the pushes; empty means the tool-wide setting.</summary>
