@@ -60,7 +60,7 @@ public static partial class DriftRules
     private static partial System.Text.RegularExpressions.Regex ActionPin();
 
     /// <summary>Files a project may tailor; reported when they differ, but not ticked for overwriting by default.</summary>
-    public static readonly IReadOnlyList<string> TailoredFiles = ["CONTRIBUTING.md", "Docs/Working with Git.md", ".github/pull_request_template.md", ".github/workflows/ci.yml"];
+    public static readonly IReadOnlyList<string> TailoredFiles = ["CONTRIBUTING.md", "Docs/Working with Git.md", ".github/pull_request_template.md", ".github/workflows/ci.yml", .. IssueForms.ConventionForms];
 
     public static bool IsTailored(string path) => TailoredFiles.Contains(path, StringComparer.OrdinalIgnoreCase);
 
@@ -148,7 +148,8 @@ public static partial class DriftRules
             bool present = input.Actual.ContainsKey(file.Path) || f.HasFile(file);
             if (!present)
             {
-                Add("file:" + file.Path, SetupStep.Files, DriftKind.Missing, string.Format(Strings.Drift_FileMissing, file.Path), path: file.Path);
+                // A project chooses its own issue forms, so a missing one is reported but not ticked.
+                Add("file:" + file.Path, SetupStep.Files, DriftKind.Missing, string.Format(Strings.Drift_FileMissing, file.Path), ticked: !IssueForms.IsConventionForm(file.Path), path: file.Path);
                 continue;
             }
             if (file.OnlyWhenMissing) continue;

@@ -684,6 +684,7 @@ The clone and the repository on GitHub are not touched.</value></data>
   <data name="Scan_FormAppliesRenamedLabel" xml:space="preserve"><value>{0} applies the label {1}, which would be renamed {2}. Change the form to apply {2}.</value></data>
   <data name="Scan_LabelsOk" xml:space="preserve"><value>All {0} convention labels are present with the right colours.</value></data>
   <data name="Scan_OtherLabels" xml:space="preserve"><value>{0} other label(s) are left alone.</value></data>
+  <data name="Scan_OwnIssueFormsKept" xml:space="preserve"><value>{0} issue form(s) of the repository's own are kept, and the convention's bug.yml and feature.yml are not added beside them.</value></data>
   <data name="Scan_CreateBoard" xml:space="preserve"><value>No usable board is linked. Set-up would create one, keeping GitHub&apos;s Todo, In Progress and Done columns, and link it.</value></data>
   <data name="Scan_BoardUsable" xml:space="preserve"><value>Board {0} ({1}) is linked and has Todo, In Progress and Done.</value></data>
   <data name="Scan_WriteFiles" xml:space="preserve"><value>{0} convention file(s) would be written.</value></data>

@@ -23,7 +23,7 @@ public enum ScanCode
     RulesetsUnavailable, CodeOwnersUnavailable, PushProtectionUnavailable, CodeScanningUnavailable,
     // Already in place, or information
     AlreadySetUp, Visibility, BoardUsable, LanguageDetected, EmptyRepository, HasHistory, MergeSettingsOk, LabelsOk,
-    HooksOk, OtherWorkflows, OtherLabels,
+    HooksOk, OtherWorkflows, OtherLabels, OwnIssueFormsKept,
 }
 
 public enum ScanVerdict { NotConvertible, Convertible, AlreadySetUp }
@@ -316,16 +316,19 @@ public static class ScanRules
 
         var toWrite = new List<string>();
         var kept = new List<string>();
+        var ownForms = IssueForms.OwnForms(f.Files);
         foreach (var file in ConventionFiles.All)
         {
             if (file.PublicOnly && !f.IsPublic) continue;
             if (file.Optional) continue;
+            if (ownForms.Count > 0 && IssueForms.IsConventionForm(file.Path)) continue;
             bool present = f.HasFile(file);
             if (!present) toWrite.Add(file.Path);
             else if (!file.OnlyWhenMissing && !file.Path.EndsWith(".json", StringComparison.OrdinalIgnoreCase)) kept.Add(file.Path);
         }
         if (toWrite.Count > 0) Add(ScanSeverity.Change, ScanCode.WriteFiles, SetupStep.Files, string.Format(Strings.Scan_WriteFiles, toWrite.Count), string.Join("\n", toWrite));
         if (kept.Count > 0) Add(ScanSeverity.Warning, ScanCode.ExistingFilesKept, SetupStep.Files, string.Format(Strings.Scan_ExistingFilesKept, kept.Count), string.Join("\n", kept));
+        if (ownForms.Count > 0) Add(ScanSeverity.Ok, ScanCode.OwnIssueFormsKept, SetupStep.Files, string.Format(Strings.Scan_OwnIssueFormsKept, ownForms.Count), string.Join("\n", ownForms));
 
         if (f.IsEmptyRepository) Add(ScanSeverity.Ok, ScanCode.EmptyRepository, SetupStep.Files, string.Format(Strings.Scan_EmptyRepository, f.DefaultBranch));
         else if ((f.HasClone && f.IsGitRepository) || f.RemoteFound) Add(ScanSeverity.Ok, ScanCode.HasHistory, SetupStep.Files, Strings.Scan_HasHistory);

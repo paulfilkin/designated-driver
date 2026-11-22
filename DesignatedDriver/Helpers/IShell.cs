@@ -14,6 +14,12 @@ public interface IShell
     /// <summary>Runs work with the busy strip shown and command failures reported in a dialog. Ignored while busy.</summary>
     Task RunAsync(Func<CancellationToken, Task> work);
 
+    /// <summary>
+    /// Runs a pick that only loads what the user picked, such as a pull request's files. A newer pick stops it and
+    /// takes its place, and so does a user action; it never interrupts a user action, and is refused while one runs.
+    /// </summary>
+    Task RunPickAsync(Func<CancellationToken, Task> work);
+
     /// <summary>Shows a screen and reloads it. With a pull request number, the Review screen selects that pull request.</summary>
     void Navigate(Screen screen, int? pullRequest = null);
     /// <summary>Shows the Scan screen with a folder or an owner/name already chosen.</summary>

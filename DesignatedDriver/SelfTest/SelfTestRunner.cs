@@ -666,6 +666,21 @@ public static partial class SelfTestRunner
         var formedReport = ScanRules.Assess(formed);
         check(formedReport.Findings.Count(f => f.Code == ScanCode.FormAppliesRenamedLabel) == 1 && formedReport.Findings.First(f => f.Code == ScanCode.FormAppliesRenamedLabel).Text.Contains("feature_request.yml", StringComparison.Ordinal),
             "Scan: an issue form that applies a label to be renamed is named, and one applying a kept label is not");
+        // Issue forms: the repository's own are kept and the convention's not added; the convention's own are just files.
+        var ownForms = Clone(fresh);
+        ownForms.Files = [.. fresh.Files, ".github/ISSUE_TEMPLATE/bug_report.yml", ".github/ISSUE_TEMPLATE/feature_request.yml"];
+        var ownReport = ScanRules.Assess(ownForms);
+        var ownWrite = ownReport.Findings.First(f => f.Code == ScanCode.WriteFiles).Detail;
+        check(ownReport.Findings.FirstOrDefault(f => f.Code == ScanCode.OwnIssueFormsKept)?.Detail == ".github/ISSUE_TEMPLATE/bug_report.yml\n.github/ISSUE_TEMPLATE/feature_request.yml"
+            && !ownWrite.Contains("ISSUE_TEMPLATE/bug.yml", StringComparison.Ordinal) && !ownWrite.Contains("ISSUE_TEMPLATE/feature.yml", StringComparison.Ordinal) && ownWrite.Contains("ISSUE_TEMPLATE/config.yml", StringComparison.Ordinal),
+            "Scan: a repository's own issue forms are listed as kept, and the convention's bug.yml and feature.yml would not be written; config.yml still would");
+        var conventionForms = Clone(fresh);
+        conventionForms.Files = [.. fresh.Files, ".github/ISSUE_TEMPLATE/bug.yml"];
+        var conventionReport = ScanRules.Assess(conventionForms);
+        check(!conventionReport.Has(ScanCode.OwnIssueFormsKept) && conventionReport.Findings.First(f => f.Code == ScanCode.WriteFiles).Detail.Contains("ISSUE_TEMPLATE/feature.yml", StringComparison.Ordinal)
+            && ScanRules.Assess(fresh).Findings.First(f => f.Code == ScanCode.WriteFiles).Detail.Contains("ISSUE_TEMPLATE/bug.yml", StringComparison.Ordinal),
+            "Scan: with the convention's own form, or none, the convention's forms are written as before");
+        check(IssueForms.OwnForms([".github/ISSUE_TEMPLATE/bug.yml", ".github/ISSUE_TEMPLATE/config.yml", ".github\\ISSUE_TEMPLATE\\ask.yaml"]).SequenceEqual([".github/ISSUE_TEMPLATE/ask.yaml"]), "Issue forms: own forms leave out the convention's and config.yml");
         var plainPlan = ConventionLabels.Plan([new GhLabel { Name = "bug", Color = "d73a4a", Description = "Something isn't working" }]);
         check(plainPlan.Count(p => p.Change == LabelChange.Create) == 7 && !plainPlan.Any(p => p.Change == LabelChange.Rename), "Labels: with no defaults to rename, every missing label is created");
         check(ConventionLabels.Plan(ConventionLabels.All.Select(l => new GhLabel { Name = l.Name, Color = l.Color, Description = l.Description }).ToList()).Count == 0, "Labels: a repository with every convention label has nothing to do");
