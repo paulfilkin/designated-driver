@@ -86,6 +86,16 @@ public static partial class SelfTestRunner
         check(r3.Count == 2 && hook is { Kind: DriftKind.Different, TickedByDefault: true } && guide is { Kind: DriftKind.Different, TickedByDefault: false }, "Drift: an edited hook is ticked, an edited CONTRIBUTING.md is reported but unticked");
         check(hook!.Detail.Contains("- ", StringComparison.Ordinal) && hook.Detail.Contains("exit 1", StringComparison.Ordinal) && hook.Detail.Contains("+ ", StringComparison.Ordinal) && guide!.Text.Contains("4 added", StringComparison.Ordinal), "Drift: the detail is a line diff and the text counts the lines");
 
+        // Issue forms are the project's to choose: an edited or missing one is reported, unticked
+        var forms = new Dictionary<string, string>(actual, StringComparer.OrdinalIgnoreCase);
+        forms[".github/ISSUE_TEMPLATE/bug.yml"] = actual[".github/ISSUE_TEMPLATE/bug.yml"] + "\n# Our own question\n";
+        forms.Remove(".github/ISSUE_TEMPLATE/feature.yml");
+        var formFacts = Clone(facts);
+        formFacts.Files = facts.Files.Where(f => f != ".github/ISSUE_TEMPLATE/feature.yml").ToList();
+        var rForms = Drift(formFacts, expected, forms);
+        check(rForms.Count == 2 && rForms.Actionable.FirstOrDefault(i => i.Key == "file:.github/ISSUE_TEMPLATE/bug.yml") is { Kind: DriftKind.Different, TickedByDefault: false }
+            && rForms.Actionable.FirstOrDefault(i => i.Key == "file:.github/ISSUE_TEMPLATE/feature.yml") is { Kind: DriftKind.Missing, TickedByDefault: false }, "Drift: an edited or missing issue form is reported but unticked, as a tailored file");
+
         // Line endings and trailing spaces are not drift
         var crlf = new Dictionary<string, string>(actual, StringComparer.OrdinalIgnoreCase);
         crlf[".github/workflows/ci.yml"] = actual[".github/workflows/ci.yml"].Replace("\n", "  \r\n");
