@@ -51,6 +51,10 @@ public sealed partial class GitService
     public Task AddPathsInAsync(string folder, IReadOnlyList<string> paths, CancellationToken ct)
         => paths.Count == 0 ? Task.CompletedTask : MustInAsync(folder, ct, ["add", "--", .. paths]);
 
+    /// <summary>Removes tracked files from the working tree and the index, for the next commit.</summary>
+    public Task RemovePathsInAsync(string folder, IReadOnlyList<string> paths, CancellationToken ct)
+        => paths.Count == 0 ? Task.CompletedTask : MustInAsync(folder, ct, ["rm", "-q", "--", .. paths]);
+
     /// <summary>Marks files executable in the index, so the hooks run on macOS and Linux clones too.</summary>
     public Task MarkExecutableInAsync(string folder, IReadOnlyList<string> paths, CancellationToken ct)
         => paths.Count == 0 ? Task.CompletedTask : MustInAsync(folder, ct, ["update-index", "--chmod=+x", "--", .. paths]);

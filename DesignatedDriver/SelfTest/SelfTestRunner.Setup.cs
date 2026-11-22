@@ -338,6 +338,22 @@ public static partial class SelfTestRunner
                 check(ok7 && good, $"Set-up: a kept CONTRIBUTING.md {label} " + (expectAppend ? "gets the section added at the end, in its own line endings, and the pull request says so" : "is left exactly as it was"));
             }
 
+            // A workflow ticked for removal goes in the set-up commit; a convention workflow is never removed.
+            var folder6 = Path.Combine(root, "competing");
+            Directory.CreateDirectory(Path.Combine(folder6, ".github", "workflows"));
+            File.WriteAllText(Path.Combine(folder6, ".github", "workflows", "build.yml"), "on: [push, pull_request]\n");
+            var host6 = new FakeHost(folder6, hasHistory: true);
+            var setup6 = new SetupService(new Workspace(new Settings { SavePath = Path.Combine(root, "settings6.json") }, host6.Runner));
+            var answers6 = DotNetAnswers();
+            answers6.Source = SetupSource.ExistingFolder; answers6.ExistingFolder = folder6; answers6.ProjectFile = "Example.csproj"; answers6.TestProject = "";
+            answers6.RemoveWorkflows = [".github/workflows/build.yml", ".github/workflows/ci.yml", ".github/workflows/missing.yml"];
+            var plan6 = setup6.Build(answers6, new ScanFacts { Folder = folder6, OwnerAndName = "paulfilkin/example", IsGitRepository = true, HasCommits = true, OriginUrl = "https://github.com/paulfilkin/example.git" });
+            bool ok6 = setup6.RunAsync(plan6, CancellationToken.None).GetAwaiter().GetResult();
+            var removedCalls = host6.Runner.Calls.Where(c => c.Is("rm")).ToList();
+            var body6 = host6.Runner.Calls.FirstOrDefault(c => c.Is("pr", "create"))?.FileContent ?? "";
+            check(ok6 && removedCalls.Count == 1 && removedCalls[0].Arguments.SequenceEqual(["rm", "-q", "--", ".github/workflows/build.yml"]) && setup6.Removed.SequenceEqual([".github/workflows/build.yml"])
+                && body6.Contains("are removed", StringComparison.Ordinal) && body6.Contains("`.github/workflows/build.yml`", StringComparison.Ordinal),
+                ok6 ? "Set-up: a workflow ticked for removal is removed in the set-up commit and listed in the pull request; ci.yml and a missing file are not" : $"Set-up with a removal failed at {plan6.FailedStep?.Title}: {plan6.FailedStep?.Message}");
             // An existing folder with its own issue forms: they are kept, and the convention's are not added beside them.
             var folder5 = Path.Combine(root, "forms");
             Directory.CreateDirectory(Path.Combine(folder5, ".github", "ISSUE_TEMPLATE"));

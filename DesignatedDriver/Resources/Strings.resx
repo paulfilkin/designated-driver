@@ -711,6 +711,10 @@ The clone and the repository on GitHub are not touched.</value></data>
   <data name="Scan_ReleasesElsewhere" xml:space="preserve"><value>The repository already publishes releases another way, so the release workflow is left off; a tag would otherwise make a second release.</value></data>
   <data name="Scan_ReleasesPublished" xml:space="preserve"><value>{0} release(s) with files attached; the latest, {1}, has {2}</value></data>
   <data name="Scan_ReleaseWorkflows" xml:space="preserve"><value>Run on tags or releases: {0}</value></data>
+  <data name="Scan_CompetingWorkflows" xml:space="preserve"><value>{0} other workflow(s) also run on pull requests or pushes to {1}, beside the convention's ci.yml, so each change would be built twice. Set up a repository can remove them in the set-up pull request.</value></data>
+  <data name="Setup_RemoveWorkflowsTitle" xml:space="preserve"><value>Other workflows that build pull requests</value></data>
+  <data name="Setup_RemoveWorkflowsHelp" xml:space="preserve"><value>These run beside the convention's ci.yml, so every pull request would be built twice. Tick one to remove it in the set-up pull request.</value></data>
+  <data name="Setup_RemoveWorkflow" xml:space="preserve"><value>Remove {0}</value></data>
   <data name="Setup_ReleaseLeftOff" xml:space="preserve"><value>Left off because the repository already publishes releases another way ({0}). Tick it to add the convention's release workflow anyway.</value></data>
 
   <!-- Plan and capabilities -->

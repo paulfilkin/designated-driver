@@ -1168,6 +1168,9 @@ public static class Strings
     /// <summary>Code scanning (CodeQL): not available. No CodeQL workflow is written.</summary>
     public static string Scan_CodeScanningUnavailable => Get("Scan_CodeScanningUnavailable");
 
+    /// <summary>{0} other workflow(s) also run on pull requests or pushes to {1}, beside the convention...</summary>
+    public static string Scan_CompetingWorkflows => Get("Scan_CompetingWorkflows");
+
     /// <summary>Copy report</summary>
     public static string Scan_CopyReport => Get("Scan_CopyReport");
 
@@ -1791,6 +1794,15 @@ public static class Strings
 
     /// <summary>Left off because the repository already publishes releases another way ({0}). Tick it t...</summary>
     public static string Setup_ReleaseLeftOff => Get("Setup_ReleaseLeftOff");
+
+    /// <summary>Remove {0}</summary>
+    public static string Setup_RemoveWorkflow => Get("Setup_RemoveWorkflow");
+
+    /// <summary>These run beside the convention&apos;s ci.yml, so every pull request would be built twice. T...</summary>
+    public static string Setup_RemoveWorkflowsHelp => Get("Setup_RemoveWorkflowsHelp");
+
+    /// <summary>Other workflows that build pull requests</summary>
+    public static string Setup_RemoveWorkflowsTitle => Get("Setup_RemoveWorkflowsTitle");
 
     /// <summary>The folder&apos;s origin names {0}, but that repository was not found on GitHub.</summary>
     public static string Setup_RepositoryMissing => Get("Setup_RepositoryMissing");

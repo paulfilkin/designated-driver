@@ -15,7 +15,7 @@ public enum ScanCode
     NotGitHubOrigin, RepositoryNotFound, RepositoryMoved, Archived, NotAdmin,
     // Warnings
     Fork, Organisation, DirtyTree, MergeInProgress, DefaultBranchNotMain, ExistingFilesKept, ExistingBoardOtherColumns,
-    HooksPathElsewhere, RulesAlreadyApply, NoLanguage, LabelsBothPresent, FormAppliesRenamedLabel, ReleasesElsewhere,
+    HooksPathElsewhere, RulesAlreadyApply, NoLanguage, LabelsBothPresent, FormAppliesRenamedLabel, ReleasesElsewhere, CompetingWorkflows,
     // Changes
     InitGit, CreateRepository, MergeSettings, Features, CreateLabels, RecolourLabels, RenameLabels, CreateBoard, WriteFiles, PointHooks,
     DependabotAlerts, DependabotUpdates, SecretScanning, CreateRuleset, UpdateConvention, AppendWorkflowSection,
@@ -304,8 +304,11 @@ public static class ScanRules
         var releaseReasons = ReleaseEvidence.Reasons(f);
         if (releaseReasons.Count > 0) Add(ScanSeverity.Warning, ScanCode.ReleasesElsewhere, SetupStep.Files, Strings.Scan_ReleasesElsewhere, string.Join("\n", releaseReasons));
 
-        // Workflows that aren't the convention's
-        var otherWorkflows = f.Workflows.Where(w => !ConventionFiles.All.Any(c => c.Matches(w.Path))).Select(w => w.Name).ToList();
+        // Workflows that aren't the convention's. Those that build pull requests or the default branch would run beside
+        // ci.yml, so each change would be built twice; the wizard offers to remove them in the set-up pull request.
+        var competing = CompetingWorkflows.In(f);
+        if (competing.Count > 0) Add(ScanSeverity.Warning, ScanCode.CompetingWorkflows, SetupStep.Files, string.Format(Strings.Scan_CompetingWorkflows, competing.Count, f.DefaultBranch), string.Join("\n", competing));
+        var otherWorkflows = f.Workflows.Where(w => !ConventionFiles.All.Any(c => c.Matches(w.Path)) && !competing.Contains(w.Path, StringComparer.OrdinalIgnoreCase)).Select(w => w.Name).ToList();
         if (otherWorkflows.Count > 0) Add(ScanSeverity.Ok, ScanCode.OtherWorkflows, SetupStep.Files, string.Format(Strings.Scan_OtherWorkflows, otherWorkflows.Count), string.Join(", ", otherWorkflows));
     }
 

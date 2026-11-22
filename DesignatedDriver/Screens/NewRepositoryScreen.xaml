@@ -136,6 +136,11 @@
                 <TextBlock x:Name="ReleaseNote" Style="{StaticResource HelperText}" TextWrapping="Wrap" Margin="24,-4,0,8" Visibility="Collapsed"/>
                 <CheckBox x:Name="CodeQlBox" Content="{x:Static res:Strings.Setup_CodeQl}" IsEnabled="False" Margin="0,2,0,2" AutomationProperties.Name="{x:Static res:Strings.Setup_CodeQl}"/>
                 <TextBlock Text="{x:Static res:Strings.Setup_CodeQlHelp}" Style="{StaticResource HelperText}" Margin="24,0,0,8"/>
+                <StackPanel x:Name="RemoveWorkflowsSection" Visibility="Collapsed">
+                    <TextBlock Text="{x:Static res:Strings.Setup_RemoveWorkflowsTitle}" Style="{StaticResource LabelText}"/>
+                    <TextBlock Text="{x:Static res:Strings.Setup_RemoveWorkflowsHelp}" Style="{StaticResource HelperText}" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                    <StackPanel x:Name="RemoveWorkflowsPanel" Margin="0,2,0,8" AutomationProperties.Name="{x:Static res:Strings.Setup_RemoveWorkflowsTitle}"/>
+                </StackPanel>
 
                 <TextBlock Text="{x:Static res:Strings.Setup_BehindLimit}" Style="{StaticResource LabelText}"/>
                 <TextBox x:Name="BehindBox" Style="{StaticResource ModernTextBox}" Width="80" HorizontalAlignment="Left" Text="10" AutomationProperties.Name="{x:Static res:Strings.Setup_BehindLimit}" AutomationProperties.HelpText="{x:Static res:Strings.Setup_BehindLimitHelp}"/>

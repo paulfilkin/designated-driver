@@ -379,6 +379,18 @@ public partial class NewRepositoryScreen : ScreenBase
             ReleaseNote.Visibility = Visibility.Collapsed;
             _releaseLeftOff = false;
         }
+
+        // Workflows that build pull requests beside ci.yml: one box each, unticked, to remove it in the set-up pull request.
+        var ticked = RemoveWorkflowsPanel.Children.OfType<CheckBox>().Where(c => c.IsChecked == true).Select(c => (string)c.Tag).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        RemoveWorkflowsPanel.Children.Clear();
+        foreach (var path in CompetingWorkflows.In(facts))
+        {
+            var text = string.Format(Strings.Setup_RemoveWorkflow, path);
+            var box = new CheckBox { Content = text, Tag = path, IsChecked = ticked.Contains(path), Margin = new Thickness(0, 2, 0, 2) };
+            AutomationProperties.SetName(box, text);
+            RemoveWorkflowsPanel.Children.Add(box);
+        }
+        RemoveWorkflowsSection.Visibility = RemoveWorkflowsPanel.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 
     /// <summary>True while the release workflow is unticked because the last scan found releases made another way.</summary>
@@ -443,6 +455,7 @@ public partial class NewRepositoryScreen : ScreenBase
         CodeQl = CodeQlBox.IsChecked == true,
         BehindLimit = behindLimit,
         Checklist = ChecklistPanel.Children.OfType<CheckBox>().Where(c => c.IsChecked == true).Select(c => (string)c.Tag).ToList(),
+        RemoveWorkflows = RemoveWorkflowsPanel.Children.OfType<CheckBox>().Where(c => c.IsChecked == true).Select(c => (string)c.Tag).ToList(),
         HasBoardToken = !string.IsNullOrEmpty(_setup.BoardToken),
         GitProtocol = SshOption.IsChecked == true ? RemoteUrl.Ssh : RemoteUrl.Https,
         SshHost = SshHostBox.Text.Trim().Length > 0 ? SshHostBox.Text.Trim() : "github.com",

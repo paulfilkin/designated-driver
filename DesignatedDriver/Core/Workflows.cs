@@ -18,6 +18,11 @@ public sealed record WorkflowTriggers(IReadOnlyList<string> Events, IReadOnlyLis
     /// <summary>Runs when a release is published or a tag is pushed: the signs of a workflow that makes releases.</summary>
     public bool RunsOnRelease => Has("release") || (Has("push") && PushHasTags);
 
+    /// <summary>Runs on pull requests, or on pushes to the default branch: the work the convention's ci.yml does.</summary>
+    public bool BuildsChanges(string defaultBranch)
+        => Has("pull_request") || Has("pull_request_target")
+        || (Has("push") && !PushTagsOnly && (PushBranches.Count == 0 || PushBranches.Any(b => b.Equals(defaultBranch, StringComparison.OrdinalIgnoreCase) || b is "*" or "**")));
+
     public static WorkflowTriggers Parse(string yaml)
     {
         var lines = yaml.Replace("\r\n", "\n").Split('\n');
@@ -91,6 +96,16 @@ public sealed record WorkflowTriggers(IReadOnlyList<string> Events, IReadOnlyLis
         return p.StartsWith(".github/workflows/", StringComparison.OrdinalIgnoreCase) && p.Count(c => c == '/') == 2
             && (p.EndsWith(".yml", StringComparison.OrdinalIgnoreCase) || p.EndsWith(".yaml", StringComparison.OrdinalIgnoreCase));
     }
+}
+
+/// <summary>Workflows other than the convention's that build pull requests or the default branch, beside ci.yml.</summary>
+public static class CompetingWorkflows
+{
+    public static List<string> In(ScanFacts f)
+        => [.. f.WorkflowTriggers.Where(w => MayRemove(w.Key) && w.Value.BuildsChanges(f.DefaultBranch)).Select(w => w.Key).Order(StringComparer.OrdinalIgnoreCase)];
+
+    /// <summary>Only workflow files the convention doesn't write may be removed.</summary>
+    public static bool MayRemove(string path) => WorkflowTriggers.IsWorkflow(path) && !ConventionFiles.All.Any(c => c.Matches(path));
 }
 
 /// <summary>Whether a repository already publishes releases another way, so the convention's release workflow is left off.</summary>

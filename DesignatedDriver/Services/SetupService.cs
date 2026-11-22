@@ -36,6 +36,8 @@ public sealed partial class SetupService(Workspace workspace)
     public string RepositoryUrl => $"https://github.com/{Name}";
     public IReadOnlyList<string> Written { get; private set; } = [];
     public IReadOnlyList<string> Kept { get; private set; } = [];
+    /// <summary>Workflows the set-up removed because they built pull requests beside ci.yml.</summary>
+    public IReadOnlyList<string> Removed { get; private set; } = [];
     /// <summary>True when the convention's section on how a change gets in was added to a kept CONTRIBUTING.md.</summary>
     public bool AppendedSection { get; private set; }
 
@@ -50,6 +52,7 @@ public sealed partial class SetupService(Workspace workspace)
         PullRequestUrl = "";
         Written = [];
         Kept = [];
+        Removed = [];
         _capabilities = facts?.Capabilities ?? Capabilities.From(workspace.PlanName, !answers.IsPrivate, null);
 
         var steps = PlanOutline.For(answers, _capabilities).Select(kind => kind switch
@@ -466,6 +469,11 @@ public sealed partial class SetupService(Workspace workspace)
         }
 
         await Git.AddPathsInAsync(Folder, written, ct).ConfigureAwait(false);
+        // Workflows the user chose to remove go out in the same commit, so the pull request shows them going.
+        var removed = _update ? [] : _a.RemoveWorkflows.Select(p => p.Replace('\\', '/'))
+            .Where(p => CompetingWorkflows.MayRemove(p) && File.Exists(Path.Combine(Folder, p.Replace('/', '\\')))).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        await Git.RemovePathsInAsync(Folder, removed, ct).ConfigureAwait(false);
+        Removed = removed;
         await Git.MarkExecutableInAsync(Folder, written.Where(p => p.StartsWith(ConventionFiles.HooksFolder + "/", StringComparison.Ordinal)).ToList(), ct).ConfigureAwait(false);
         if (await Git.HasStagedChangesInAsync(Folder, ct).ConfigureAwait(false))
             await Git.CommitInAsync(Folder, CommitMessageText(issue), ct).ConfigureAwait(false);

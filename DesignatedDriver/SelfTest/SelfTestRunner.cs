@@ -782,6 +782,20 @@ public static partial class SelfTestRunner
         tagged.WorkflowTriggers[".github/workflows/publish.yml"] = onTags;
         tagged.WorkflowTriggers[".github/workflows/build.yml"] = build;
         check(ReleaseEvidence.Reasons(tagged).Single().Contains("publish.yml", StringComparison.Ordinal) && !ReleaseEvidence.Reasons(tagged).Single().Contains("build.yml", StringComparison.Ordinal), "Releases: a workflow run on tags counts; one run on pushes and pull requests doesn't");
+        // Workflows that build pull requests or main beside ci.yml are warned about; others are left alone as before.
+        check(build.BuildsChanges("main") && WorkflowTriggers.Parse("on: push\n").BuildsChanges("main") && !onTags.BuildsChanges("main")
+            && !WorkflowTriggers.Parse("on:\n  push:\n    branches: [develop]\n").BuildsChanges("main") && WorkflowTriggers.Parse("on:\n  pull_request_target:\n").BuildsChanges("main"),
+            "Workflow triggers: pull requests, or pushes to the default branch, build changes; tags alone or another branch don't");
+        var competingFacts = Clone(fresh);
+        competingFacts.WorkflowTriggers[".github/workflows/build.yml"] = build;
+        competingFacts.WorkflowTriggers[".github/workflows/publish.yml"] = onTags;
+        competingFacts.WorkflowTriggers[".github/workflows/ci.yml"] = build;
+        var competingReport = ScanRules.Assess(competingFacts);
+        check(competingReport.Findings.FirstOrDefault(f => f.Code == ScanCode.CompetingWorkflows)?.Detail == ".github/workflows/build.yml" && !competingReport.Findings.First(f => f.Code == ScanCode.CompetingWorkflows).Text.Contains("{", StringComparison.Ordinal)
+            && !(competingReport.Findings.FirstOrDefault(f => f.Code == ScanCode.OtherWorkflows)?.Detail ?? "").Contains("Build", StringComparison.Ordinal) && !ScanRules.Assess(fresh).Has(ScanCode.CompetingWorkflows),
+            "Scan: another workflow that builds pull requests is a warning naming it, not listed with the workflows left alone; the convention's ci.yml and a tag workflow aren't");
+        check(CompetingWorkflows.MayRemove(".github/workflows/build.yml") && !CompetingWorkflows.MayRemove(".github/workflows/ci.yml") && !CompetingWorkflows.MayRemove("build.yml"), "Workflows: only a workflow file the convention doesn't write may be removed");
+
         var plain = Clone(fresh);
         plain.Releases = [new GhRelease { TagName = "v0.1", Draft = true, Assets = [new GhReleaseAsset { Name = "a.zip" }] }, new GhRelease { TagName = "v0.0" }];
         var own = Clone(releasing);

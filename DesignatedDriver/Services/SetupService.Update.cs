@@ -54,7 +54,7 @@ public sealed partial class SetupService
     private string BranchSuffix => _update ? ConventionContent.UpdateBranchSuffix : ConventionContent.ConventionBranchSuffix;
     private string IssueBodyText() => _update ? SetupTexts.UpdateIssueBody(_updateReasons) : SetupTexts.IssueBody(_a);
     private string CommitMessageText(int issue) => _update ? SetupTexts.UpdateCommitMessage(issue, Written) : SetupTexts.CommitMessage(issue);
-    private string PullRequestBodyText(int issue) => _update ? SetupTexts.UpdatePullRequestBody(issue, Written, _updateReasons) : SetupTexts.PullRequestBody(issue, Written, Kept, AppendedSection);
+    private string PullRequestBodyText(int issue) => _update ? SetupTexts.UpdatePullRequestBody(issue, Written, _updateReasons) : SetupTexts.PullRequestBody(issue, Written, Kept, AppendedSection, Removed);
 
     /// <summary>In an update only the ticked files and the manifest are written, and a ticked file is overwritten.</summary>
     private bool ShouldWrite(ConventionFile file, bool exists)
