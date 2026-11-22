@@ -150,6 +150,9 @@ public sealed class ScanService(Workspace workspace)
             catch (CommandFailedException) { /* without the project scope the columns can't be read */ }
             facts.LinkedBoards.Add(new ScanBoard(project.Number, project.Title, project.Url, options));
         }
+        // Whether anything puts new issues and pull requests on the board the convention would use (issue 67).
+        if (facts.LinkedBoards.FirstOrDefault(b => ConventionBoard.HasRequiredColumns(b.StatusOptions)) is { } usable)
+            facts.BoardFeed = BoardFeed.Assess(await GitHub.BoardFeedAsync(name, new BoardReference(owner, usable.Number), ct).ConfigureAwait(false));
 
         if (!facts.HasClone)
         {

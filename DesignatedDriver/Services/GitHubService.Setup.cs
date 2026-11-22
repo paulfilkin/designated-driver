@@ -116,15 +116,64 @@ public sealed partial class GitHubService
 
     // Secrets
 
-    public async Task<List<string>> SecretNamesAsync(string ownerAndName, CancellationToken ct)
+    /// <summary>
+    /// The names of the repository's secrets for Actions, or with dependabot set, for Dependabot, whose runs read only
+    /// its own. Empty when they can't be read.
+    /// </summary>
+    public async Task<List<string>> SecretNamesAsync(string ownerAndName, CancellationToken ct, bool dependabot = false)
+        => await SecretNamesOrNullAsync(ownerAndName, ct, dependabot).ConfigureAwait(false) ?? [];
+
+    /// <summary>As SecretNamesAsync, but null when they can't be read, as for a contributor, who can't list secrets.</summary>
+    private async Task<List<string>?> SecretNamesOrNullAsync(string ownerAndName, CancellationToken ct, bool dependabot)
     {
-        var r = await RunAsync(ct, "secret", "list", "-R", ownerAndName, "--json", "name").ConfigureAwait(false);
-        return r.Succeeded ? GhJson.ParseList<GhSecret>(r.StandardOutput).Select(s => s.Name).ToList() : [];
+        string[] args = dependabot ? ["secret", "list", "-R", ownerAndName, "--app", "dependabot", "--json", "name"] : ["secret", "list", "-R", ownerAndName, "--json", "name"];
+        var r = await RunAsync(ct, args).ConfigureAwait(false);
+        return r.Succeeded ? GhJson.ParseList<GhSecret>(r.StandardOutput).Select(s => s.Name).ToList() : null;
     }
 
-    /// <summary>Sets a repository secret with the value on standard input, so it is never on the command line or in the activity panel.</summary>
-    public Task SetSecretAsync(string ownerAndName, string name, string value, CancellationToken ct)
-        => MustInFolderAsync(null, value, ct, "secret", "set", name, "-R", ownerAndName);
+    /// <summary>
+    /// Sets a repository secret, for Actions or with dependabot set for Dependabot, with the value on standard input, so
+    /// it is never on the command line or in the activity panel.
+    /// </summary>
+    public Task SetSecretAsync(string ownerAndName, string name, string value, CancellationToken ct, bool dependabot = false)
+        => dependabot
+            ? MustInFolderAsync(null, value, ct, "secret", "set", name, "-R", ownerAndName, "--app", "dependabot")
+            : MustInFolderAsync(null, value, ct, "secret", "set", name, "-R", ownerAndName);
+
+    /// <summary>Stores the board token where board.yml can read it in every run: for Actions and for Dependabot (issue 67).</summary>
+    public async Task SetBoardTokenAsync(string ownerAndName, string token, CancellationToken ct)
+    {
+        await SetSecretAsync(ownerAndName, BoardFeed.TokenSecret, token, ct).ConfigureAwait(false);
+        await SetSecretAsync(ownerAndName, BoardFeed.TokenSecret, token, ct, dependabot: true).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// A board's built-in workflows, by name and whether each is on, through GraphQL, for a user's board or an
+    /// organisation's. Null when they can't be read. The API reads them but can't turn one on.
+    /// </summary>
+    public async Task<List<(string Name, bool Enabled)>?> BoardWorkflowsAsync(BoardReference board, CancellationToken ct)
+    {
+        const string query = "query($owner: String!, $number: Int!) { repositoryOwner(login: $owner) { "
+            + "... on User { projectV2(number: $number) { workflows(first: 50) { nodes { name enabled } } } } "
+            + "... on Organization { projectV2(number: $number) { workflows(first: 50) { nodes { name enabled } } } } } }";
+        var r = await ApiAsync(ct, "graphql", "-f", "query=" + query, "-f", "owner=" + board.Owner, "-F", "number=" + board.Number,
+            "--jq", ".data.repositoryOwner.projectV2.workflows.nodes").ConfigureAwait(false);
+        if (!r.Ok || !r.Output.TrimStart().StartsWith('[')) return null;
+        return GhJson.ParseList<GhProjectWorkflow>(r.Output).Select(w => (w.Name, w.Enabled)).ToList();
+    }
+
+    /// <summary>What feeds the repository's board: its Auto-add workflow, and PROJECT_TOKEN for Actions and for Dependabot.</summary>
+    public async Task<BoardFeedFacts> BoardFeedAsync(string ownerAndName, BoardReference board, CancellationToken ct)
+    {
+        var workflows = await BoardWorkflowsAsync(board, ct).ConfigureAwait(false);
+        // Auto-add on settles it, so the secrets aren't read.
+        if (BoardFeed.AutoAddOn(workflows) == true) return new BoardFeedFacts(true, null, null);
+        var actions = await SecretNamesOrNullAsync(ownerAndName, ct, dependabot: false).ConfigureAwait(false);
+        var dependabot = await SecretNamesOrNullAsync(ownerAndName, ct, dependabot: true).ConfigureAwait(false);
+        return new BoardFeedFacts(BoardFeed.AutoAddOn(workflows),
+            actions?.Contains(BoardFeed.TokenSecret, StringComparer.OrdinalIgnoreCase),
+            dependabot?.Contains(BoardFeed.TokenSecret, StringComparer.OrdinalIgnoreCase));
+    }
 
     // Issues and pull requests by repository
 
@@ -183,4 +232,11 @@ public sealed partial class GitHubService
 public sealed class GhSecret
 {
     public string Name { get; set; } = "";
+}
+
+/// <summary>One of a project's built-in workflows, from GraphQL's ProjectV2.workflows.</summary>
+public sealed class GhProjectWorkflow
+{
+    public string Name { get; set; } = "";
+    public bool Enabled { get; set; }
 }

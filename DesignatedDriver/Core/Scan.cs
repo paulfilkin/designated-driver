@@ -16,7 +16,7 @@ public enum ScanCode
     // Warnings
     Fork, Organisation, DirtyTree, MergeInProgress, DefaultBranchNotMain, ExistingFilesKept, ExistingBoardOtherColumns,
     HooksPathElsewhere, RulesAlreadyApply, NoLanguage, LabelsBothPresent, FormAppliesRenamedLabel, ReleasesElsewhere, CompetingWorkflows, NearbyClone,
-    OrganisationSecurity,
+    OrganisationSecurity, BoardNotFed,
     // Changes
     InitGit, CreateRepository, MergeSettings, Features, CreateLabels, RecolourLabels, RenameLabels, CreateBoard, WriteFiles, PointHooks,
     DependabotAlerts, DependabotUpdates, SecretScanning, CreateRuleset, UpdateConvention, AppendWorkflowSection,
@@ -24,7 +24,7 @@ public enum ScanCode
     RulesetsUnavailable, CodeOwnersUnavailable, PushProtectionUnavailable, CodeScanningUnavailable,
     // Already in place, or information
     AlreadySetUp, Visibility, BoardUsable, LanguageDetected, EmptyRepository, HasHistory, MergeSettingsOk, LabelsOk,
-    HooksOk, OtherWorkflows, OtherLabels, OwnIssueFormsKept, RulesCover,
+    HooksOk, OtherWorkflows, OtherLabels, OwnIssueFormsKept, RulesCover, BoardFed,
 }
 
 public enum ScanVerdict { NotConvertible, Convertible, AlreadySetUp, KeepsOwnConventions }
@@ -72,6 +72,8 @@ public sealed class ScanFacts
     public GhRepository? View { get; set; }
     public List<GhLabel> Labels { get; set; } = [];
     public List<ScanBoard> LinkedBoards { get; set; } = [];
+    /// <summary>What feeds the usable linked board, if any; Unknown when there is none or it couldn't be read.</summary>
+    public BoardFeedKind BoardFeed { get; set; } = BoardFeedKind.Unknown;
     public ApiStatus? BranchRulesStatus { get; set; }
     public List<GhBranchRule> BranchRules { get; set; } = [];
     /// <summary>The checks classic branch protection requires, read only when no ruleset names one.</summary>
@@ -334,6 +336,11 @@ public static class ScanRules
             var columns = BoardColumns.Match(usable.StatusOptions);
             Add(ScanSeverity.Ok, ScanCode.BoardUsable, SetupStep.Board,
                 string.Format(Strings.Scan_BoardUsable, usable.Number, usable.Title, TextList.And(usable.StatusOptions), columns.Ready, columns.InProgress));
+            // What puts new issues and pull requests on it (issue 67); the Workflows page is where Auto-add is turned on.
+            if (BoardFeed.IsFed(f.BoardFeed))
+                Add(ScanSeverity.Ok, ScanCode.BoardFed, SetupStep.BoardToken, BoardFeed.Text(f.BoardFeed));
+            else if (f.BoardFeed is not BoardFeedKind.Unknown)
+                Add(ScanSeverity.Warning, ScanCode.BoardNotFed, SetupStep.BoardToken, BoardFeed.Text(f.BoardFeed), usable.Url.TrimEnd('/') + "/workflows");
         }
         else
         {

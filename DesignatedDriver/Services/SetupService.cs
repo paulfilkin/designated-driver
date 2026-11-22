@@ -32,6 +32,7 @@ public sealed partial class SetupService(Workspace workspace)
     private string Name => _a.OwnerAndName;
 
     public BoardReference? Board => _board;
+    public string OwnerAndName => Name;
     public string PullRequestUrl { get; private set; } = "";
     public string RepositoryUrl => $"https://github.com/{Name}";
     public IReadOnlyList<string> Written { get; private set; } = [];
@@ -316,13 +317,15 @@ public sealed partial class SetupService(Workspace workspace)
 
     // 5. Board token
 
+    // Done when PROJECT_TOKEN is stored for Actions and for Dependabot, whose runs can't read the other (issue 67).
     private async Task<bool> CheckTokenAsync(CancellationToken ct)
-        => (await GitHub.SecretNamesAsync(Name, ct).ConfigureAwait(false)).Contains("PROJECT_TOKEN", StringComparer.OrdinalIgnoreCase);
+        => (await GitHub.SecretNamesAsync(Name, ct).ConfigureAwait(false)).Contains(BoardFeed.TokenSecret, StringComparer.OrdinalIgnoreCase)
+        && (await GitHub.SecretNamesAsync(Name, ct, dependabot: true).ConfigureAwait(false)).Contains(BoardFeed.TokenSecret, StringComparer.OrdinalIgnoreCase);
 
     private async Task ApplyTokenAsync(CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(BoardToken)) throw new InvalidOperationException(Strings.Setup_NoToken);
-        await GitHub.SetSecretAsync(Name, "PROJECT_TOKEN", BoardToken.Trim(), ct).ConfigureAwait(false);
+        await GitHub.SetBoardTokenAsync(Name, BoardToken.Trim(), ct).ConfigureAwait(false);
         BoardToken = null;
     }
 

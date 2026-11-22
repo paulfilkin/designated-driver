@@ -70,8 +70,8 @@ public partial class StatusScreen : ScreenBase
             await ShowAutomationAsync(ct);
         else
         {
-            DependabotText.Text = ActionsText.Text = Strings.Status_SignInFirst;
-            ActionsNote.Visibility = Visibility.Collapsed;
+            DependabotText.Text = ActionsText.Text = BoardFeedText.Text = Strings.Status_SignInFirst;
+            ActionsNote.Visibility = AutoAddLink.Visibility = Visibility.Collapsed;
             AddMissingButton.IsEnabled = TokenButton.IsEnabled = false;
         }
 
@@ -292,6 +292,8 @@ public partial class StatusScreen : ScreenBase
             AlertsLink.Visibility = alerts.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        await ShowBoardFeedAsync(ct);
+
         // Account-wide from billing when the token has the user scope; this repository's runs otherwise, unless the
         // repository is public, where Actions minutes are free and no run is billable.
         var billing = ActionsUsage.ReadsAccount(_auth) ? await Workspace.GitHub.ActionsBillingAsync(Workspace.Login, ct) : null;
@@ -324,6 +326,33 @@ public partial class StatusScreen : ScreenBase
         ActionsNote.Visibility = Visibility.Visible;
     }
 
+    /// <summary>The board's Workflows page, set when nothing feeds the board.</summary>
+    private string _workflowsUrl = "";
+
+    /// <summary>What puts new issues and pull requests on the board; when nothing does, a link to the board's Auto-add (issue 67).</summary>
+    private async Task ShowBoardFeedAsync(CancellationToken ct)
+    {
+        AutoAddLink.Visibility = Visibility.Collapsed;
+        if (Workspace.Board is not { } board)
+        {
+            BoardFeedText.Text = Strings.Status_NoBoard;
+            return;
+        }
+        var kind = BoardFeed.Assess(await Workspace.GitHub.BoardFeedAsync(Repo.OwnerAndName, board, ct));
+        BoardFeedText.Text = BoardFeed.Text(kind);
+        if (kind is BoardFeedKind.None or BoardFeedKind.TokenNotForDependabot)
+        {
+            bool organisation = string.Equals(await Workspace.GitHub.OwnerTypeAsync(board.Owner, ct), "Organization", StringComparison.OrdinalIgnoreCase);
+            _workflowsUrl = BoardFeed.WorkflowsUrl(board, organisation);
+            AutoAddLink.Visibility = Visibility.Visible;
+        }
+    }
+
+    private void AutoAddLink_Click(object sender, RoutedEventArgs e)
+    {
+        if (_workflowsUrl.Length > 0) Shell.OpenUrl(_workflowsUrl);
+    }
+
     private void AlertsLink_Click(object sender, RoutedEventArgs e) => Shell.OpenUrl($"https://github.com/{Repo.OwnerAndName}/security/dependabot");
 
     private void AddMissing_Click(object sender, RoutedEventArgs e)
@@ -343,7 +372,7 @@ public partial class StatusScreen : ScreenBase
         var token = window.Token;
         _ = Shell.RunAsync(async ct =>
         {
-            await Workspace.GitHub.SetSecretAsync(Repo.OwnerAndName, "PROJECT_TOKEN", token, ct);
+            await Workspace.GitHub.SetBoardTokenAsync(Repo.OwnerAndName, token, ct);
             Shell.ShowInfo(Strings.Status_TokenStored);
         });
     }
