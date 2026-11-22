@@ -15,7 +15,7 @@ public enum ScanCode
     NotGitHubOrigin, RepositoryNotFound, RepositoryMoved, Archived, NotAdmin,
     // Warnings
     Fork, Organisation, DirtyTree, MergeInProgress, DefaultBranchNotMain, ExistingFilesKept, ExistingBoardOtherColumns,
-    HooksPathElsewhere, RulesAlreadyApply, NoLanguage, LabelsBothPresent, FormAppliesRenamedLabel,
+    HooksPathElsewhere, RulesAlreadyApply, NoLanguage, LabelsBothPresent, FormAppliesRenamedLabel, ReleasesElsewhere,
     // Changes
     InitGit, CreateRepository, MergeSettings, Features, CreateLabels, RecolourLabels, RenameLabels, CreateBoard, WriteFiles, PointHooks,
     DependabotAlerts, DependabotUpdates, SecretScanning, CreateRuleset, UpdateConvention,
@@ -71,6 +71,10 @@ public sealed class ScanFacts
     /// <summary>Dependabot security updates, from the automated-security-fixes endpoint; null when not read, in which case the details decide.</summary>
     public bool? SecurityUpdates { get; set; }
     public List<GhWorkflow> Workflows { get; set; } = [];
+    /// <summary>The repository's most recent releases, newest first.</summary>
+    public List<GhRelease> Releases { get; set; } = [];
+    /// <summary>Each workflow's triggers, by path, read from the clone or from GitHub.</summary>
+    public Dictionary<string, WorkflowTriggers> WorkflowTriggers { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     /// <summary>The labels each of the clone's issue forms applies, by path; empty when there is no clone.</summary>
     public Dictionary<string, List<string>> IssueFormLabels { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     public Manifest? Manifest { get; set; }
@@ -293,6 +297,10 @@ public static class ScanRules
         }
         if (!caps.CodeOwners) Add(ScanSeverity.NotAvailable, ScanCode.CodeOwnersUnavailable, SetupStep.Files, Strings.Scan_CodeOwnersUnavailable);
         if (!caps.CodeScanning) Add(ScanSeverity.NotAvailable, ScanCode.CodeScanningUnavailable, SetupStep.Files, Strings.Scan_CodeScanningUnavailable);
+
+        // A repository that already publishes releases another way keeps the release workflow off (the wizard unticks it).
+        var releaseReasons = ReleaseEvidence.Reasons(f);
+        if (releaseReasons.Count > 0) Add(ScanSeverity.Warning, ScanCode.ReleasesElsewhere, SetupStep.Files, Strings.Scan_ReleasesElsewhere, string.Join("\n", releaseReasons));
 
         // Workflows that aren't the convention's
         var otherWorkflows = f.Workflows.Where(w => !ConventionFiles.All.Any(c => c.Matches(w.Path))).Select(w => w.Name).ToList();

@@ -133,6 +133,7 @@
                 <TextBlock Text="{x:Static res:Strings.Setup_DiscussionsHelp}" Style="{StaticResource HelperText}" Margin="24,0,0,8"/>
                 <CheckBox x:Name="ReleaseBox" Content="{x:Static res:Strings.Setup_Release}" IsEnabled="False" Margin="0,2,0,2" AutomationProperties.Name="{x:Static res:Strings.Setup_Release}"/>
                 <TextBlock Text="{x:Static res:Strings.Setup_ReleaseHelp}" Style="{StaticResource HelperText}" Margin="24,0,0,8"/>
+                <TextBlock x:Name="ReleaseNote" Style="{StaticResource HelperText}" TextWrapping="Wrap" Margin="24,-4,0,8" Visibility="Collapsed"/>
                 <CheckBox x:Name="CodeQlBox" Content="{x:Static res:Strings.Setup_CodeQl}" IsEnabled="False" Margin="0,2,0,2" AutomationProperties.Name="{x:Static res:Strings.Setup_CodeQl}"/>
                 <TextBlock Text="{x:Static res:Strings.Setup_CodeQlHelp}" Style="{StaticResource HelperText}" Margin="24,0,0,8"/>
 
