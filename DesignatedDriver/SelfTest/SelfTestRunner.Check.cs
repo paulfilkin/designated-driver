@@ -86,6 +86,13 @@ public static partial class SelfTestRunner
         check(r3.Count == 2 && hook is { Kind: DriftKind.Different, TickedByDefault: true } && guide is { Kind: DriftKind.Different, TickedByDefault: false }, "Drift: an edited hook is ticked, an edited CONTRIBUTING.md is reported but unticked");
         check(hook!.Detail.Contains("- ", StringComparison.Ordinal) && hook.Detail.Contains("exit 1", StringComparison.Ordinal) && hook.Detail.Contains("+ ", StringComparison.Ordinal) && guide!.Text.Contains("4 added", StringComparison.Ordinal), "Drift: the detail is a line diff and the text counts the lines");
 
+        // A CONTRIBUTING.md of the project's own, without the section on how a change gets in: its own unticked item
+        var ownGuide = new Dictionary<string, string>(actual, StringComparer.OrdinalIgnoreCase) { ["CONTRIBUTING.md"] = "# Contributing\n\nBuild with make.\n" };
+        var rGuide = Drift(facts, expected, ownGuide);
+        check(rGuide.Actionable.FirstOrDefault(i => i.Key == WorkflowSection.DriftKey) is { Kind: DriftKind.Missing, TickedByDefault: false, Step: SetupStep.Files }
+            && !r3.Actionable.Any(i => i.Key == WorkflowSection.DriftKey) && !clean.Items.Any(i => i.Key == WorkflowSection.DriftKey)
+            && PlanOutline.ForUpdate([WorkflowSection.DriftKey], false).SequenceEqual([SetupStep.Files]),
+            "Drift: a CONTRIBUTING.md without the section is an unticked item that applies through the files step; one with it isn't reported");
         // Issue forms are the project's to choose: an edited or missing one is reported, unticked
         var forms = new Dictionary<string, string>(actual, StringComparer.OrdinalIgnoreCase);
         forms[".github/ISSUE_TEMPLATE/bug.yml"] = actual[".github/ISSUE_TEMPLATE/bug.yml"] + "\n# Our own question\n";

@@ -706,6 +706,8 @@ The clone and the repository on GitHub are not touched.</value></data>
   <data name="Scan_EmptyRepository" xml:space="preserve"><value>The repository has no commits. Convention files would be committed straight to {0}.</value></data>
   <data name="Scan_HasHistory" xml:space="preserve"><value>The repository has history. Convention files would go through a pull request on chore/repo-starter-v1.</value></data>
   <data name="Scan_OtherWorkflows" xml:space="preserve"><value>{0} other workflow(s) are left alone.</value></data>
+  <data name="Scan_AppendWorkflowSection" xml:space="preserve"><value>CONTRIBUTING.md is kept, and the convention's section on how a change gets in (issue first, branch names, Closes #n, squash merge, the hooks) would be added at the end; the rest of it stays as it is.</value></data>
+  <data name="Drift_WorkflowSectionMissing" xml:space="preserve"><value>CONTRIBUTING.md has no section on how a change gets in. Applying adds the convention's at the end and leaves the rest alone.</value></data>
   <data name="Scan_ReleasesElsewhere" xml:space="preserve"><value>The repository already publishes releases another way, so the release workflow is left off; a tag would otherwise make a second release.</value></data>
   <data name="Scan_ReleasesPublished" xml:space="preserve"><value>{0} release(s) with files attached; the latest, {1}, has {2}</value></data>
   <data name="Scan_ReleaseWorkflows" xml:space="preserve"><value>Run on tags or releases: {0}</value></data>

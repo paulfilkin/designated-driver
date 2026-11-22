@@ -38,6 +38,8 @@ public sealed partial class SetupService(Workspace workspace)
     public IReadOnlyList<string> Kept { get; private set; } = [];
     /// <summary>Workflows the set-up removed because they built pull requests beside ci.yml.</summary>
     public IReadOnlyList<string> Removed { get; private set; } = [];
+    /// <summary>True when the convention's section on how a change gets in was added to a kept CONTRIBUTING.md.</summary>
+    public bool AppendedSection { get; private set; }
 
     public SetupPlan Build(SetupAnswers answers, ScanFacts? facts)
     {
@@ -339,8 +341,14 @@ public sealed partial class SetupService(Workspace workspace)
         if (!manifest.HasAnswers) return false;
         if (!_update && !ConventionContent.ManifestReflects(manifest, _a)) return false;
 
-        // In an update every ticked file must read as the convention writes it.
+        // In an update every ticked file must read as the convention writes it, and a ticked section must be there.
         var paths = new List<string> { ConventionContent.ManifestPath };
+        if (_update && _selectedFiles.Contains(WorkflowSection.DriftKey["file:".Length..]))
+        {
+            var contributing = Path.Combine(Folder, WorkflowSection.ContributingPath);
+            if (!File.Exists(contributing) || !WorkflowSection.IsIn(await File.ReadAllTextAsync(contributing, ct).ConfigureAwait(false))) return false;
+            paths.Add(WorkflowSection.ContributingPath);
+        }
         if (_update)
         {
             var values = ConventionContent.ValuesFor(_a, _board, await ProjectFileTextAsync(ct).ConfigureAwait(false), await Git.ListFilesInAsync(Folder, ct).ConfigureAwait(false));
@@ -443,6 +451,22 @@ public sealed partial class SetupService(Workspace workspace)
         }
         Written = written;
         Kept = kept;
+
+        // A kept CONTRIBUTING.md without the convention's section on how a change gets in gets it added at the end, in
+        // the same commit; the rest of the file is left as it was. In an update this happens only when it was ticked.
+        AppendedSection = false;
+        var contributing = Path.Combine(Folder, WorkflowSection.ContributingPath);
+        bool wantSection = _update ? _selectedFiles.Contains(WorkflowSection.DriftKey["file:".Length..]) : kept.Contains(WorkflowSection.ContributingPath);
+        if (wantSection && File.Exists(contributing))
+        {
+            var existing = await File.ReadAllTextAsync(contributing, ct).ConfigureAwait(false);
+            if (!WorkflowSection.IsIn(existing))
+            {
+                await File.WriteAllTextAsync(contributing, WorkflowSection.AppendTo(existing, values), new System.Text.UTF8Encoding(false), ct).ConfigureAwait(false);
+                await Git.AddPathsInAsync(Folder, [WorkflowSection.ContributingPath], ct).ConfigureAwait(false);
+                AppendedSection = true;
+            }
+        }
 
         await Git.AddPathsInAsync(Folder, written, ct).ConfigureAwait(false);
         // Workflows the user chose to remove go out in the same commit, so the pull request shows them going.

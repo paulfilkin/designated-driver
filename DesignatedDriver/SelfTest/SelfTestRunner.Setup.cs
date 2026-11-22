@@ -313,6 +313,30 @@ public static partial class SelfTestRunner
             check(prBody.Contains("Closes #12", StringComparison.Ordinal) && prBody.Contains("`README.md`", StringComparison.Ordinal), "History: the pull request body closes the issue and lists the kept files");
             check(host3.Runner.Calls.First(c => c.Is("commit")).FileContent?.Contains("Closes #12", StringComparison.Ordinal) == true, "History: the commit message closes the issue too");
             check(plan3.Steps.First(s => s.Kind == SetupStep.Files).Message.Contains("/pull/13", StringComparison.Ordinal), "History: the files step reports the pull request");
+            var written3 = File.ReadAllText(Path.Combine(folder3, "CONTRIBUTING.md"));
+            check(!setup3.AppendedSection && System.Text.RegularExpressions.Regex.Matches(written3, "How a change gets into").Count == 1 && written3.Contains("## 2. How a change gets into main", StringComparison.Ordinal),
+                "History: with no CONTRIBUTING.md, the convention's is written with its section once, and nothing is appended");
+
+            // A CONTRIBUTING.md of the project's own: the section is added at the end, once, and the rest left alone.
+            foreach (var (label, text, expectAppend) in new[] { ("without the section", "# Contributing\r\n\r\nBuild with make.\r\n", true), ("with the section", "# Contributing\n\n## How a change gets into main\n\nOur way.\n", false) })
+            {
+                var folder7 = Path.Combine(root, "contributing-" + (expectAppend ? "append" : "present"));
+                Directory.CreateDirectory(folder7);
+                File.WriteAllText(Path.Combine(folder7, "CONTRIBUTING.md"), text);
+                var host7 = new FakeHost(folder7, hasHistory: true);
+                var setup7 = new SetupService(new Workspace(new Settings { SavePath = Path.Combine(root, $"settings7-{expectAppend}.json") }, host7.Runner));
+                var answers7 = DotNetAnswers();
+                answers7.Source = SetupSource.ExistingFolder; answers7.ExistingFolder = folder7; answers7.ProjectFile = "Example.csproj"; answers7.TestProject = "";
+                var plan7 = setup7.Build(answers7, new ScanFacts { Folder = folder7, OwnerAndName = "paulfilkin/example", IsGitRepository = true, HasCommits = true, OriginUrl = "https://github.com/paulfilkin/example.git" });
+                bool ok7 = setup7.RunAsync(plan7, CancellationToken.None).GetAwaiter().GetResult();
+                var after = File.ReadAllText(Path.Combine(folder7, "CONTRIBUTING.md"));
+                var body7 = host7.Runner.Calls.FirstOrDefault(c => c.Is("pr", "create"))?.FileContent ?? "";
+                bool good = expectAppend
+                    ? setup7.AppendedSection && after.StartsWith(text.TrimEnd('\r', '\n'), StringComparison.Ordinal) && after.Contains("\r\n## How a change gets into main\r\n", StringComparison.Ordinal)
+                      && System.Text.RegularExpressions.Regex.Matches(after, "How a change gets into").Count == 1 && host7.Runner.Calls.Any(c => c.Is("add", "--", "CONTRIBUTING.md")) && body7.Contains("added at the end of `CONTRIBUTING.md`", StringComparison.Ordinal)
+                    : !setup7.AppendedSection && after == text && !body7.Contains("added at the end", StringComparison.Ordinal);
+                check(ok7 && good, $"Set-up: a kept CONTRIBUTING.md {label} " + (expectAppend ? "gets the section added at the end, in its own line endings, and the pull request says so" : "is left exactly as it was"));
+            }
 
             // A workflow ticked for removal goes in the set-up commit; a convention workflow is never removed.
             var folder6 = Path.Combine(root, "competing");

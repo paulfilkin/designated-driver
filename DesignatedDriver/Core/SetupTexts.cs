@@ -21,7 +21,7 @@ public static class SetupTexts
          + $"- Review required: {(a.ReviewRequired ? "yes" : "no")}\n\n"
          + "This issue is closed by the pull request that adds the files.\n";
 
-    public static string PullRequestBody(int issue, IReadOnlyList<string> written, IReadOnlyList<string> kept, IReadOnlyList<string>? removed = null)
+    public static string PullRequestBody(int issue, IReadOnlyList<string> written, IReadOnlyList<string> kept, bool appendedSection = false, IReadOnlyList<string>? removed = null)
     {
         var sb = new System.Text.StringBuilder();
         sb.Append("## Issue\n\nCloses #").Append(issue).Append("\n\n");
@@ -34,6 +34,8 @@ public static class SetupTexts
             foreach (var k in kept) sb.Append("- `").Append(k).Append("`\n");
             sb.Append('\n');
         }
+        if (appendedSection)
+            sb.Append("The convention's section on how a change gets in (issue first, branch names, `Closes #n`, squash merge, the hooks) is added at the end of `CONTRIBUTING.md`; the rest of it is as it was.\n\n");
         sb.Append("Files added:\n\n");
         foreach (var w in written) sb.Append("- `").Append(w).Append("`\n");
         if (removed is { Count: > 0 })

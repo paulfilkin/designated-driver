@@ -754,6 +754,19 @@ public static partial class SelfTestRunner
             && mv.Findings.First(f => f.Code == ScanCode.RepositoryMoved).Text.Contains("paulfilkin/example", StringComparison.Ordinal), "Scan: a name GitHub answers with a renamed repository is a blocker naming where it leads, and that repository isn't judged");
         check(Fresh().IsNamed("PaulFilkin/Example") && !Fresh().IsNamed("paulfilkin/old-name") && new GhRepositoryDetails().IsNamed("a/b"), "Repository details: the full name is compared without regard to case, and a reply without one isn't judged");
 
+        // The convention's section on how a change gets in: in its CONTRIBUTING.md, and added to a kept one that lacks it.
+        var sectionValues = ConventionContent.ValuesFor(DotNetAnswers(), new BoardReference("paulfilkin", 7));
+        var guideText = ConventionContent.Render(ConventionFiles.All.First(c => c.Path == "CONTRIBUTING.md"), DotNetAnswers(), sectionValues);
+        check(System.Text.RegularExpressions.Regex.Matches(guideText, "How a change gets into").Count == 1 && guideText.Contains("## 2. How a change gets into main\n\nNobody pushes", StringComparison.Ordinal)
+            && guideText.Contains("## 3. What the automatic checks do", StringComparison.Ordinal) && !ConventionContent.HasUnfilled(guideText) && !guideText.Contains("(section 3)", StringComparison.Ordinal),
+            "Workflow section: the convention's CONTRIBUTING.md has it as section 2, filled, once");
+        var appended = WorkflowSection.AppendTo("# Ours\n\nBuild with make.\n\n\n", sectionValues);
+        check(appended.StartsWith("# Ours\n\nBuild with make.\n\n## How a change gets into main\n", StringComparison.Ordinal) && appended.EndsWith("for each of these steps.\n", StringComparison.Ordinal)
+            && WorkflowSection.IsIn(appended) && WorkflowSection.IsIn("### 4. How a change gets into develop\n") && !WorkflowSection.IsIn("We describe how a change gets into main below.\n"),
+            "Workflow section: added at the end as a level-two heading after one blank line, and found by its heading at any level, numbered or not");
+        var withGuide = Clone(fresh);
+        withGuide.ContributingHasWorkflowSection = false;
+        check(ScanRules.Assess(withGuide).Has(ScanCode.AppendWorkflowSection) && !ScanRules.Assess(fresh).Has(ScanCode.AppendWorkflowSection), "Scan: a kept CONTRIBUTING.md without the section reports that it would be added; one with it, or none, doesn't");
         // Workflow triggers, and a repository that already publishes releases another way.
         var onTags = WorkflowTriggers.Parse("name: Release\non:\n  push:\n    tags: ['v*']\n  workflow_dispatch:\njobs: {}\n");
         var build = WorkflowTriggers.Parse("name: Build\non:\n  push:\n    branches:\n      - main\n  pull_request:\n    branches: [ main ]\njobs: {}\n");
