@@ -225,6 +225,30 @@ public sealed class GhWorkflow
     public string State { get; set; } = "";
 }
 
+/// <summary>gh api repos/{owner}/{name}/releases: one release, with the names of the files attached to it.</summary>
+public sealed class GhRelease
+{
+    public string TagName { get; set; } = "";
+    public string Name { get; set; } = "";
+    public bool Draft { get; set; }
+    public bool Prerelease { get; set; }
+    public List<GhReleaseAsset> Assets { get; set; } = [];
+}
+
+public sealed class GhReleaseAsset
+{
+    public string Name { get; set; } = "";
+}
+
+/// <summary>gh api repos/{owner}/{name}/contents/{path} for a file: its text, base64-encoded.</summary>
+public sealed class GhFileContent
+{
+    public string Content { get; set; } = "";
+    public string Encoding { get; set; } = "";
+
+    public string Text => Encoding.Equals("base64", StringComparison.OrdinalIgnoreCase) ? System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(Content.Replace("\n", ""))) : Content;
+}
+
 /// <summary>gh api repos/{owner}/{name}/contents/{path}: one entry of a folder listing.</summary>
 public sealed class GhContentEntry
 {

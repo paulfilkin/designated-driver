@@ -1339,6 +1339,15 @@ public static class Strings
     /// <summary>{0} label(s) would get the convention&apos;s colour and description.</summary>
     public static string Scan_RecolourLabels => Get("Scan_RecolourLabels");
 
+    /// <summary>The repository already publishes releases another way, so the release workflow is left ...</summary>
+    public static string Scan_ReleasesElsewhere => Get("Scan_ReleasesElsewhere");
+
+    /// <summary>{0} release(s) with files attached; the latest, {1}, has {2}</summary>
+    public static string Scan_ReleasesPublished => Get("Scan_ReleasesPublished");
+
+    /// <summary>Run on tags or releases: {0}</summary>
+    public static string Scan_ReleaseWorkflows => Get("Scan_ReleaseWorkflows");
+
     /// <summary>{0} was not found on GitHub, or the signed-in account cannot see it.</summary>
     public static string Scan_RepositoryNotFound => Get("Scan_RepositoryNotFound");
 
@@ -1752,6 +1761,9 @@ public static class Strings
 
     /// <summary>.NET projects only. A push of a tag such as v1.2.0 builds a framework-dependent single-...</summary>
     public static string Setup_ReleaseHelp => Get("Setup_ReleaseHelp");
+
+    /// <summary>Left off because the repository already publishes releases another way ({0}). Tick it t...</summary>
+    public static string Setup_ReleaseLeftOff => Get("Setup_ReleaseLeftOff");
 
     /// <summary>The folder&apos;s origin names {0}, but that repository was not found on GitHub.</summary>
     public static string Setup_RepositoryMissing => Get("Setup_RepositoryMissing");

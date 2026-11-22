@@ -117,6 +117,22 @@ public sealed partial class GitHubService(ICommandRunner runner, Func<Repository
         return r.Ok ? GhJson.ParseRest<GhWorkflowList>(r.Output).Workflows : [];
     }
 
+    /// <summary>The repository's most recent releases, newest first; empty when there are none or they can't be read.</summary>
+    public async Task<List<GhRelease>> ReleasesAsync(string ownerAndName, CancellationToken ct)
+    {
+        var r = await ApiAsync(ct, $"repos/{ownerAndName}/releases?per_page=30").ConfigureAwait(false);
+        return r.Ok ? GhJson.ParseRestList<GhRelease>(r.Output) : [];
+    }
+
+    /// <summary>A file's text from the repository on GitHub's default branch, or null when it can't be read.</summary>
+    public async Task<string?> FileTextAsync(string ownerAndName, string path, CancellationToken ct)
+    {
+        var r = await ApiAsync(ct, $"repos/{ownerAndName}/contents/{path}").ConfigureAwait(false);
+        if (!r.Ok) return null;
+        try { return GhJson.ParseRest<GhFileContent>(r.Output).Text; }
+        catch (Exception ex) when (ex is System.Text.Json.JsonException or FormatException) { return null; }
+    }
+
     /// <summary>The entries of a folder in the repository on GitHub; empty when the folder doesn't exist.</summary>
     public async Task<List<GhContentEntry>> ContentsAsync(string ownerAndName, string path, CancellationToken ct)
     {

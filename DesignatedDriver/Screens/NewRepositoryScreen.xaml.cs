@@ -357,7 +357,27 @@ public partial class NewRepositoryScreen : ScreenBase
         if (TestProjectBox.Text.Trim().Length == 0 && test is not null) TestProjectBox.Text = test.Replace('/', '\\');
         if (SelfTestBox.Text.Trim().Length == 0 && facts.Manifest is { SelfTestCommand.Length: > 0 } m) SelfTestBox.Text = m.SelfTestCommand;
         if (DescriptionBox.Text.Trim().Length == 0 && facts.Details is { Description.Length: > 0 } d) DescriptionBox.Text = d.Description;
+
+        // A repository that already publishes releases another way would get a second release from each tag, so the
+        // release workflow starts unticked here, with the reason under it. It can still be ticked.
+        var reasons = ReleaseEvidence.Reasons(facts);
+        if (reasons.Count > 0)
+        {
+            ReleaseBox.IsChecked = false;
+            ReleaseNote.Text = string.Format(Strings.Setup_ReleaseLeftOff, string.Join("; ", reasons));
+            ReleaseNote.Visibility = Visibility.Visible;
+            _releaseLeftOff = true;
+        }
+        else
+        {
+            if (_releaseLeftOff && ReleaseBox.IsEnabled) ReleaseBox.IsChecked = true;
+            ReleaseNote.Visibility = Visibility.Collapsed;
+            _releaseLeftOff = false;
+        }
     }
+
+    /// <summary>True while the release workflow is unticked because the last scan found releases made another way.</summary>
+    private bool _releaseLeftOff;
 
     private static bool IsDotNetProject(string path)
         => path.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".fsproj", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".vbproj", StringComparison.OrdinalIgnoreCase);

@@ -708,6 +708,29 @@ public static partial class SelfTestRunner
         var missing = new ScanFacts { OwnerAndName = "paulfilkin/no-such-repository", RemoteLookedUp = true, Details = null };
         check(ScanRules.Assess(missing) is { Verdict: ScanVerdict.NotConvertible } mr && mr.Has(ScanCode.RepositoryNotFound), "Scan: a repository GitHub doesn't return is a blocker");
 
+        // Workflow triggers, and a repository that already publishes releases another way.
+        var onTags = WorkflowTriggers.Parse("name: Release\non:\n  push:\n    tags: ['v*']\n  workflow_dispatch:\njobs: {}\n");
+        var build = WorkflowTriggers.Parse("name: Build\non:\n  push:\n    branches:\n      - main\n  pull_request:\n    branches: [ main ]\njobs: {}\n");
+        check(onTags.RunsOnRelease && onTags.PushTagsOnly && onTags.Has("workflow_dispatch") && !build.RunsOnRelease && build.Has("pull_request") && build.PushBranches.SequenceEqual(["main"])
+            && WorkflowTriggers.Parse("on: [push, pull_request]\n").Has("pull_request") && WorkflowTriggers.Parse("on: release\n").RunsOnRelease && WorkflowTriggers.Parse("name: x\n").Events.Count == 0,
+            "Workflow triggers: a single event, a list and a mapping are read, with push's branch and tag filters");
+        var releasing = Clone(fresh);
+        releasing.Releases = [new GhRelease { TagName = "v2.1.0", Assets = [new GhReleaseAsset { Name = "MyceliaSetup-2.1.0.exe" }] }, new GhRelease { TagName = "v2.0.0", Assets = [new GhReleaseAsset { Name = "MyceliaSetup-2.0.0.exe" }] }];
+        var releasingReport = ScanRules.Assess(releasing);
+        check(releasingReport.Has(ScanCode.ReleasesElsewhere) && ReleaseEvidence.Reasons(releasing).Single().Contains("v2.1.0", StringComparison.Ordinal) && ReleaseEvidence.Reasons(releasing).Single().Contains("MyceliaSetup-2.1.0.exe", StringComparison.Ordinal),
+            "Releases: releases with files attached are reported with the latest tag and its files, and the release workflow is left off");
+        var tagged = Clone(fresh);
+        tagged.WorkflowTriggers[".github/workflows/publish.yml"] = onTags;
+        tagged.WorkflowTriggers[".github/workflows/build.yml"] = build;
+        check(ReleaseEvidence.Reasons(tagged).Single().Contains("publish.yml", StringComparison.Ordinal) && !ReleaseEvidence.Reasons(tagged).Single().Contains("build.yml", StringComparison.Ordinal), "Releases: a workflow run on tags counts; one run on pushes and pull requests doesn't");
+        var plain = Clone(fresh);
+        plain.Releases = [new GhRelease { TagName = "v0.1", Draft = true, Assets = [new GhReleaseAsset { Name = "a.zip" }] }, new GhRelease { TagName = "v0.0" }];
+        var own = Clone(releasing);
+        own.Files = [.. fresh.Files, ReleaseEvidence.ConventionWorkflow];
+        own.WorkflowTriggers[ReleaseEvidence.ConventionWorkflow] = onTags;
+        check(ReleaseEvidence.Reasons(fresh).Count == 0 && ReleaseEvidence.Reasons(plain).Count == 0 && ReleaseEvidence.Reasons(own).Count == 0 && !ScanRules.Assess(fresh).Has(ScanCode.ReleasesElsewhere),
+            "Releases: no releases, drafts, releases without files, or the convention's own release workflow leave the default alone");
+
         // Warnings and the create path.
         var fork = Clone(fresh);
         fork.Details = Fresh();
