@@ -36,7 +36,7 @@ public static partial class SelfTestRunner
             Folder = @"C:\Users\paul\Documents\GIT\example", OwnerAndName = "paulfilkin/example",
             IsGitRepository = true, OriginUrl = "git@github-paulfilkin:paulfilkin/example.git", HasCommits = true, HooksPath = ".githooks",
             Files = [.. actual.Keys, "app/Example.csproj", ConventionContent.ManifestPath],
-            RemoteLookedUp = true, Details = GhJson.ParseRest<GhRepositoryDetails>(Sample("repo-details-private.json")),
+            RemoteLookedUp = true, Details = GhJson.ParseRest<GhRepositoryDetails>(Sample("repo-details-private.json").Replace("paulfilkin/tidy", "paulfilkin/example")),
             Labels = ConventionLabels.All.Select(l => new GhLabel { Name = l.Name, Color = l.Color, Description = l.Description }).ToList(),
             LinkedBoards = [new ScanBoard(7, "example", "https://github.com/users/paulfilkin/projects/7", ["Todo", "In Progress", "Done"])],
             BranchRulesStatus = ApiStatus.NotAvailable, VulnerabilityAlerts = true, SecurityUpdates = true, Manifest = TidyManifest(),
@@ -99,7 +99,7 @@ public static partial class SelfTestRunner
 
         // A changed merge setting
         var merge = Clone(facts);
-        merge.Details = GhJson.ParseRest<GhRepositoryDetails>(Sample("repo-details-private.json").Replace("\"delete_branch_on_merge\": true", "\"delete_branch_on_merge\": false"));
+        merge.Details = GhJson.ParseRest<GhRepositoryDetails>(Sample("repo-details-private.json").Replace("paulfilkin/tidy", "paulfilkin/example").Replace("\"delete_branch_on_merge\": true", "\"delete_branch_on_merge\": false"));
         var r4 = Drift(merge, expected, actual);
         check(r4.Count == 1 && r4.Actionable.Single() is { Key: "settings", Step: SetupStep.Settings } s && s.Detail.Contains("Delete branch", StringComparison.Ordinal), "Drift: a changed merge setting is one item naming the setting");
 
@@ -118,7 +118,7 @@ public static partial class SelfTestRunner
 
         // Public: the ruleset and push protection count
         var pub = Clone(facts);
-        pub.Details = GhJson.ParseRest<GhRepositoryDetails>(Sample("repo-details-private.json").Replace("\"private\": true", "\"private\": false"));
+        pub.Details = GhJson.ParseRest<GhRepositoryDetails>(Sample("repo-details-private.json").Replace("paulfilkin/tidy", "paulfilkin/example").Replace("\"private\": true", "\"private\": false"));
         pub.BranchRulesStatus = ApiStatus.Ok;
         var r8 = Drift(pub, expected, actual);
         check(r8.Actionable.Any(i => i.Key == "ruleset" && i.Kind == DriftKind.Missing) && r8.Actionable.Any(i => i.Key == "pushprotection" && i.Kind == DriftKind.Off), "Drift: on a public repository a missing ruleset and push protection off are items");
@@ -161,7 +161,7 @@ public static partial class SelfTestRunner
         var manifest = TidyManifest();
         check(manifest.HasAnswers && manifest.Answers!.ProjectFile == @"app\Example.csproj" && manifest.Answers.Checklist.Count == ChecklistItems.All.Count, "Manifest: the set-up answers are recorded");
         var round = Manifest.Parse(manifest.ToJson())!;
-        var back = SetupAnswers.FromManifest(round, new RepositorySettings { Owner = "paulfilkin", Name = "example", Folder = @"C:\x" }, new ScanFacts { Details = GhJson.ParseRest<GhRepositoryDetails>(Sample("repo-details-private.json")) });
+        var back = SetupAnswers.FromManifest(round, new RepositorySettings { Owner = "paulfilkin", Name = "example", Folder = @"C:\x" }, new ScanFacts { Details = GhJson.ParseRest<GhRepositoryDetails>(Sample("repo-details-private.json").Replace("paulfilkin/tidy", "paulfilkin/example")) });
         check(back.ProjectFile == @"app\Example.csproj" && back.SelfTestCommand == DotNetAnswers().SelfTestCommand && back.IsPrivate && back.ReviewRequired && back.Language == ProjectLanguage.DotNet, "Manifest: the answers come back for rendering the files again");
         var kept = ConventionContent.ManifestFor(DotNetAnswers(), new BoardReference("paulfilkin", 9), null, new DateTime(2027, 1, 1), manifest);
         check(kept.SetUp == "2026-11-20" && kept.Board!.Number == 9, "Manifest: an update keeps the set-up date and takes the new board");
