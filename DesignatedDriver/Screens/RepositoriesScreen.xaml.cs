@@ -56,9 +56,17 @@ public partial class RepositoriesScreen : ScreenBase
 
     private void Clone_Click(object sender, RoutedEventArgs e) => ShowClone("");
 
-    /// <summary>Opens the clone card, with an owner/name already chosen when Scan sends one.</summary>
-    public void ShowClone(string ownerAndName)
+    /// <summary>True while the clone card was opened by Scan's Keep it as it is, so the clone is marked as keeping its own conventions.</summary>
+    private bool _cloneKeepsOwn;
+
+    /// <summary>
+    /// Opens the clone card, with an owner/name already chosen when Scan sends one. Scan's Keep it as it is sends
+    /// keepsOwnConventions, and the card says the clone will be marked; the card's own button never marks it.
+    /// </summary>
+    public void ShowClone(string ownerAndName, bool keepsOwnConventions = false)
     {
+        _cloneKeepsOwn = keepsOwnConventions;
+        CloneKeepsOwnText.Visibility = keepsOwnConventions ? Visibility.Visible : Visibility.Collapsed;
         if (ownerAndName.Length > 0) CloneNameBox.Text = ownerAndName;
         if (CloneParentBox.Text.Trim().Length == 0) CloneParentBox.Text = DefaultParentFolder();
         CloneCard.Visibility = Visibility.Visible;
@@ -93,7 +101,7 @@ public partial class RepositoriesScreen : ScreenBase
         RepositorySettings? cloned = null;
         await Shell.RunAsync(async ct =>
         {
-            cloned = await Workspace.CloneAndAddAsync(name, parent, ct);
+            cloned = await Workspace.CloneAndAddAsync(name, parent, ct, _cloneKeepsOwn);
             HideClone();
             CloneNameBox.Text = "";
             var done = string.Format(Strings.Clone_Done, cloned.OwnerAndName, cloned.Folder);

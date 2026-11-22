@@ -24,8 +24,11 @@ public interface IShell
     void Navigate(Screen screen, int? pullRequest = null);
     /// <summary>Shows the Scan screen with a folder or an owner/name already chosen.</summary>
     void NavigateToScan(string? folder, string ownerAndName);
-    /// <summary>Shows Repositories with the clone card open for an owner/name.</summary>
-    void NavigateToClone(string ownerAndName);
+    /// <summary>
+    /// Shows Repositories with the clone card open for an owner/name. With keepsOwnConventions, as Scan's Keep it as it
+    /// is asks, the clone is added marked as keeping its own conventions.
+    /// </summary>
+    void NavigateToClone(string ownerAndName, bool keepsOwnConventions = false);
     /// <summary>Shows the set-up wizard with a folder or an owner/name already chosen, and what a scan found when there was one.</summary>
     void NavigateToSetup(string? folder, string ownerAndName, ScanFacts? facts = null);
     /// <summary>Shows one of the tool's own windows modally. True when it was accepted.</summary>

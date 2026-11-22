@@ -14,10 +14,15 @@ public static partial class SelfTestRunner
         check(verdicts.All(v => ScanReportText.NextStepText(v).StartsWith("Next step", StringComparison.Ordinal)), "Scan next step: every verdict has a sentence for the text report");
         check(ScanReportText.NextStep(ScanVerdict.AlreadySetUp, true) != ScanReportText.NextStep(ScanVerdict.AlreadySetUp, false)
             && ScanReportText.NextStep(ScanVerdict.AlreadySetUp, true).Contains("Check", StringComparison.Ordinal)
-            && ScanReportText.NextStep(ScanVerdict.AlreadySetUp, false).Contains(Strings.Scan_AddToList, StringComparison.Ordinal),
-            "Scan next step: already set up points the current repository at Check and another at the add button, by its label");
+            && ScanReportText.NextStep(ScanVerdict.AlreadySetUp, false).Contains("button below", StringComparison.Ordinal),
+            "Scan next step: already set up points the current repository at Check and another at the button below");
         check(ScanReportText.NextStep(ScanVerdict.Convertible, true).Contains("nothing changes until you press " + Strings.Setup_Start, StringComparison.Ordinal),
             "Scan next step: convertible says nothing changes until Start in the wizard");
+        check(ScanReportText.NextStep(ScanVerdict.Convertible, false, canKeepAsIs: true) is var choice
+            && choice.Contains("choose", StringComparison.Ordinal) && choice.Contains("its own way of working", StringComparison.Ordinal)
+            && choice.Contains("press " + Strings.Setup_Start, StringComparison.Ordinal)
+            && ScanReportText.NextStep(ScanVerdict.AlreadySetUp, false, canKeepAsIs: true) == ScanReportText.NextStep(ScanVerdict.AlreadySetUp, false),
+            "Scan next step: a convertible repository that can be kept as it is asks for a choice; other verdicts are unchanged");
         check(ScanReportText.NextStep(ScanVerdict.Convertible, false) == ScanReportText.NextStep(ScanVerdict.Convertible, true)
             && ScanReportText.NextStepText(ScanVerdict.Convertible).Contains("--setup", StringComparison.Ordinal)
             && ScanReportText.NextStepText(ScanVerdict.AlreadySetUp).Contains("--check", StringComparison.Ordinal),

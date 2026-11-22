@@ -253,10 +253,10 @@ public partial class MainWindow : Window, IShell
     }
 
     /// <summary>Clone a particular repository as it is: shows Repositories with the clone card open for it.</summary>
-    public void NavigateToClone(string ownerAndName)
+    public void NavigateToClone(string ownerAndName, bool keepsOwnConventions = false)
     {
         Navigate(Screen.Repositories);
-        if (_screens[Screen.Repositories] is RepositoriesScreen repositories) repositories.ShowClone(ownerAndName);
+        if (_screens[Screen.Repositories] is RepositoriesScreen repositories) repositories.ShowClone(ownerAndName, keepsOwnConventions);
     }
 
     /// <summary>

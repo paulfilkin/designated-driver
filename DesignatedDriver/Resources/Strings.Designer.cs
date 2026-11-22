@@ -235,6 +235,9 @@ public static class Strings
     /// <summary>Clones the repository and adds it to the list as it is. Nothing changes on GitHub or in...</summary>
     public static string Clone_Intro => Get("Clone_Intro");
 
+    /// <summary>From Scan&apos;s Keep it as it is: the clone is added marked as keeping its own conventions....</summary>
+    public static string Clone_KeepsOwn => Get("Clone_KeepsOwn");
+
     /// <summary>Repository (owner/name)</summary>
     public static string Clone_Name => Get("Clone_Name");
 
@@ -1186,10 +1189,10 @@ public static class Strings
     /// <summary>Save and share</summary>
     public static string Save_Title => Get("Save_Title");
 
-    /// <summary>Work on it in Designated Driver</summary>
+    /// <summary>Add to Repositories</summary>
     public static string Scan_AddToList => Get("Scan_AddToList");
 
-    /// <summary>Add this clone to Designated Driver&apos;s list of repositories and make it current</summary>
+    /// <summary>Adds this clone to Repositories and makes it current. Nothing changes in the repository...</summary>
     public static string Scan_AddToListHelp => Get("Scan_AddToListHelp");
 
     /// <summary>Set up to convention v{0} on {1}.</summary>
@@ -1207,10 +1210,10 @@ public static class Strings
     /// <summary>Board {0} ({1}) is linked and has {2}. {3} is used to pick up work and {4} for work und...</summary>
     public static string Scan_BoardUsable => Get("Scan_BoardUsable");
 
-    /// <summary>Clone and work on it as it is</summary>
+    /// <summary>Clone it</summary>
     public static string Scan_CloneAsIs => Get("Scan_CloneAsIs");
 
-    /// <summary>Clone this repository and add it to the list without setting it up; nothing changes on ...</summary>
+    /// <summary>Clones it into a folder you choose and adds it to Repositories. Nothing changes in the ...</summary>
     public static string Scan_CloneAsIsHelp => Get("Scan_CloneAsIsHelp");
 
     /// <summary>Required code owner review: not available. CODEOWNERS is written anyway, so it takes ef...</summary>
@@ -1315,6 +1318,18 @@ public static class Strings
     /// <summary>A read-only look at a repository against the convention: what stops a conversion, what ...</summary>
     public static string Scan_Intro => Get("Scan_Intro");
 
+    /// <summary>Keep it as it is</summary>
+    public static string Scan_KeepAsIs => Get("Scan_KeepAsIs");
+
+    /// <summary>Adds this clone to Repositories, marked as keeping its own conventions, and opens its S...</summary>
+    public static string Scan_KeepAsIsAddHelp => Get("Scan_KeepAsIsAddHelp");
+
+    /// <summary>Clones it into a folder you choose and adds it to Repositories, marked as keeping its o...</summary>
+    public static string Scan_KeepAsIsCloneHelp => Get("Scan_KeepAsIsCloneHelp");
+
+    /// <summary>Marks its entry in Repositories as keeping its own conventions and opens its Settings. ...</summary>
+    public static string Scan_KeepAsIsMarkHelp => Get("Scan_KeepAsIsMarkHelp");
+
     /// <summary>{0} to {1}</summary>
     public static string Scan_LabelRename => Get("Scan_LabelRename");
 
@@ -1360,20 +1375,20 @@ public static class Strings
     /// <summary>Next step: none needed. Check shows anything that has drifted since; Status shows where...</summary>
     public static string Scan_Next_AlreadySetUp_Current => Get("Scan_Next_AlreadySetUp_Current");
 
-    /// <summary>Next step: none needed. Work on it in Designated Driver to use Check and Status on it.</summary>
+    /// <summary>Next step: none needed. To use Check and Status on it, take it on with the button below.</summary>
     public static string Scan_Next_AlreadySetUp_Other => Get("Scan_Next_AlreadySetUp_Other");
 
     /// <summary>Next step: none needed. --check &lt;folder&gt; shows anything that has drifted since.</summary>
     public static string Scan_Next_AlreadySetUp_Text => Get("Scan_Next_AlreadySetUp_Text");
-
-    /// <summary>To work on it as it is instead, clone it; nothing changes on GitHub or in the repository.</summary>
-    public static string Scan_Next_CloneToo => Get("Scan_Next_CloneToo");
 
     /// <summary>Next step: bring this repository into the convention. The set-up wizard opens with it c...</summary>
     public static string Scan_Next_Convertible => Get("Scan_Next_Convertible");
 
     /// <summary>Next step: run the set-up wizard on it, or --setup &lt;answers.json&gt;.</summary>
     public static string Scan_Next_Convertible_Text => Get("Scan_Next_Convertible_Text");
+
+    /// <summary>Next step: choose whether it takes the convention or keeps its own way of working. Each...</summary>
+    public static string Scan_Next_ConvertibleOrKeep => Get("Scan_Next_ConvertibleOrKeep");
 
     /// <summary>Next step: none. To convert it on purpose, clear Keeps its own conventions in its Setti...</summary>
     public static string Scan_Next_KeepsOwn => Get("Scan_Next_KeepsOwn");
@@ -1396,7 +1411,7 @@ public static class Strings
     /// <summary>Open Check</summary>
     public static string Scan_OpenCheck => Get("Scan_OpenCheck");
 
-    /// <summary>Open the Check screen for the current repository</summary>
+    /// <summary>Opens Check, which lists anything that has drifted from the convention.</summary>
     public static string Scan_OpenCheckHelp => Get("Scan_OpenCheckHelp");
 
     /// <summary>The repository belongs to an organisation ({0}). The tool is designed for a personal ac...</summary>
@@ -1462,7 +1477,7 @@ public static class Strings
     /// <summary>Apply the convention</summary>
     public static string Scan_SetUp => Get("Scan_SetUp");
 
-    /// <summary>Open the set-up wizard with this folder or repository chosen. Nothing changes until you...</summary>
+    /// <summary>Opens the set-up wizard with this repository chosen, to make the changes listed below. ...</summary>
     public static string Scan_SetUpHelp => Get("Scan_SetUpHelp");
 
     /// <summary>Step: {0}</summary>

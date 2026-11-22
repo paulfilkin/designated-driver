@@ -40,11 +40,11 @@ The tool clones and pushes with git itself, over HTTPS or SSH, and never lets gh
 
 Start the tool.  The first screen is **Repositories**.  You can add a clone you already have, scan any folder or repository to see what setting it up would involve, or press **Set up a repository**.  The set-up works on a new repository or one that already exists.
 
-To work on a repository that is already on GitHub without changing it, press **Clone a repository**, give its owner/name and a parent folder, and press **Clone**.  Only `git clone` and reads from GitHub run.  The clone is added to the list as the current repository, with the default branch from GitHub and, if it was set up to the convention, the self-test command and required check from its manifest.  Settings then opens for it.  Scan offers the same as **Clone and work on it as it is** after a scan by name.
+To work on a repository that is already on GitHub without changing it, press **Clone a repository**, give its owner/name and a parent folder, and press **Clone**.  Only `git clone` and reads from GitHub run.  The clone is added to the list as the current repository, with the default branch from GitHub and, if it was set up to the convention, the self-test command and required check from its manifest.  Settings then opens for it.  After a scan by name, Scan's **Keep it as it is** or **Clone it** opens the same card.
 
 A repository without a manifest keeps its own settings in its entry in the tool's settings, its profile.  When you clone one, add one with **Add a clone**, or add a scanned clone from Scan, Settings reads what it already uses from GitHub and fills the boxes: the default branch, the required check from its ruleset or branch protection, its linked board and that board's columns for ready to pick up, in progress and in review, and the self-test command from its CI workflow.  Check them and press Save; nothing is kept until you do, and nothing is written to the repository or to GitHub.  **Read from GitHub** reads again later: an empty box is filled, and a value of yours that differs from GitHub's is replaced only if you say so.
 
-A repository with rules of its own, such as an organisation's repository with its own ruleset, labels and board automations, can be left as it is: tick **Keeps its own conventions** in its Settings.  Scan then says so instead of offering to apply the convention, Set up a repository and `--setup` refuse it, and Check and `--check` say so instead of listing drift.  The workflow screens use its own settings, its board included.  Clear the box to convert it later, on purpose.
+A repository with rules of its own, such as an organisation's repository with its own ruleset, labels and board automations, can be left as it is: tick **Keeps its own conventions** in its Settings, or press **Keep it as it is** after scanning it, which ticks it for you.  Scan then says so instead of offering to apply the convention, Set up a repository and `--setup` refuse it, and Check and `--check` say so instead of listing drift.  The workflow screens use its own settings, its board included.  Clear the box to convert it later, on purpose.
 
 The wizard has three pages:
 
@@ -61,7 +61,7 @@ What the repository already has is kept.  Its own issue forms stay, and the conv
 | Screen | What it does |
 |---|---|
 | Repositories | The repositories the tool knows; filter by text or by your GitHub stars; add, clone as it is, switch, scan, check, remove |
-| Scan | A read-only look at any folder or repository against the convention, ending with the next step: apply the convention, open Check, or fix the blockers.  **Work on it in Designated Driver** adds a scanned clone to the Repositories list; **Clone and work on it as it is** clones a repository scanned by name |
+| Scan | A read-only look at any folder or repository against the convention, ending with the next step and a line beside each button saying what it does.  A convertible repository offers a choice: **Apply the convention**, or **Keep it as it is**, which adds the clone, clones it, or marks its entry, as keeping its own conventions.  Otherwise **Add to Repositories** or **Clone it** takes it on, **Open Check** follows a set-up repository, or the blockers are fixed first |
 | Set up a repository | The wizard, for a new repository or an existing one |
 | Status | Prerequisites, the repository, what the plan allows, the branch, open pull requests and issues, Dependabot alerts, Actions minutes, and two board actions |
 | Check | What has drifted from the convention; tick and Apply |

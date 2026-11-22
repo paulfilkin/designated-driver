@@ -599,6 +599,7 @@ Delete all three marker lines and keep the lines you want.</value></data>
   <data name="Clone_Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="Clone_NameInvalid" xml:space="preserve"><value>Type the repository as owner/name, for example paulfilkin/example. "{0}" isn't that.</value></data>
   <data name="Clone_AlreadyKnown" xml:space="preserve"><value>{0} is already in the list, at {1}.</value></data>
+  <data name="Clone_KeepsOwn" xml:space="preserve"><value>From Scan's Keep it as it is: the clone is added marked as keeping its own conventions. Its Settings open afterwards, where you can clear that.</value></data>
   <data name="Clone_Done" xml:space="preserve"><value>{0} is cloned into {1} and is now the current repository. Check its settings: the board, the required check and the self-test command.</value></data>
   <data name="Repos_None" xml:space="preserve"><value>No repositories yet. Add a clone, or go to Scan to look at one first.</value></data>
   <data name="Repos_Filter" xml:space="preserve"><value>Filter</value></data>
@@ -661,20 +662,24 @@ The clone and the repository on GitHub are not touched.</value></data>
   <data name="Scan_Step" xml:space="preserve"><value>Step: {0}</value></data>
   <data name="Scan_CopyReport" xml:space="preserve"><value>Copy report</value></data>
   <data name="Scan_CopyReportHelp" xml:space="preserve"><value>Copy the scan report as text</value></data>
-  <data name="Scan_AddToList" xml:space="preserve"><value>Work on it in Designated Driver</value></data>
-  <data name="Scan_AddToListHelp" xml:space="preserve"><value>Add this clone to Designated Driver's list of repositories and make it current</value></data>
-  <data name="Scan_CloneAsIs" xml:space="preserve"><value>Clone and work on it as it is</value></data>
-  <data name="Scan_CloneAsIsHelp" xml:space="preserve"><value>Clone this repository and add it to the list without setting it up; nothing changes on GitHub or in the repository</value></data>
-  <data name="Scan_Next_CloneToo" xml:space="preserve"><value>To work on it as it is instead, clone it; nothing changes on GitHub or in the repository.</value></data>
+  <data name="Scan_AddToList" xml:space="preserve"><value>Add to Repositories</value></data>
+  <data name="Scan_AddToListHelp" xml:space="preserve"><value>Adds this clone to Repositories and makes it current. Nothing changes in the repository or on GitHub.</value></data>
+  <data name="Scan_CloneAsIs" xml:space="preserve"><value>Clone it</value></data>
+  <data name="Scan_CloneAsIsHelp" xml:space="preserve"><value>Clones it into a folder you choose and adds it to Repositories. Nothing changes in the repository or on GitHub.</value></data>
+  <data name="Scan_KeepAsIs" xml:space="preserve"><value>Keep it as it is</value></data>
+  <data name="Scan_KeepAsIsAddHelp" xml:space="preserve"><value>Adds this clone to Repositories, marked as keeping its own conventions, and opens its Settings. Nothing changes in the repository or on GitHub.</value></data>
+  <data name="Scan_KeepAsIsCloneHelp" xml:space="preserve"><value>Clones it into a folder you choose and adds it to Repositories, marked as keeping its own conventions. Nothing changes in the repository or on GitHub.</value></data>
+  <data name="Scan_KeepAsIsMarkHelp" xml:space="preserve"><value>Marks its entry in Repositories as keeping its own conventions and opens its Settings. Nothing changes in the repository or on GitHub.</value></data>
   <data name="Scan_Done" xml:space="preserve"><value>Scan finished: {0}</value></data>
   <data name="Scan_Next_NotConvertible" xml:space="preserve"><value>Next step: fix the blockers above, then scan again.</value></data>
   <data name="Scan_Next_Convertible" xml:space="preserve"><value>Next step: bring this repository into the convention. The set-up wizard opens with it chosen; nothing changes until you press Start on its last page.</value></data>
+  <data name="Scan_Next_ConvertibleOrKeep" xml:space="preserve"><value>Next step: choose whether it takes the convention or keeps its own way of working. Each button below says what it does; nothing changes on GitHub unless you press Start in the set-up wizard.</value></data>
   <data name="Scan_Next_Convertible_Text" xml:space="preserve"><value>Next step: run the set-up wizard on it, or --setup &lt;answers.json&gt;.</value></data>
   <data name="Scan_Next_AlreadySetUp_Current" xml:space="preserve"><value>Next step: none needed. Check shows anything that has drifted since; Status shows where the repository stands.</value></data>
-  <data name="Scan_Next_AlreadySetUp_Other" xml:space="preserve"><value>Next step: none needed. Work on it in Designated Driver to use Check and Status on it.</value></data>
+  <data name="Scan_Next_AlreadySetUp_Other" xml:space="preserve"><value>Next step: none needed. To use Check and Status on it, take it on with the button below.</value></data>
   <data name="Scan_Next_AlreadySetUp_Text" xml:space="preserve"><value>Next step: none needed. --check &lt;folder&gt; shows anything that has drifted since.</value></data>
   <data name="Scan_OpenCheck" xml:space="preserve"><value>Open Check</value></data>
-  <data name="Scan_OpenCheckHelp" xml:space="preserve"><value>Open the Check screen for the current repository</value></data>
+  <data name="Scan_OpenCheckHelp" xml:space="preserve"><value>Opens Check, which lists anything that has drifted from the convention.</value></data>
 
   <!-- Set-up steps, as scan findings name them -->
   <data name="Step_None" xml:space="preserve"><value>Before set-up</value></data>
@@ -797,7 +802,7 @@ The clone and the repository on GitHub are not touched.</value></data>
   <data name="Nav_NewRepository" xml:space="preserve"><value>Set up a repository</value></data>
   <data name="Step_Register" xml:space="preserve"><value>Add to the tool</value></data>
   <data name="Scan_SetUp" xml:space="preserve"><value>Apply the convention</value></data>
-  <data name="Scan_SetUpHelp" xml:space="preserve"><value>Open the set-up wizard with this folder or repository chosen. Nothing changes until you press Start on its last page.</value></data>
+  <data name="Scan_SetUpHelp" xml:space="preserve"><value>Opens the set-up wizard with this repository chosen, to make the changes listed below. Nothing changes until you press Start on its last page.</value></data>
   <data name="Setup_Title" xml:space="preserve"><value>Set up a repository</value></data>
   <data name="Setup_Intro" xml:space="preserve"><value>Create a repository, or bring an existing one in, so that it has the same labels, board, templates, settings and automation as every other repository set up with the tool. Three pages: where, options, plan.</value></data>
   <data name="Setup_PageOf" xml:space="preserve"><value>Page {0} of {1}: {2}</value></data>

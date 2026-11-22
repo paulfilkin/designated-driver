@@ -132,9 +132,10 @@ public sealed class Workspace
     /// gh reads and git clone run: nothing changes on GitHub or in the repository. The clone uses the protocol and SSH
     /// host from Settings, the alias found for the signed-in login rather than the repository's owner, which may be an
     /// organisation. A clone of a repository set up to the convention has its hooks pointed at, as adding a clone
-    /// promises; that is local configuration only.
+    /// promises; that is local configuration only. With keepsOwnConventions, as Scan's Keep it as it is asks, a clone
+    /// without a manifest is added marked as keeping its own conventions.
     /// </summary>
-    public async Task<RepositorySettings> CloneAndAddAsync(string ownerAndName, string parentFolder, CancellationToken ct)
+    public async Task<RepositorySettings> CloneAndAddAsync(string ownerAndName, string parentFolder, CancellationToken ct, bool keepsOwnConventions = false)
     {
         var name = ownerAndName.Trim().Trim('/');
         var parts = name.Split('/');
@@ -174,6 +175,7 @@ public sealed class Workspace
             if (Directory.Exists(Path.Combine(folder, ConventionFiles.HooksFolder)))
                 await Git.SetHooksPathInAsync(folder, ConventionFiles.HooksFolder, ct).ConfigureAwait(false);
         }
+        else repository.KeepsOwnConventions = keepsOwnConventions;
         SaveRepository(repository);
         return repository;
     }

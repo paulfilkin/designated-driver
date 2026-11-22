@@ -28,6 +28,12 @@ public enum ScanCode
 
 public enum ScanVerdict { NotConvertible, Convertible, AlreadySetUp, KeepsOwnConventions }
 
+/// <summary>
+/// How Scan's "as it is" button takes a scanned repository on: add its clone to the list, clone it first, or mark the
+/// entry already in the list. None when there is nothing to take on.
+/// </summary>
+public enum AsItIsRoute { None, Add, Clone, Mark }
+
 public sealed record ScanFinding(ScanSeverity Severity, ScanCode Code, SetupStep Step, string Text, string Detail = "");
 
 /// <summary>A board linked to the repository, with its Status columns.</summary>
@@ -151,6 +157,23 @@ public static class ScanRules
     /// that name, there is no clone here, and it isn't in the list already.
     /// </summary>
     public static bool CanCloneAsIs(ScanFacts f, bool known) => !f.HasClone && f.RemoteFound && f.OwnerAndName.Length > 0 && !known;
+
+    /// <summary>
+    /// How the scanned repository can be taken on as it is: a clone with a GitHub origin that isn't in the list is
+    /// added, a repository found by name with no clone is cloned, and a convertible repository already in the list has
+    /// its entry marked. Only a convertible repository is marked as keeping its own conventions (KeepsOwnAsItIs); the
+    /// other verdicts add or clone it plainly.
+    /// </summary>
+    public static AsItIsRoute AsItIs(ScanFacts f, ScanVerdict verdict, bool known)
+    {
+        if (f.HasClone && f.IsGitRepository && f.OriginIsGitHub && !known) return AsItIsRoute.Add;
+        if (CanCloneAsIs(f, known)) return AsItIsRoute.Clone;
+        if (known && verdict == ScanVerdict.Convertible) return AsItIsRoute.Mark;
+        return AsItIsRoute.None;
+    }
+
+    /// <summary>True when taking a repository on as it is also marks it as keeping its own conventions: the alternative to converting it.</summary>
+    public static bool KeepsOwnAsItIs(ScanVerdict verdict) => verdict == ScanVerdict.Convertible;
 
     public static ScanReport Assess(ScanFacts f)
     {
