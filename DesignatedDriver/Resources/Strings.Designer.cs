@@ -217,6 +217,36 @@ public static class Strings
     /// <summary>checks running</summary>
     public static string Checks_Pending => Get("Checks_Pending");
 
+    /// <summary>{0} is already in the list, at {1}.</summary>
+    public static string Clone_AlreadyKnown => Get("Clone_AlreadyKnown");
+
+    /// <summary>Cancel</summary>
+    public static string Clone_Cancel => Get("Clone_Cancel");
+
+    /// <summary>{0} is cloned into {1} and is now the current repository. Check its settings: the board...</summary>
+    public static string Clone_Done => Get("Clone_Done");
+
+    /// <summary>Clone</summary>
+    public static string Clone_Go => Get("Clone_Go");
+
+    /// <summary>Clones the repository and adds it to the list as it is. Nothing changes on GitHub or in...</summary>
+    public static string Clone_Intro => Get("Clone_Intro");
+
+    /// <summary>Repository (owner/name)</summary>
+    public static string Clone_Name => Get("Clone_Name");
+
+    /// <summary>Type the repository as owner/name, for example paulfilkin/example. &quot;{0}&quot; isn&apos;t that.</summary>
+    public static string Clone_NameInvalid => Get("Clone_NameInvalid");
+
+    /// <summary>Clone into this folder</summary>
+    public static string Clone_Parent => Get("Clone_Parent");
+
+    /// <summary>The clone goes in a folder named for the repository inside this one.</summary>
+    public static string Clone_ParentHelp => Get("Clone_ParentHelp");
+
+    /// <summary>Clone a repository</summary>
+    public static string Clone_Title => Get("Clone_Title");
+
     /// <summary>Wrap the detail at about {0} characters.</summary>
     public static string Commit_Check_DetailLineTooLong => Get("Commit_Check_DetailLineTooLong");
 
@@ -697,6 +727,12 @@ public static class Strings
     /// <summary>Add an existing clone to the list</summary>
     public static string Repos_AddHelp => Get("Repos_AddHelp");
 
+    /// <summary>Clone a repository</summary>
+    public static string Repos_Clone => Get("Repos_Clone");
+
+    /// <summary>Clone a repository from GitHub and add it to the list as it is, without setting it up</summary>
+    public static string Repos_CloneHelp => Get("Repos_CloneHelp");
+
     /// <summary>Remove {0} from the list? The clone and the repository on GitHub are not touched.</summary>
     public static string Repos_ConfirmRemove => Get("Repos_ConfirmRemove");
 
@@ -1165,6 +1201,12 @@ public static class Strings
     /// <summary>Board {0} ({1}) is linked and has Todo, In Progress and Done.</summary>
     public static string Scan_BoardUsable => Get("Scan_BoardUsable");
 
+    /// <summary>Clone and work on it as it is</summary>
+    public static string Scan_CloneAsIs => Get("Scan_CloneAsIs");
+
+    /// <summary>Clone this repository and add it to the list without setting it up; nothing changes on ...</summary>
+    public static string Scan_CloneAsIsHelp => Get("Scan_CloneAsIsHelp");
+
     /// <summary>Required code owner review: not available. CODEOWNERS is written anyway, so it takes ef...</summary>
     public static string Scan_CodeOwnersUnavailable => Get("Scan_CodeOwnersUnavailable");
 
@@ -1317,6 +1359,9 @@ public static class Strings
 
     /// <summary>Next step: none needed. --check &lt;folder&gt; shows anything that has drifted since.</summary>
     public static string Scan_Next_AlreadySetUp_Text => Get("Scan_Next_AlreadySetUp_Text");
+
+    /// <summary>To work on it as it is instead, clone it; nothing changes on GitHub or in the repository.</summary>
+    public static string Scan_Next_CloneToo => Get("Scan_Next_CloneToo");
 
     /// <summary>Next step: bring this repository into the convention. The set-up wizard opens with it c...</summary>
     public static string Scan_Next_Convertible => Get("Scan_Next_Convertible");

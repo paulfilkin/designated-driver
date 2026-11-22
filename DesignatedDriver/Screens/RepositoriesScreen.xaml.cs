@@ -53,6 +53,61 @@ public partial class RepositoriesScreen : ScreenBase
                         : "";
     }
     private void Add_Click(object sender, RoutedEventArgs e) => Shell.EditRepository(null);
+
+    private void Clone_Click(object sender, RoutedEventArgs e) => ShowClone("");
+
+    /// <summary>Opens the clone card, with an owner/name already chosen when Scan sends one.</summary>
+    public void ShowClone(string ownerAndName)
+    {
+        if (ownerAndName.Length > 0) CloneNameBox.Text = ownerAndName;
+        if (CloneParentBox.Text.Trim().Length == 0) CloneParentBox.Text = DefaultParentFolder();
+        CloneCard.Visibility = Visibility.Visible;
+        CloneButton.IsEnabled = false;
+        (CloneNameBox.Text.Trim().Length == 0 ? CloneNameBox : CloneGoButton as Control).Focus();
+    }
+
+    private void CloneCancel_Click(object sender, RoutedEventArgs e) => HideClone();
+
+    private void HideClone()
+    {
+        CloneCard.Visibility = Visibility.Collapsed;
+        CloneButton.IsEnabled = true;
+    }
+
+    private void CloneBrowse_Click(object sender, RoutedEventArgs e)
+    {
+        // The .NET folder picker, where a path can be typed or pasted; not the legacy tree-only dialog.
+        var dialog = new Microsoft.Win32.OpenFolderDialog
+        {
+            Title = Strings.Settings_BrowseTitle,
+            Multiselect = false,
+            InitialDirectory = System.IO.Directory.Exists(CloneParentBox.Text) ? CloneParentBox.Text : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+        };
+        if (dialog.ShowDialog(Shell.Window) == true) CloneParentBox.Text = dialog.FolderName;
+    }
+
+    private async void CloneGo_Click(object sender, RoutedEventArgs e)
+    {
+        var name = CloneNameBox.Text.Trim();
+        var parent = CloneParentBox.Text.Trim();
+        RepositorySettings? cloned = null;
+        await Shell.RunAsync(async ct =>
+        {
+            cloned = await Workspace.CloneAndAddAsync(name, parent, ct);
+            HideClone();
+            CloneNameBox.Text = "";
+            var done = string.Format(Strings.Clone_Done, cloned.OwnerAndName, cloned.Folder);
+            Workspace.Runner.Note(done);
+            Shell.Announce(done);
+            await RefreshAsync(ct);
+        });
+        // Once the busy work has ended: its settings, to check the board, the required check and the self-test command.
+        if (cloned is not null) Shell.EditRepository(cloned);
+    }
+
+    /// <summary>Next to the current clone, as the wizard suggests; else Documents.</summary>
+    private string DefaultParentFolder()
+        => Repo.HasFolder && System.IO.Path.GetDirectoryName(Repo.Folder) is { Length: > 0 } parent ? parent : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
     private void Scan_Click(object sender, RoutedEventArgs e) => Shell.Navigate(Screen.Scan);
     private void Wizard_Click(object sender, RoutedEventArgs e) => Shell.Navigate(Screen.NewRepository);
 

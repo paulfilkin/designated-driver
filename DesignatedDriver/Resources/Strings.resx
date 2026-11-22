@@ -563,6 +563,18 @@ Delete all three marker lines and keep the lines you want.</value></data>
   <data name="Repos_AddHelp" xml:space="preserve"><value>Add an existing clone to the list</value></data>
   <data name="Repos_Wizard" xml:space="preserve"><value>Set up a repository</value></data>
   <data name="Repos_WizardHelp" xml:space="preserve"><value>Create a repository, or set an existing one up, to the convention</value></data>
+  <data name="Repos_Clone" xml:space="preserve"><value>Clone a repository</value></data>
+  <data name="Repos_CloneHelp" xml:space="preserve"><value>Clone a repository from GitHub and add it to the list as it is, without setting it up</value></data>
+  <data name="Clone_Title" xml:space="preserve"><value>Clone a repository</value></data>
+  <data name="Clone_Intro" xml:space="preserve"><value>Clones the repository and adds it to the list as it is. Nothing changes on GitHub or in the repository.</value></data>
+  <data name="Clone_Name" xml:space="preserve"><value>Repository (owner/name)</value></data>
+  <data name="Clone_Parent" xml:space="preserve"><value>Clone into this folder</value></data>
+  <data name="Clone_ParentHelp" xml:space="preserve"><value>The clone goes in a folder named for the repository inside this one.</value></data>
+  <data name="Clone_Go" xml:space="preserve"><value>Clone</value></data>
+  <data name="Clone_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Clone_NameInvalid" xml:space="preserve"><value>Type the repository as owner/name, for example paulfilkin/example. "{0}" isn't that.</value></data>
+  <data name="Clone_AlreadyKnown" xml:space="preserve"><value>{0} is already in the list, at {1}.</value></data>
+  <data name="Clone_Done" xml:space="preserve"><value>{0} is cloned into {1} and is now the current repository. Check its settings: the board, the required check and the self-test command.</value></data>
   <data name="Repos_None" xml:space="preserve"><value>No repositories yet. Add a clone, or go to Scan to look at one first.</value></data>
   <data name="Repos_Filter" xml:space="preserve"><value>Filter</value></data>
   <data name="Repos_FilterHelp" xml:space="preserve"><value>Type part of an owner, a name or a folder to narrow the list</value></data>
@@ -623,6 +635,9 @@ The clone and the repository on GitHub are not touched.</value></data>
   <data name="Scan_CopyReportHelp" xml:space="preserve"><value>Copy the scan report as text</value></data>
   <data name="Scan_AddToList" xml:space="preserve"><value>Work on it in Designated Driver</value></data>
   <data name="Scan_AddToListHelp" xml:space="preserve"><value>Add this clone to Designated Driver's list of repositories and make it current</value></data>
+  <data name="Scan_CloneAsIs" xml:space="preserve"><value>Clone and work on it as it is</value></data>
+  <data name="Scan_CloneAsIsHelp" xml:space="preserve"><value>Clone this repository and add it to the list without setting it up; nothing changes on GitHub or in the repository</value></data>
+  <data name="Scan_Next_CloneToo" xml:space="preserve"><value>To work on it as it is instead, clone it; nothing changes on GitHub or in the repository.</value></data>
   <data name="Scan_Done" xml:space="preserve"><value>Scan finished: {0}</value></data>
   <data name="Scan_Next_NotConvertible" xml:space="preserve"><value>Next step: fix the blockers above, then scan again.</value></data>
   <data name="Scan_Next_Convertible" xml:space="preserve"><value>Next step: bring this repository into the convention. The set-up wizard opens with it chosen; nothing changes until you press Start on its last page.</value></data>
