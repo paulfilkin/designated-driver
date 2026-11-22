@@ -23,8 +23,30 @@ public sealed class ScanService(Workspace workspace)
 
         bool askGitHub = facts.OwnerAndName.Length > 0 && (!facts.HasClone || !facts.IsGitRepository || facts.OriginIsGitHub);
         if (askGitHub) await ReadGitHubAsync(facts, ct).ConfigureAwait(false);
+        await ReadWorkflowTriggersAsync(facts, ct).ConfigureAwait(false);
 
         return facts;
+    }
+
+    /// <summary>Each workflow's triggers: from the clone when there is one, otherwise from GitHub.</summary>
+    private async Task ReadWorkflowTriggersAsync(ScanFacts facts, CancellationToken ct)
+    {
+        var paths = facts.Files.Where(WorkflowTriggers.IsWorkflow).Concat(facts.Workflows.Select(w => w.Path).Where(WorkflowTriggers.IsWorkflow)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        foreach (var path in paths)
+        {
+            string? text = null;
+            var local = facts.HasClone ? Path.Combine(facts.Folder, path.Replace('/', '\\')) : "";
+            if (local.Length > 0 && File.Exists(local))
+            {
+                try { text = await File.ReadAllTextAsync(local, ct).ConfigureAwait(false); }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* unreadable: triggers not known */ }
+            }
+            else if (facts.RemoteFound)
+            {
+                text = await GitHub.FileTextAsync(facts.OwnerAndName, path, ct).ConfigureAwait(false);
+            }
+            if (text is not null) facts.WorkflowTriggers[path] = WorkflowTriggers.Parse(text);
+        }
     }
 
     private async Task ReadCloneAsync(ScanFacts facts, CancellationToken ct)
@@ -92,6 +114,7 @@ public sealed class ScanService(Workspace workspace)
         catch (CommandFailedException) { /* no labels known: every convention label is reported missing */ }
 
         facts.Workflows = await GitHub.WorkflowsAsync(name, ct).ConfigureAwait(false);
+        facts.Releases = await GitHub.ReleasesAsync(name, ct).ConfigureAwait(false);
 
         var (status, rules) = await GitHub.BranchRulesAsync(name, facts.DefaultBranch, ct).ConfigureAwait(false);
         facts.BranchRulesStatus = status;

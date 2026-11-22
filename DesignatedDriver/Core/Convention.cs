@@ -97,6 +97,18 @@ public static class IssueForms
 
     private static string Unquote(string s) => s.Trim().Trim('"', '\'').Trim();
 
+    /// <summary>The convention's own issue forms.</summary>
+    public static readonly IReadOnlyList<string> ConventionForms = [".github/ISSUE_TEMPLATE/bug.yml", ".github/ISSUE_TEMPLATE/feature.yml"];
+
+    public static bool IsConventionForm(string path) => ConventionForms.Contains(path.Replace('\\', '/'), StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// The repository's own issue forms: forms other than the convention's. A repository that has any keeps them,
+    /// and the convention's bug.yml and feature.yml are not added beside them.
+    /// </summary>
+    public static List<string> OwnForms(IEnumerable<string> paths)
+        => [.. paths.Select(p => p.Replace('\\', '/')).Where(p => IsForm(p) && !IsConventionForm(p)).Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase)];
+
     /// <summary>True for a path that is an issue form: a .yml or .yaml file in .github/ISSUE_TEMPLATE other than config.yml.</summary>
     public static bool IsForm(string path)
     {

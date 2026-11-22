@@ -105,7 +105,7 @@ dotnet run --project DesignatedDriver\DesignatedDriver.csproj -- --self-test
    gh issue edit 42 --add-assignee "@me"
    ```
 
-   Then move its card to **In Progress** on the [project board](https://github.com/users/paulfilkin/projects/5).
+   Then move its card to **In Progress** on the [project board](https://github.com/users/paulfilkin/projects/8).
 
    If the work has no issue yet, open one and choose the **Feature** or **Bug** form:
 

@@ -666,6 +666,21 @@ public static partial class SelfTestRunner
         var formedReport = ScanRules.Assess(formed);
         check(formedReport.Findings.Count(f => f.Code == ScanCode.FormAppliesRenamedLabel) == 1 && formedReport.Findings.First(f => f.Code == ScanCode.FormAppliesRenamedLabel).Text.Contains("feature_request.yml", StringComparison.Ordinal),
             "Scan: an issue form that applies a label to be renamed is named, and one applying a kept label is not");
+        // Issue forms: the repository's own are kept and the convention's not added; the convention's own are just files.
+        var ownForms = Clone(fresh);
+        ownForms.Files = [.. fresh.Files, ".github/ISSUE_TEMPLATE/bug_report.yml", ".github/ISSUE_TEMPLATE/feature_request.yml"];
+        var ownReport = ScanRules.Assess(ownForms);
+        var ownWrite = ownReport.Findings.First(f => f.Code == ScanCode.WriteFiles).Detail;
+        check(ownReport.Findings.FirstOrDefault(f => f.Code == ScanCode.OwnIssueFormsKept)?.Detail == ".github/ISSUE_TEMPLATE/bug_report.yml\n.github/ISSUE_TEMPLATE/feature_request.yml"
+            && !ownWrite.Contains("ISSUE_TEMPLATE/bug.yml", StringComparison.Ordinal) && !ownWrite.Contains("ISSUE_TEMPLATE/feature.yml", StringComparison.Ordinal) && ownWrite.Contains("ISSUE_TEMPLATE/config.yml", StringComparison.Ordinal),
+            "Scan: a repository's own issue forms are listed as kept, and the convention's bug.yml and feature.yml would not be written; config.yml still would");
+        var conventionForms = Clone(fresh);
+        conventionForms.Files = [.. fresh.Files, ".github/ISSUE_TEMPLATE/bug.yml"];
+        var conventionReport = ScanRules.Assess(conventionForms);
+        check(!conventionReport.Has(ScanCode.OwnIssueFormsKept) && conventionReport.Findings.First(f => f.Code == ScanCode.WriteFiles).Detail.Contains("ISSUE_TEMPLATE/feature.yml", StringComparison.Ordinal)
+            && ScanRules.Assess(fresh).Findings.First(f => f.Code == ScanCode.WriteFiles).Detail.Contains("ISSUE_TEMPLATE/bug.yml", StringComparison.Ordinal),
+            "Scan: with the convention's own form, or none, the convention's forms are written as before");
+        check(IssueForms.OwnForms([".github/ISSUE_TEMPLATE/bug.yml", ".github/ISSUE_TEMPLATE/config.yml", ".github\\ISSUE_TEMPLATE\\ask.yaml"]).SequenceEqual([".github/ISSUE_TEMPLATE/ask.yaml"]), "Issue forms: own forms leave out the convention's and config.yml");
         var plainPlan = ConventionLabels.Plan([new GhLabel { Name = "bug", Color = "d73a4a", Description = "Something isn't working" }]);
         check(plainPlan.Count(p => p.Change == LabelChange.Create) == 7 && !plainPlan.Any(p => p.Change == LabelChange.Rename), "Labels: with no defaults to rename, every missing label is created");
         check(ConventionLabels.Plan(ConventionLabels.All.Select(l => new GhLabel { Name = l.Name, Color = l.Color, Description = l.Description }).ToList()).Count == 0, "Labels: a repository with every convention label has nothing to do");
@@ -752,6 +767,28 @@ public static partial class SelfTestRunner
         var withGuide = Clone(fresh);
         withGuide.ContributingHasWorkflowSection = false;
         check(ScanRules.Assess(withGuide).Has(ScanCode.AppendWorkflowSection) && !ScanRules.Assess(fresh).Has(ScanCode.AppendWorkflowSection), "Scan: a kept CONTRIBUTING.md without the section reports that it would be added; one with it, or none, doesn't");
+        // Workflow triggers, and a repository that already publishes releases another way.
+        var onTags = WorkflowTriggers.Parse("name: Release\non:\n  push:\n    tags: ['v*']\n  workflow_dispatch:\njobs: {}\n");
+        var build = WorkflowTriggers.Parse("name: Build\non:\n  push:\n    branches:\n      - main\n  pull_request:\n    branches: [ main ]\njobs: {}\n");
+        check(onTags.RunsOnRelease && onTags.PushTagsOnly && onTags.Has("workflow_dispatch") && !build.RunsOnRelease && build.Has("pull_request") && build.PushBranches.SequenceEqual(["main"])
+            && WorkflowTriggers.Parse("on: [push, pull_request]\n").Has("pull_request") && WorkflowTriggers.Parse("on: release\n").RunsOnRelease && WorkflowTriggers.Parse("name: x\n").Events.Count == 0,
+            "Workflow triggers: a single event, a list and a mapping are read, with push's branch and tag filters");
+        var releasing = Clone(fresh);
+        releasing.Releases = [new GhRelease { TagName = "v2.1.0", Assets = [new GhReleaseAsset { Name = "MyceliaSetup-2.1.0.exe" }] }, new GhRelease { TagName = "v2.0.0", Assets = [new GhReleaseAsset { Name = "MyceliaSetup-2.0.0.exe" }] }];
+        var releasingReport = ScanRules.Assess(releasing);
+        check(releasingReport.Has(ScanCode.ReleasesElsewhere) && ReleaseEvidence.Reasons(releasing).Single().Contains("v2.1.0", StringComparison.Ordinal) && ReleaseEvidence.Reasons(releasing).Single().Contains("MyceliaSetup-2.1.0.exe", StringComparison.Ordinal),
+            "Releases: releases with files attached are reported with the latest tag and its files, and the release workflow is left off");
+        var tagged = Clone(fresh);
+        tagged.WorkflowTriggers[".github/workflows/publish.yml"] = onTags;
+        tagged.WorkflowTriggers[".github/workflows/build.yml"] = build;
+        check(ReleaseEvidence.Reasons(tagged).Single().Contains("publish.yml", StringComparison.Ordinal) && !ReleaseEvidence.Reasons(tagged).Single().Contains("build.yml", StringComparison.Ordinal), "Releases: a workflow run on tags counts; one run on pushes and pull requests doesn't");
+        var plain = Clone(fresh);
+        plain.Releases = [new GhRelease { TagName = "v0.1", Draft = true, Assets = [new GhReleaseAsset { Name = "a.zip" }] }, new GhRelease { TagName = "v0.0" }];
+        var own = Clone(releasing);
+        own.Files = [.. fresh.Files, ReleaseEvidence.ConventionWorkflow];
+        own.WorkflowTriggers[ReleaseEvidence.ConventionWorkflow] = onTags;
+        check(ReleaseEvidence.Reasons(fresh).Count == 0 && ReleaseEvidence.Reasons(plain).Count == 0 && ReleaseEvidence.Reasons(own).Count == 0 && !ScanRules.Assess(fresh).Has(ScanCode.ReleasesElsewhere),
+            "Releases: no releases, drafts, releases without files, or the convention's own release workflow leave the default alone");
 
         // Warnings and the create path.
         var fork = Clone(fresh);

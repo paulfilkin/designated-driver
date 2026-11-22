@@ -422,9 +422,15 @@ public sealed partial class SetupService(Workspace workspace)
         var values = ConventionContent.ValuesFor(_a, _board, await ProjectFileTextAsync(ct).ConfigureAwait(false), present);
         var written = new List<string>();
         var kept = new List<string>();
+        // A repository's own issue forms are kept, and the convention's are not added beside them.
+        var templates = Path.Combine(Folder, ".github", "ISSUE_TEMPLATE");
+        var onDisk = Directory.Exists(templates) ? Directory.GetFiles(templates).Select(p => ".github/ISSUE_TEMPLATE/" + Path.GetFileName(p)) : Enumerable.Empty<string>();
+        var ownForms = IssueForms.OwnForms(present.Concat(onDisk));
+        if (!_update) kept.AddRange(ownForms);
         foreach (var file in ConventionContent.FilesFor(_a, !_a.IsPrivate))
         {
             bool isManifest = file.Path == ConventionContent.ManifestPath;
+            if (ownForms.Count > 0 && IssueForms.IsConventionForm(file.Path) && !_selectedFiles.Contains(file.Path)) continue;
             var target = Path.Combine(Folder, file.Path.Replace('/', '\\'));
             bool exists = File.Exists(target) || present.Any(file.Matches);
             if (!ShouldWrite(file, exists))

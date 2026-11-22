@@ -1,5 +1,31 @@
 namespace DesignatedDriver.Core;
 
+/// <summary>
+/// The kinds of work the busy strip runs: a screen reload the tool starts itself, a pick that only loads what was
+/// picked (a pull request's files on Review), and an action the user starts that may change something.
+/// </summary>
+public enum WorkKind { Reload, Pick, Action }
+
+/// <summary>What happens to work asked for while other work runs.</summary>
+public enum WorkStart { Start, StopRunningFirst, Refuse, Drop }
+
+public static class BusyRules
+{
+    /// <summary>
+    /// The rule for work asked for while other work runs, or is waiting to start. A reload is dropped (the screen
+    /// holds it and it runs afterwards). A pick or an action stops a running reload or pick and starts once it has
+    /// stopped, so the latest pick wins and a click is never lost to a load. Nothing stops an action: a pick or
+    /// another action while one runs is refused, and the user is told.
+    /// </summary>
+    public static WorkStart OnRequest(WorkKind? running, WorkKind requested) => (running, requested) switch
+    {
+        (null, _) => WorkStart.Start,
+        (_, WorkKind.Reload) => WorkStart.Drop,
+        (WorkKind.Reload or WorkKind.Pick, _) => WorkStart.StopRunningFirst,
+        _ => WorkStart.Refuse,
+    };
+}
+
 /// <summary>Whether a running reload stops for another screen's.</summary>
 public static class HeldReload
 {

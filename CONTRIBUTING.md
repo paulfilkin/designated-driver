@@ -18,7 +18,7 @@ Nobody pushes to `main`.  Every change arrives through a pull request, passes th
 
 Every change starts from an issue.  Open one with the **Feature** or **Bug** form on the repository's Issues tab.  The form adds the type label (`feature`, `bug`); add `docs` or `chore` where they fit, and `blocked` while an issue is waiting on something else.  An issue is ready to work on once it has acceptance criteria and isn't labelled `blocked`.
 
-The [project board](https://github.com/users/paulfilkin/projects/5) shows every issue in one of GitHub's three columns: Todo, In Progress and Done.  The columns are left as GitHub made them, so its built-in automations do the moving.
+The [project board](https://github.com/users/paulfilkin/projects/8) shows every issue in one of GitHub's three columns: Todo, In Progress and Done.  The columns are left as GitHub made them, so its built-in automations do the moving.
 
 - A new issue is added to the board automatically, in Todo.  One that is not ready to pick up is labelled `blocked`.
 - Opening a pull request with `Closes #42` links it to the issue.

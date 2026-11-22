@@ -15,7 +15,7 @@ public enum ScanCode
     NotGitHubOrigin, RepositoryNotFound, RepositoryMoved, Archived, NotAdmin,
     // Warnings
     Fork, Organisation, DirtyTree, MergeInProgress, DefaultBranchNotMain, ExistingFilesKept, ExistingBoardOtherColumns,
-    HooksPathElsewhere, RulesAlreadyApply, NoLanguage, LabelsBothPresent, FormAppliesRenamedLabel,
+    HooksPathElsewhere, RulesAlreadyApply, NoLanguage, LabelsBothPresent, FormAppliesRenamedLabel, ReleasesElsewhere,
     // Changes
     InitGit, CreateRepository, MergeSettings, Features, CreateLabels, RecolourLabels, RenameLabels, CreateBoard, WriteFiles, PointHooks,
     DependabotAlerts, DependabotUpdates, SecretScanning, CreateRuleset, UpdateConvention, AppendWorkflowSection,
@@ -23,7 +23,7 @@ public enum ScanCode
     RulesetsUnavailable, CodeOwnersUnavailable, PushProtectionUnavailable, CodeScanningUnavailable,
     // Already in place, or information
     AlreadySetUp, Visibility, BoardUsable, LanguageDetected, EmptyRepository, HasHistory, MergeSettingsOk, LabelsOk,
-    HooksOk, OtherWorkflows, OtherLabels,
+    HooksOk, OtherWorkflows, OtherLabels, OwnIssueFormsKept,
 }
 
 public enum ScanVerdict { NotConvertible, Convertible, AlreadySetUp }
@@ -71,6 +71,10 @@ public sealed class ScanFacts
     /// <summary>Dependabot security updates, from the automated-security-fixes endpoint; null when not read, in which case the details decide.</summary>
     public bool? SecurityUpdates { get; set; }
     public List<GhWorkflow> Workflows { get; set; } = [];
+    /// <summary>The repository's most recent releases, newest first.</summary>
+    public List<GhRelease> Releases { get; set; } = [];
+    /// <summary>Each workflow's triggers, by path, read from the clone or from GitHub.</summary>
+    public Dictionary<string, WorkflowTriggers> WorkflowTriggers { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     /// <summary>The labels each of the clone's issue forms applies, by path; empty when there is no clone.</summary>
     public Dictionary<string, List<string>> IssueFormLabels { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     public Manifest? Manifest { get; set; }
@@ -296,6 +300,10 @@ public static class ScanRules
         if (!caps.CodeOwners) Add(ScanSeverity.NotAvailable, ScanCode.CodeOwnersUnavailable, SetupStep.Files, Strings.Scan_CodeOwnersUnavailable);
         if (!caps.CodeScanning) Add(ScanSeverity.NotAvailable, ScanCode.CodeScanningUnavailable, SetupStep.Files, Strings.Scan_CodeScanningUnavailable);
 
+        // A repository that already publishes releases another way keeps the release workflow off (the wizard unticks it).
+        var releaseReasons = ReleaseEvidence.Reasons(f);
+        if (releaseReasons.Count > 0) Add(ScanSeverity.Warning, ScanCode.ReleasesElsewhere, SetupStep.Files, Strings.Scan_ReleasesElsewhere, string.Join("\n", releaseReasons));
+
         // Workflows that aren't the convention's
         var otherWorkflows = f.Workflows.Where(w => !ConventionFiles.All.Any(c => c.Matches(w.Path))).Select(w => w.Name).ToList();
         if (otherWorkflows.Count > 0) Add(ScanSeverity.Ok, ScanCode.OtherWorkflows, SetupStep.Files, string.Format(Strings.Scan_OtherWorkflows, otherWorkflows.Count), string.Join(", ", otherWorkflows));
@@ -307,10 +315,12 @@ public static class ScanRules
 
         var toWrite = new List<string>();
         var kept = new List<string>();
+        var ownForms = IssueForms.OwnForms(f.Files);
         foreach (var file in ConventionFiles.All)
         {
             if (file.PublicOnly && !f.IsPublic) continue;
             if (file.Optional) continue;
+            if (ownForms.Count > 0 && IssueForms.IsConventionForm(file.Path)) continue;
             bool present = f.HasFile(file);
             if (!present) toWrite.Add(file.Path);
             else if (!file.OnlyWhenMissing && !file.Path.EndsWith(".json", StringComparison.OrdinalIgnoreCase)) kept.Add(file.Path);
@@ -318,6 +328,7 @@ public static class ScanRules
         if (toWrite.Count > 0) Add(ScanSeverity.Change, ScanCode.WriteFiles, SetupStep.Files, string.Format(Strings.Scan_WriteFiles, toWrite.Count), string.Join("\n", toWrite));
         if (kept.Count > 0) Add(ScanSeverity.Warning, ScanCode.ExistingFilesKept, SetupStep.Files, string.Format(Strings.Scan_ExistingFilesKept, kept.Count), string.Join("\n", kept));
         if (f.ContributingHasWorkflowSection == false) Add(ScanSeverity.Change, ScanCode.AppendWorkflowSection, SetupStep.Files, Strings.Scan_AppendWorkflowSection);
+        if (ownForms.Count > 0) Add(ScanSeverity.Ok, ScanCode.OwnIssueFormsKept, SetupStep.Files, string.Format(Strings.Scan_OwnIssueFormsKept, ownForms.Count), string.Join("\n", ownForms));
 
         if (f.IsEmptyRepository) Add(ScanSeverity.Ok, ScanCode.EmptyRepository, SetupStep.Files, string.Format(Strings.Scan_EmptyRepository, f.DefaultBranch));
         else if ((f.HasClone && f.IsGitRepository) || f.RemoteFound) Add(ScanSeverity.Ok, ScanCode.HasHistory, SetupStep.Files, Strings.Scan_HasHistory);

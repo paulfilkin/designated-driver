@@ -93,6 +93,15 @@ public static partial class SelfTestRunner
             && !r3.Actionable.Any(i => i.Key == WorkflowSection.DriftKey) && !clean.Items.Any(i => i.Key == WorkflowSection.DriftKey)
             && PlanOutline.ForUpdate([WorkflowSection.DriftKey], false).SequenceEqual([SetupStep.Files]),
             "Drift: a CONTRIBUTING.md without the section is an unticked item that applies through the files step; one with it isn't reported");
+        // Issue forms are the project's to choose: an edited or missing one is reported, unticked
+        var forms = new Dictionary<string, string>(actual, StringComparer.OrdinalIgnoreCase);
+        forms[".github/ISSUE_TEMPLATE/bug.yml"] = actual[".github/ISSUE_TEMPLATE/bug.yml"] + "\n# Our own question\n";
+        forms.Remove(".github/ISSUE_TEMPLATE/feature.yml");
+        var formFacts = Clone(facts);
+        formFacts.Files = facts.Files.Where(f => f != ".github/ISSUE_TEMPLATE/feature.yml").ToList();
+        var rForms = Drift(formFacts, expected, forms);
+        check(rForms.Count == 2 && rForms.Actionable.FirstOrDefault(i => i.Key == "file:.github/ISSUE_TEMPLATE/bug.yml") is { Kind: DriftKind.Different, TickedByDefault: false }
+            && rForms.Actionable.FirstOrDefault(i => i.Key == "file:.github/ISSUE_TEMPLATE/feature.yml") is { Kind: DriftKind.Missing, TickedByDefault: false }, "Drift: an edited or missing issue form is reported but unticked, as a tailored file");
 
         // Line endings and trailing spaces are not drift
         var crlf = new Dictionary<string, string>(actual, StringComparer.OrdinalIgnoreCase);
