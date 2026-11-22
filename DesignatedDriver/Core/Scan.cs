@@ -15,8 +15,7 @@ public enum ScanCode
     NotGitHubOrigin, RepositoryNotFound, RepositoryMoved, Archived, NotAdmin,
     // Warnings
     Fork, Organisation, DirtyTree, MergeInProgress, DefaultBranchNotMain, ExistingFilesKept, ExistingBoardOtherColumns,
-    HooksPathElsewhere, RulesAlreadyApply, NoLanguage, ReleasesElsewhere,
-    HooksPathElsewhere, RulesAlreadyApply, NoLanguage, LabelsBothPresent, FormAppliesRenamedLabel,
+    HooksPathElsewhere, RulesAlreadyApply, NoLanguage, LabelsBothPresent, FormAppliesRenamedLabel, ReleasesElsewhere,
     // Changes
     InitGit, CreateRepository, MergeSettings, Features, CreateLabels, RecolourLabels, RenameLabels, CreateBoard, WriteFiles, PointHooks,
     DependabotAlerts, DependabotUpdates, SecretScanning, CreateRuleset, UpdateConvention,
