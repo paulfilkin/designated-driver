@@ -598,6 +598,10 @@ public static partial class SelfTestRunner
         var p = GhJson.ParseRest<GhRepositoryDetails>(Sample("repo-details-private.json"));
         check(!p.IsPublic && p.DependabotSecurityUpdatesOn && !p.SecretScanningOn && p.SquashMergeCommitTitle == "PR_TITLE", "gh api repos: a private repository with partial security_and_analysis");
 
+        // A repository made with gh repo create and no description comes back with "description": null.
+        var bare = GhJson.ParseRest<GhRepositoryDetails>(System.Text.RegularExpressions.Regex.Replace(Sample("repo-details.json"), "\"(description|language)\": (\"[^\"]*\"|null)", "\"$1\": null"));
+        check(bare.Description == "" && bare.Language == "" && bare.Description.Trim().Length == 0, "gh api repos: a null description or language reads as empty, not null");
+
         var v = GhJson.Parse<GhRepository>(Sample("repo-view-scan.json"));
         check(v.IsAdmin && !v.IsEmpty && !v.IsInOrganization && v.IsBlankIssuesEnabled, "gh repo view (scan fields): flags");
         check(v.LinkedProjects.Count() == 1 && v.LinkedProjects.First().Number == 4 && v.LinkedProjects.First().Title == "example", "gh repo view (scan fields): linked projects under projectsV2.Nodes");
@@ -743,6 +747,12 @@ public static partial class SelfTestRunner
         check(ScanRules.Assess(elsewhere) is { Verdict: ScanVerdict.NotConvertible } e && e.Has(ScanCode.NotGitHubOrigin) && !e.RemoteFindings(), "Scan: an origin that isn't GitHub is a blocker, and GitHub isn't asked");
         var missing = new ScanFacts { OwnerAndName = "paulfilkin/no-such-repository", RemoteLookedUp = true, Details = null };
         check(ScanRules.Assess(missing) is { Verdict: ScanVerdict.NotConvertible } mr && mr.Has(ScanCode.RepositoryNotFound), "Scan: a repository GitHub doesn't return is a blocker");
+        var moved = Clone(fresh);
+        moved.OwnerAndName = "paulfilkin/old-name";
+        moved.Details = Fresh();
+        check(moved.MovedTo == "paulfilkin/example" && !moved.RemoteFound && ScanRules.Assess(moved) is { Verdict: ScanVerdict.NotConvertible } mv && mv.Has(ScanCode.RepositoryMoved) && !mv.Has(ScanCode.MergeSettings)
+            && mv.Findings.First(f => f.Code == ScanCode.RepositoryMoved).Text.Contains("paulfilkin/example", StringComparison.Ordinal), "Scan: a name GitHub answers with a renamed repository is a blocker naming where it leads, and that repository isn't judged");
+        check(Fresh().IsNamed("PaulFilkin/Example") && !Fresh().IsNamed("paulfilkin/old-name") && new GhRepositoryDetails().IsNamed("a/b"), "Repository details: the full name is compared without regard to case, and a reply without one isn't judged");
 
         // Warnings and the create path.
         var fork = Clone(fresh);

@@ -157,6 +157,8 @@ public static partial class SelfTestRunner
         public string Folder { get; }
         public bool HasHistory { get; }
         public bool Created, Edited, LabelsDone, ProjectCreated, Linked, Committed, Pushed, MainOnRemote, HooksSet, AlertsOn, FixesOn, IssueCreated, PrCreated, SecretSet, FailLinkOnce;
+        /// <summary>When set, GitHub answers for the name with this repository instead, as it does after a rename.</summary>
+        public string MovedTo = "";
 
         private const string Name = "paulfilkin/example";
 
@@ -204,7 +206,8 @@ public static partial class SelfTestRunner
                 return Ok("{\"viewerPermission\":\"ADMIN\",\"defaultBranchRef\":{\"name\":\"main\"},\"isEmpty\":" + (HasHistory ? "false" : "true") + ",\"projectsV2\":{\"Nodes\":[" + nodes + "]}}");
             }
             if (a[0] == "api" && a[1] == "-X") { if (a[3].EndsWith("vulnerability-alerts", StringComparison.Ordinal)) AlertsOn = true; else FixesOn = true; return null; }
-            if (a[0] == "api" && a[1] == $"repos/{Name}") return Created ? Ok(Edited ? Sample("repo-details-private.json").Replace("A private repository already set to the convention's settings.", "An example") : Sample("repo-details.json")) : Fail("gh: Not Found (HTTP 404)");
+            if (a[0] == "api" && a[1] == $"repos/{Name}" && MovedTo.Length > 0) return Ok(Sample("repo-details.json").Replace(Name, MovedTo));
+            if (a[0] == "api" && a[1] == $"repos/{Name}") return Created ? Ok(Edited ? Sample("repo-details-private.json").Replace("A private repository already set to the convention's settings.", "An example").Replace("paulfilkin/tidy", Name) : Sample("repo-details.json")) : Fail("gh: Not Found (HTTP 404)");
             if (a[0] == "api" && a[1].EndsWith("/vulnerability-alerts", StringComparison.Ordinal)) return AlertsOn ? Ok("") : Fail("gh: Not Found (HTTP 404)");
             if (a[0] == "api" && a[1].EndsWith("/automated-security-fixes", StringComparison.Ordinal)) return Ok(FixesOn ? "true" : "false");
             if (a[0] == "api" && a[1] == "user") return Ok("paulfilkin");
@@ -324,6 +327,16 @@ public static partial class SelfTestRunner
             check(ok5 && !setup5.Written.Contains(".github/ISSUE_TEMPLATE/bug.yml") && !setup5.Written.Contains(".github/ISSUE_TEMPLATE/feature.yml") && setup5.Written.Contains(".github/ISSUE_TEMPLATE/config.yml")
                 && setup5.Kept.Contains(".github/ISSUE_TEMPLATE/bug_report.yml") && !File.Exists(Path.Combine(folder5, ".github", "ISSUE_TEMPLATE", "bug.yml")),
                 ok5 ? "Set-up: a folder with its own issue form keeps it, writes config.yml, and adds no bug.yml or feature.yml" : $"Set-up with own forms failed at {plan5.FailedStep?.Title}: {plan5.FailedStep?.Message}");
+
+            // A name that GitHub answers with a renamed repository: the set-up stops before creating or cloning anything.
+            var host4 = new FakeHost(Path.Combine(root, "moved", "example"), hasHistory: false) { MovedTo = "paulfilkin/example-archive" };
+            var setup4 = new SetupService(new Workspace(new Settings { SavePath = Path.Combine(root, "settings4.json") }, host4.Runner));
+            var answers4 = DotNetAnswers();
+            answers4.ParentFolder = Path.Combine(root, "moved");
+            var plan4 = setup4.Build(answers4, null);
+            bool ok4 = setup4.RunAsync(plan4, CancellationToken.None).GetAwaiter().GetResult();
+            check(!ok4 && plan4.FailedStep?.Kind == SetupStep.CreateRepository && plan4.FailedStep.Message.Contains("paulfilkin/example-archive", StringComparison.Ordinal)
+                && !host4.Runner.Calls.Any(c => c.Is("repo", "create") || c.Is("clone")), "Set-up: a name that leads to a renamed repository stops the first step, naming where it leads, before anything is created or cloned");
         }
         finally
         {
