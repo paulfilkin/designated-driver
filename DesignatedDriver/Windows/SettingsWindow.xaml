@@ -8,7 +8,14 @@
         Background="{StaticResource BackgroundBrush}"
         UseLayoutRounding="True" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"
         FontFamily="Segoe UI Variable Text, Segoe UI">
-    <StackPanel Margin="28,24,28,20">
+    <!-- The content scrolls and Save and Cancel stay below it: the window is capped at the screen's height in code. -->
+    <Grid Margin="28,24,28,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <ScrollViewer x:Name="ContentScroller" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+        <StackPanel>
         <TextBlock x:Name="TitleText" Text="{x:Static res:Strings.Settings_Title}" Style="{StaticResource PageTitle}"/>
         <TextBlock Text="{x:Static res:Strings.Settings_Intro}" Style="{StaticResource PageIntro}"/>
 
@@ -107,11 +114,13 @@
         </Border>
 
         <TextBlock x:Name="StoredAtText" Style="{StaticResource HelperText}" Margin="0,0,0,14"/>
+        </StackPanel>
+        </ScrollViewer>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
             <Button Content="{x:Static res:Strings.Common_Cancel}" Style="{StaticResource SecondaryButton}" IsCancel="True" MinWidth="100" AutomationProperties.Name="{x:Static res:Strings.Common_Cancel}"/>
             <Button x:Name="SaveButton" Content="{x:Static res:Strings.Common_Save}" Style="{StaticResource ModernButton}" IsDefault="True" MinWidth="100" Margin="0" Click="Save_Click"
                     AutomationProperties.Name="{x:Static res:Strings.Common_Save}"/>
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </Window>

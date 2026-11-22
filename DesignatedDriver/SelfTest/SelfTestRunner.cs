@@ -59,6 +59,7 @@ public static partial class SelfTestRunner
             IssueTextChecks(Check);
             RepositoryFilterChecks(Check);
             WindowPlacementChecks(Check);
+            DialogFitChecks(Check);
             ScanNextStepChecks(Check);
             CloneAsIsChecks(Check);
             ProfileChecks(Check);

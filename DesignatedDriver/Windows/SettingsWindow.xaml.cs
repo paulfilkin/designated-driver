@@ -27,6 +27,12 @@ public partial class SettingsWindow : Window
         _repository = repository?.Clone() ?? new RepositorySettings();
         InitializeComponent();
 
+        // Fit the screen it opens on, which is the one under the mouse that opened it: no taller than its work area,
+        // with the content scrolling and Save and Cancel below it, and moved to stay inside it (issue 59).
+        var area = MonitorHelper.AreaUnderMouse();
+        MaxHeight = DialogFit.MaxHeight(area?.WorkArea.Height ?? SystemParameters.WorkArea.Height);
+        if (area is { } a) Loaded += (_, _) => Top = DialogFit.Top(Top, ActualHeight, a.WorkArea);
+
         if (_adding) { Title = Strings.Settings_AddTitle; TitleText.Text = Strings.Settings_AddTitle; }
         var s = _repository;
         FolderBox.Text = s.Folder;
