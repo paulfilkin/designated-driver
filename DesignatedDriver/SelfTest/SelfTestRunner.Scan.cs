@@ -32,6 +32,9 @@ public static partial class SelfTestRunner
         var report = new ScanReport(ScanVerdict.NotConvertible, [new ScanFinding(ScanSeverity.Blocker, ScanCode.Archived, SetupStep.None, "The repository is archived.")]);
         var lines = ScanReportText.Render(facts, report, new DateTime(2026, 11, 21, 12, 0, 0)).Split('\n').Select(l => l.TrimEnd('\r')).ToList();
         check(lines.Count > 2 && lines[2] == ScanReportText.NextStepText(ScanVerdict.NotConvertible), "Scan next step: the text report carries it on the line after the verdict");
+        check(ScanReportText.NextStepText(ScanVerdict.Convertible) is var copied && copied.Contains("--setup", StringComparison.Ordinal)
+            && copied.Contains(Strings.Scan_KeepAsIs, StringComparison.Ordinal) && copied.Contains("keeping its own conventions", StringComparison.Ordinal),
+            "Scan next step: the copied report offers the same choice as the screen, the set-up or Keep it as it is");
 
         // The targets say what each reads, so a clone is scanned by its folder rather than by name.
         check(Strings.Scan_TargetFolder.Contains("clone", StringComparison.Ordinal) && Strings.Scan_FolderHelp.Contains("GitHub", StringComparison.Ordinal)
