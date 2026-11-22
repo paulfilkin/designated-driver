@@ -295,6 +295,9 @@ public static class Strings
     /// <summary>The label {0} is missing.</summary>
     public static string Drift_LabelMissing => Get("Drift_LabelMissing");
 
+    /// <summary>Applying it renames GitHub&apos;s {0} label, so the issues it labels keep it.</summary>
+    public static string Drift_LabelRenamedFrom => Get("Drift_LabelRenamedFrom");
+
     /// <summary>The manifest predates the recorded set-up answers, so the files cannot be compared. Run...</summary>
     public static string Drift_ManifestAnswers => Get("Drift_ManifestAnswers");
 
@@ -1219,6 +1222,9 @@ public static class Strings
     /// <summary>The repository is a fork. Pull requests and rules behave differently on forks, and noth...</summary>
     public static string Scan_Fork => Get("Scan_Fork");
 
+    /// <summary>{0} applies the label {1}, which would be renamed {2}. Change the form to apply {2}.</summary>
+    public static string Scan_FormAppliesRenamedLabel => Get("Scan_FormAppliesRenamedLabel");
+
     /// <summary>Blockers</summary>
     public static string Scan_Group_Blocker => Get("Scan_Group_Blocker");
 
@@ -1248,6 +1254,12 @@ public static class Strings
 
     /// <summary>A read-only look at a repository against the convention: what stops a conversion, what ...</summary>
     public static string Scan_Intro => Get("Scan_Intro");
+
+    /// <summary>{0} to {1}</summary>
+    public static string Scan_LabelRename => Get("Scan_LabelRename");
+
+    /// <summary>Both {0} and {1} exist. The convention uses {1}; {0} is left alone, and issues labelled...</summary>
+    public static string Scan_LabelsBothPresent => Get("Scan_LabelsBothPresent");
 
     /// <summary>All {0} convention labels are present with the right colours.</summary>
     public static string Scan_LabelsOk => Get("Scan_LabelsOk");
@@ -1347,6 +1359,9 @@ public static class Strings
 
     /// <summary>Run on tags or releases: {0}</summary>
     public static string Scan_ReleaseWorkflows => Get("Scan_ReleaseWorkflows");
+
+    /// <summary>{0} of GitHub&apos;s default label(s) would be renamed to the convention&apos;s, so the issues th...</summary>
+    public static string Scan_RenameLabels => Get("Scan_RenameLabels");
 
     /// <summary>{0} now leads to {1}: that repository was renamed or transferred on GitHub. Use {1}, or...</summary>
     public static string Scan_RepositoryMoved => Get("Scan_RepositoryMoved");

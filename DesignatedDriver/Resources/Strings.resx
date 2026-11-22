@@ -678,6 +678,10 @@ The clone and the repository on GitHub are not touched.</value></data>
   <data name="Scan_Feature_WikiOff" xml:space="preserve"><value>Wiki: off</value></data>
   <data name="Scan_CreateLabels" xml:space="preserve"><value>{0} label(s) would be created.</value></data>
   <data name="Scan_RecolourLabels" xml:space="preserve"><value>{0} label(s) would get the convention's colour and description.</value></data>
+  <data name="Scan_RenameLabels" xml:space="preserve"><value>{0} of GitHub's default label(s) would be renamed to the convention's, so the issues they label keep them.</value></data>
+  <data name="Scan_LabelRename" xml:space="preserve"><value>{0} to {1}</value></data>
+  <data name="Scan_LabelsBothPresent" xml:space="preserve"><value>Both {0} and {1} exist. The convention uses {1}; {0} is left alone, and issues labelled {0} keep it.</value></data>
+  <data name="Scan_FormAppliesRenamedLabel" xml:space="preserve"><value>{0} applies the label {1}, which would be renamed {2}. Change the form to apply {2}.</value></data>
   <data name="Scan_LabelsOk" xml:space="preserve"><value>All {0} convention labels are present with the right colours.</value></data>
   <data name="Scan_OtherLabels" xml:space="preserve"><value>{0} other label(s) are left alone.</value></data>
   <data name="Scan_CreateBoard" xml:space="preserve"><value>No usable board is linked. Set-up would create one, keeping GitHub&apos;s Todo, In Progress and Done columns, and link it.</value></data>
@@ -910,6 +914,7 @@ Fix the cause and press Retry. Steps already done are not repeated.</value></dat
   <data name="Drift_DiscussionsOn" xml:space="preserve"><value>Discussions: on</value></data>
   <data name="Drift_DiscussionsOff" xml:space="preserve"><value>Discussions: off</value></data>
   <data name="Drift_LabelMissing" xml:space="preserve"><value>The label {0} is missing.</value></data>
+  <data name="Drift_LabelRenamedFrom" xml:space="preserve"><value>Applying it renames GitHub's {0} label, so the issues it labels keep it.</value></data>
   <data name="Drift_LabelDiffers" xml:space="preserve"><value>The label {0} has another colour or description.</value></data>
   <data name="Drift_Board" xml:space="preserve"><value>No linked board has Todo, In Progress and Done.</value></data>
   <data name="Drift_HooksOff" xml:space="preserve"><value>core.hooksPath is not set, so the commit-msg and pre-push hooks do not run.</value></data>
