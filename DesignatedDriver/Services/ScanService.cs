@@ -26,7 +26,16 @@ public sealed class ScanService(Workspace workspace)
         await ReadWorkflowTriggersAsync(facts, ct).ConfigureAwait(false);
 
         // Whether the tool has been told this repository keeps its own conventions.
-        facts.KeepsOwnConventions = workspace.Settings.Find(facts.OwnerAndName)?.KeepsOwnConventions ?? false;
+        var entry = workspace.Settings.Find(facts.OwnerAndName);
+        facts.KeepsOwnConventions = entry?.KeepsOwnConventions ?? false;
+
+        // Scanned by name and not in the list: a clone of it may sit beside the known ones. Files are read, no command runs.
+        if (!facts.HasClone && facts.OwnerAndName.Length > 0 && entry is null)
+        {
+            var known = workspace.Settings.Repositories.Where(r => r.HasFolder).Select(r => r.Folder);
+            facts.NearbyClone = NearbyClones.Find(facts.OwnerAndName, NearbyClones.SearchFolders(known));
+            if (facts.NearbyClone.Length > 0) workspace.Runner.Note(string.Format(Resources.Strings.Scan_NearbyCloneNote, facts.OwnerAndName, facts.NearbyClone));
+        }
         return facts;
     }
 

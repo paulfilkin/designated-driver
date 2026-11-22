@@ -15,7 +15,7 @@ public enum ScanCode
     NotGitHubOrigin, RepositoryNotFound, RepositoryMoved, Archived, NotAdmin,
     // Warnings
     Fork, Organisation, DirtyTree, MergeInProgress, DefaultBranchNotMain, ExistingFilesKept, ExistingBoardOtherColumns,
-    HooksPathElsewhere, RulesAlreadyApply, NoLanguage, LabelsBothPresent, FormAppliesRenamedLabel, ReleasesElsewhere, CompetingWorkflows,
+    HooksPathElsewhere, RulesAlreadyApply, NoLanguage, LabelsBothPresent, FormAppliesRenamedLabel, ReleasesElsewhere, CompetingWorkflows, NearbyClone,
     // Changes
     InitGit, CreateRepository, MergeSettings, Features, CreateLabels, RecolourLabels, RenameLabels, CreateBoard, WriteFiles, PointHooks,
     DependabotAlerts, DependabotUpdates, SecretScanning, CreateRuleset, UpdateConvention, AppendWorkflowSection,
@@ -97,6 +97,11 @@ public sealed class ScanFacts
     // From the tool's settings
     /// <summary>The repository's entry in the list says it keeps its own conventions, so it isn't offered for conversion.</summary>
     public bool KeepsOwnConventions { get; set; }
+    /// <summary>
+    /// A clone of the repository found beside the known clones (NearbyClones), when it was scanned by name and isn't in
+    /// the list; empty when none was found or the scan had a clone.
+    /// </summary>
+    public string NearbyClone { get; set; } = "";
 
     // Derived
     public bool OriginIsGitHub => IsGitHubUrl(OriginUrl);
@@ -154,9 +159,9 @@ public static class ScanRules
 {
     /// <summary>
     /// True when a repository scanned by name can be cloned and worked on as it is: it was found on GitHub under
-    /// that name, there is no clone here, and it isn't in the list already.
+    /// that name, there is no clone here, it isn't in the list already, and no clone of it was found beside the known ones.
     /// </summary>
-    public static bool CanCloneAsIs(ScanFacts f, bool known) => !f.HasClone && f.RemoteFound && f.OwnerAndName.Length > 0 && !known;
+    public static bool CanCloneAsIs(ScanFacts f, bool known) => !f.HasClone && f.RemoteFound && f.OwnerAndName.Length > 0 && !known && f.NearbyClone.Length == 0;
 
     /// <summary>
     /// How the scanned repository can be taken on as it is: a clone with a GitHub origin that isn't in the list is
@@ -204,6 +209,11 @@ public static class ScanRules
                 else
                     Add(ScanSeverity.Warning, ScanCode.HooksPathElsewhere, SetupStep.Hooks, string.Format(Strings.Scan_HooksPathElsewhere, f.HooksPath));
             }
+        }
+        else if (f.NearbyClone.Length > 0)
+        {
+            // Scanned by name, with a clone of it beside the known ones: that folder is the one to scan.
+            Add(ScanSeverity.Warning, ScanCode.NearbyClone, SetupStep.None, string.Format(Strings.Scan_NearbyClone, f.NearbyClone));
         }
 
         // GitHub

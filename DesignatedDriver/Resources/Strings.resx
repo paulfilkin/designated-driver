@@ -761,6 +761,12 @@ The clone and the repository on GitHub are not touched.</value></data>
   <data name="Scan_ReleasesPublished" xml:space="preserve"><value>{0} release(s) with files attached; the latest, {1}, has {2}</value></data>
   <data name="Scan_ReleaseWorkflows" xml:space="preserve"><value>Run on tags or releases: {0}</value></data>
   <data name="Scan_CompetingWorkflows" xml:space="preserve"><value>{0} other workflow(s) also run on pull requests or pushes to {1}, beside the convention's ci.yml, so each change would be built twice. Set up a repository can remove them in the set-up pull request.</value></data>
+  <data name="Scan_NearbyClone" xml:space="preserve"><value>A clone of it is at {0}, beside the clones already in the list. Scanning that folder reads the clone as well as GitHub.</value></data>
+  <data name="Scan_NearbyCloneNote" xml:space="preserve"><value>A clone of {0} was found beside the known clones, at {1}, from its .git\config.</value></data>
+  <data name="Scan_Next_ScanNearbyClone" xml:space="preserve"><value>Next step: scan the clone at {0}. It reads the clone as well as GitHub, and offers adding it to Repositories, so it isn't cloned twice.</value></data>
+  <data name="Scan_Next_CloneElsewhere" xml:space="preserve"><value>Have a clone kept elsewhere? Scan its folder instead.</value></data>
+  <data name="Scan_ScanNearbyClone" xml:space="preserve"><value>Scan the clone</value></data>
+  <data name="Scan_ScanNearbyCloneHelp" xml:space="preserve"><value>Scans {0}: the clone as well as its repository on GitHub. Nothing is changed.</value></data>
   <data name="Setup_RemoveWorkflowsTitle" xml:space="preserve"><value>Other workflows that build pull requests</value></data>
   <data name="Setup_RemoveWorkflowsHelp" xml:space="preserve"><value>These run beside the convention's ci.yml, so every pull request would be built twice. Tick one to remove it in the set-up pull request.</value></data>
   <data name="Setup_RemoveWorkflow" xml:space="preserve"><value>Remove {0}</value></data>
