@@ -41,6 +41,13 @@ public sealed class RepositorySettings
     /// </summary>
     public bool KeepsOwnConventions { get; set; }
 
+    /// <summary>
+    /// Merge and merge with bypass on Review need the repository's owner and name typed before they run, so a merge
+    /// can't go ahead in the wrong repository unread. On unless cleared; an entry saved before the setting existed
+    /// reads as on, since the property starts true and JSON only overwrites what it holds.
+    /// </summary>
+    public bool TypeNameToMerge { get; set; } = true;
+
     [JsonIgnore] public string OwnerAndName => string.IsNullOrEmpty(Owner) ? "" : $"{Owner}/{Name}";
     [JsonIgnore] public bool HasFolder => !string.IsNullOrWhiteSpace(Folder) && Directory.Exists(Folder);
     [JsonIgnore] public bool HasBoardOverride => BoardOwner.Length > 0 && BoardNumber > 0;

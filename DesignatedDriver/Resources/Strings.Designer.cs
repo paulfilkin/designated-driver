@@ -316,6 +316,33 @@ public static class Strings
     /// <summary>Save</summary>
     public static string Common_Save => Get("Common_Save");
 
+    /// <summary>Approve in {0}</summary>
+    public static string Confirm_ApproveIn => Get("Confirm_ApproveIn");
+
+    /// <summary>Merge with bypass into {0}</summary>
+    public static string Confirm_BypassInto => Get("Confirm_BypassInto");
+
+    /// <summary>Keeps its own conventions.</summary>
+    public static string Confirm_KeepsOwn => Get("Confirm_KeepsOwn");
+
+    /// <summary>Merge into {0}</summary>
+    public static string Confirm_MergeInto => Get("Confirm_MergeInto");
+
+    /// <summary>Owned by {0}, not your own account.</summary>
+    public static string Confirm_OwnedBy => Get("Confirm_OwnedBy");
+
+    /// <summary>Repository</summary>
+    public static string Confirm_Repository => Get("Confirm_Repository");
+
+    /// <summary>Request changes in {0}</summary>
+    public static string Confirm_RequestChangesIn => Get("Confirm_RequestChangesIn");
+
+    /// <summary>As GitHub asks before a repository is deleted: it makes sure this is the repository you...</summary>
+    public static string Confirm_TypeHelp => Get("Confirm_TypeHelp");
+
+    /// <summary>Type {0} to confirm</summary>
+    public static string Confirm_TypeLabel => Get("Confirm_TypeLabel");
+
     /// <summary>Diff text</summary>
     public static string Diff_ContentName => Get("Diff_ContentName");
 
@@ -1710,6 +1737,12 @@ public static class Strings
 
     /// <summary>Repository settings</summary>
     public static string Settings_Title => Get("Settings_Title");
+
+    /// <summary>Type the repository&apos;s name to merge</summary>
+    public static string Settings_TypeNameToMerge => Get("Settings_TypeNameToMerge");
+
+    /// <summary>Merge and merge with bypass on Review ask for this repository&apos;s owner and name to be ty...</summary>
+    public static string Settings_TypeNameToMergeHelp => Get("Settings_TypeNameToMergeHelp");
 
     /// <summary>{0} already exists on GitHub. Choose &quot;An existing repository on GitHub&quot; to set it up.</summary>
     public static string Setup_AlreadyExists => Get("Setup_AlreadyExists");

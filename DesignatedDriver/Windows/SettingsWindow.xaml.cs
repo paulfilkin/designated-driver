@@ -46,6 +46,7 @@ public partial class SettingsWindow : Window
         InProgressColumnBox.Text = s.InProgressColumn;
         InReviewColumnBox.Text = s.InReviewColumn;
         KeepsOwnBox.IsChecked = s.KeepsOwnConventions;
+        TypeNameBox.IsChecked = s.TypeNameToMerge;
         StoredAtText.Text = string.Format(Strings.Settings_StoredAt, Settings.FilePath);
 
         // While the manifest names a board, the override boxes don't apply, unless the repository keeps its own conventions.
@@ -258,6 +259,7 @@ public partial class SettingsWindow : Window
         s.InProgressColumn = InProgressColumnBox.Text.Trim();
         s.InReviewColumn = InReviewColumnBox.Text.Trim();
         s.KeepsOwnConventions = KeepsOwnBox.IsChecked == true;
+        s.TypeNameToMerge = TypeNameBox.IsChecked == true;
 
         _shell.Workspace.SaveRepository(s);
         DialogResult = true;

@@ -212,10 +212,26 @@ public partial class ReviewScreen : ScreenBase
 
     // Actions
 
+    /// <summary>
+    /// Review's confirmation for an action on a pull request: the repository across the top in large type, the
+    /// action in words, a button that names the repository, and for a merge the name typed first unless the
+    /// repository's settings turn that off (issue 66). True only when the named button was pressed.
+    /// </summary>
+    private bool ConfirmAction(ReviewAction action, string actionText)
+    {
+        var notes = new List<string>();
+        if (Workspace.Login.Length > 0 && Repo.Owner.Length > 0 && !Repo.Owner.Equals(Workspace.Login, StringComparison.OrdinalIgnoreCase))
+            notes.Add(string.Format(Strings.Confirm_OwnedBy, Repo.Owner));
+        if (Repo.KeepsOwnConventions) notes.Add(Strings.Confirm_KeepsOwn);
+        var window = new Windows.ConfirmActionWindow(action, Repo.OwnerAndName, actionText, string.Join("  ", notes),
+            ReviewConfirm.NeedsTypedName(action, Repo.TypeNameToMerge));
+        return Shell.ShowDialog(window);
+    }
+
     private void Approve_Click(object sender, RoutedEventArgs e)
     {
         if (_selected is not { } pr) return;
-        if (!Shell.Confirm(string.Format(Strings.Review_ConfirmApprove, pr.Number, pr.Title), Strings.Review_Approve)) return;
+        if (!ConfirmAction(ReviewAction.Approve, string.Format(Strings.Review_ConfirmApprove, pr.Number, pr.Title))) return;
         _ = Shell.RunAsync(async ct =>
         {
             await Workspace.GitHub.ApproveAsync(pr.Number, ct);
@@ -229,7 +245,7 @@ public partial class ReviewScreen : ScreenBase
         if (_selected is not { } pr) return;
         var comment = CommentBox.Text.Trim();
         if (comment.Length == 0) { Shell.ShowError(Strings.Review_CommentNeeded); return; }
-        if (!Shell.Confirm(string.Format(Strings.Review_ConfirmRequestChanges, pr.Number, comment), Strings.Review_RequestChanges)) return;
+        if (!ConfirmAction(ReviewAction.RequestChanges, string.Format(Strings.Review_ConfirmRequestChanges, pr.Number, comment))) return;
         _ = Shell.RunAsync(async ct =>
         {
             await Workspace.GitHub.RequestChangesAsync(pr.Number, comment, ct);
@@ -241,7 +257,7 @@ public partial class ReviewScreen : ScreenBase
     private void Merge_Click(object sender, RoutedEventArgs e)
     {
         if (_selected is not { } pr) return;
-        if (!Shell.Confirm(string.Format(Strings.Review_ConfirmMerge, pr.Number, pr.Title, Repo.DefaultBranch, pr.HeadRefName), Strings.Review_Merge)) return;
+        if (!ConfirmAction(ReviewAction.Merge, string.Format(Strings.Review_ConfirmMerge, pr.Number, pr.Title, Repo.DefaultBranch, pr.HeadRefName))) return;
         _ = Shell.RunAsync(async ct =>
         {
             if (!await StillMergeableAsync(pr, bypass: false, ct)) return;
@@ -268,7 +284,7 @@ public partial class ReviewScreen : ScreenBase
         if (_selected is not { } pr) return;
         var reason = ReasonBox.Text.Trim();
         if (reason.Length == 0) { Shell.ShowError(Strings.Review_ReasonNeeded); return; }
-        if (!Shell.Confirm(string.Format(Strings.Review_ConfirmBypass, pr.Number, reason, pr.HeadRefName), Strings.Review_Bypass)) return;
+        if (!ConfirmAction(ReviewAction.Bypass, string.Format(Strings.Review_ConfirmBypass, pr.Number, reason, pr.HeadRefName))) return;
         _ = Shell.RunAsync(async ct =>
         {
             if (!await StillMergeableAsync(pr, bypass: true, ct)) return;
