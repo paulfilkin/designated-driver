@@ -256,26 +256,17 @@ public sealed partial class SetupService(Workspace workspace)
 
     // 3. Labels
 
-    /// <summary>The convention labels that are missing or differ, so only those are written.</summary>
-    public static List<ConventionLabel> LabelsToWrite(IReadOnlyList<GhLabel> have)
-    {
-        var list = new List<ConventionLabel>();
-        foreach (var wanted in ConventionLabels.All)
-        {
-            var existing = have.FirstOrDefault(l => l.Name.Equals(wanted.Name, StringComparison.OrdinalIgnoreCase));
-            if (existing is null || !ConventionLabels.SameColour(existing.Color, wanted.Color) || !ConventionLabels.SameDescription(existing.Description, wanted.Description))
-                list.Add(wanted);
-        }
-        return list;
-    }
-
+    // Only the labels that are missing or differ are written; a missing one GitHub has a default for is renamed from it.
     private async Task<bool> CheckLabelsAsync(CancellationToken ct)
-        => LabelsToWrite(await GitHub.LabelsAsync(Name, ct).ConfigureAwait(false)).Count == 0;
+        => ConventionLabels.Plan(await GitHub.LabelsAsync(Name, ct).ConfigureAwait(false)).Count == 0;
 
     private async Task ApplyLabelsAsync(CancellationToken ct)
     {
-        foreach (var label in LabelsToWrite(await GitHub.LabelsAsync(Name, ct).ConfigureAwait(false)))
-            await GitHub.CreateLabelAsync(Name, label, ct).ConfigureAwait(false);
+        foreach (var action in ConventionLabels.Plan(await GitHub.LabelsAsync(Name, ct).ConfigureAwait(false)))
+        {
+            if (action.Change == LabelChange.Rename) await GitHub.RenameLabelAsync(Name, action.From, action.Label, ct).ConfigureAwait(false);
+            else await GitHub.CreateLabelAsync(Name, action.Label, ct).ConfigureAwait(false);
+        }
     }
 
     // 4. Board
