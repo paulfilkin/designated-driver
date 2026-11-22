@@ -41,6 +41,7 @@ public static partial class SelfTestRunner
             ConventionChecks(Check);
             ScanSampleChecks(Check);
             ScanRuleChecks(Check);
+            RuleCoverageChecks(Check);
             ConventionTemplateChecks(Check);
             SetupVisibilityChecks(Check);
             PlanChecks(Check);
@@ -723,7 +724,10 @@ public static partial class SelfTestRunner
         var ruled = Clone(fresh);
         ruled.BranchRules = GhJson.ParseRestList<GhBranchRule>(Sample("branch-rules.json"));
         var ruledReport = ScanRules.Assess(ruled);
-        check(ruledReport.Has(ScanCode.RulesAlreadyApply) && !ruledReport.Has(ScanCode.CreateRuleset), "Scan: existing rules on main are reported and no ruleset is proposed");
+        // They require no check, so they don't cover the convention's ruleset: it is still proposed, as a change, with the convention's check.
+        check(ruledReport.Has(ScanCode.RulesAlreadyApply) && ruledReport.Findings.FirstOrDefault(f => f.Code == ScanCode.CreateRuleset) is { Severity: ScanSeverity.Change } add
+            && add.Text.Contains(RepositorySettings.DefaultRequiredCheck, StringComparison.Ordinal),
+            "Scan: existing rules on main that require no check are reported, and the ruleset is still proposed as a change with the convention's check");
 
         // A private repository on Free, already tidy: nothing to change.
         var tidy = new ScanFacts

@@ -1240,7 +1240,7 @@ public static class Strings
     /// <summary>There is no origin remote. Set-up would create the repository on GitHub from this folde...</summary>
     public static string Scan_CreateRepository => Get("Scan_CreateRepository");
 
-    /// <summary>A ruleset on {0} would be created: pull requests only, the Build and test check, no for...</summary>
+    /// <summary>A ruleset on {0} would be created: pull requests only, the {1} check, no force pushes, ...</summary>
     public static string Scan_CreateRuleset => Get("Scan_CreateRuleset");
 
     /// <summary>The default branch is {0}, not main. The convention honours it: the files, hooks and wo...</summary>
@@ -1468,8 +1468,11 @@ public static class Strings
     /// <summary>Result</summary>
     public static string Scan_ResultCard => Get("Scan_ResultCard");
 
-    /// <summary>{0} rule(s) already apply to {1}. The convention&apos;s ruleset would be added alongside them.</summary>
+    /// <summary>{0} rule(s) already apply to {1}, but they don&apos;t do everything the convention&apos;s ruleset...</summary>
     public static string Scan_RulesAlreadyApply => Get("Scan_RulesAlreadyApply");
+
+    /// <summary>The rules already on {0} cover the convention&apos;s ruleset: no deletion, no force pushes, ...</summary>
+    public static string Scan_RulesCover => Get("Scan_RulesCover");
 
     /// <summary>Rulesets: not available on a private repository with this plan. The tool, the local hoo...</summary>
     public static string Scan_RulesetsUnavailable => Get("Scan_RulesetsUnavailable");
@@ -1803,6 +1806,9 @@ public static class Strings
 
     /// <summary>Add the repository to the tool&apos;s list and make it current.</summary>
     public static string Setup_Detail_Register => Get("Setup_Detail_Register");
+
+    /// <summary>None needed: the rules already on {0} cover it, requiring the {1} check.</summary>
+    public static string Setup_Detail_RulesCover => Get("Setup_Detail_RulesCover");
 
     /// <summary>Create a ruleset on {0}: pull requests only, squash merges, the {1} check required, no ...</summary>
     public static string Setup_Detail_Ruleset => Get("Setup_Detail_Ruleset");

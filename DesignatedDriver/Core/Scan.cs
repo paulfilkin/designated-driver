@@ -23,7 +23,7 @@ public enum ScanCode
     RulesetsUnavailable, CodeOwnersUnavailable, PushProtectionUnavailable, CodeScanningUnavailable,
     // Already in place, or information
     AlreadySetUp, Visibility, BoardUsable, LanguageDetected, EmptyRepository, HasHistory, MergeSettingsOk, LabelsOk,
-    HooksOk, OtherWorkflows, OtherLabels, OwnIssueFormsKept,
+    HooksOk, OtherWorkflows, OtherLabels, OwnIssueFormsKept, RulesCover,
 }
 
 public enum ScanVerdict { NotConvertible, Convertible, AlreadySetUp, KeepsOwnConventions }
@@ -343,10 +343,20 @@ public static class ScanRules
         // Rules (sections 3.4 and 7)
         if (caps.Rulesets)
         {
-            if (f.BranchRules.Count > 0)
-                Add(ScanSeverity.Warning, ScanCode.RulesAlreadyApply, SetupStep.Ruleset, string.Format(Strings.Scan_RulesAlreadyApply, f.BranchRules.Count, f.DefaultBranch), string.Join(", ", f.BranchRules.Select(r => r.Type).Distinct()));
+            // Rules already in force that do what the convention's ruleset would leave set-up nothing to add; otherwise
+            // the ruleset it adds requires the check those rules name, which is the one the repository's workflows report.
+            var ruleTypes = string.Join(", ", f.BranchRules.Select(r => r.Type).Distinct());
+            if (RuleCoverage.Covers(f.BranchRules))
+            {
+                Add(ScanSeverity.Ok, ScanCode.RulesCover, SetupStep.Ruleset, string.Format(Strings.Scan_RulesCover, f.DefaultBranch, RuleCoverage.RequiredCheck(f.BranchRules)), ruleTypes);
+            }
             else
-                Add(ScanSeverity.Change, ScanCode.CreateRuleset, SetupStep.Ruleset, string.Format(Strings.Scan_CreateRuleset, f.DefaultBranch));
+            {
+                if (f.BranchRules.Count > 0)
+                    Add(ScanSeverity.Warning, ScanCode.RulesAlreadyApply, SetupStep.Ruleset, string.Format(Strings.Scan_RulesAlreadyApply, f.BranchRules.Count, f.DefaultBranch), ruleTypes);
+                Add(ScanSeverity.Change, ScanCode.CreateRuleset, SetupStep.Ruleset,
+                    string.Format(Strings.Scan_CreateRuleset, f.DefaultBranch, RuleCoverage.CheckFor(f.BranchRules, RepositorySettings.DefaultRequiredCheck)));
+            }
         }
         else
         {
