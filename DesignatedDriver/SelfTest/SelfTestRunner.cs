@@ -53,6 +53,7 @@ public static partial class SelfTestRunner
             CheckApplyChecks(Check);
             Phase4Checks(Check);
             ActivityBufferChecks(Check);
+            ActivityRedactionChecks(Check);
             HeldReloadChecks(Check);
             IssueTextChecks(Check);
             RepositoryFilterChecks(Check);

@@ -17,15 +17,22 @@ public sealed class ActivityBuffer(int limit = 400_000, int keep = 300_000)
     private readonly StringBuilder _kept = new();
     private readonly StringBuilder _pending = new();
 
-    /// <summary>One line of the panel: a command, its output, an error, a result or a note, each with its own prefix.</summary>
-    public static string Line(ActivityEntry entry) => entry.Kind switch
+    /// <summary>
+    /// One line of the panel: a command, its output, an error, a result or a note, each with its own prefix, with
+    /// any token value masked (issue 60).
+    /// </summary>
+    public static string Line(ActivityEntry entry)
     {
-        ActivityKind.Command => "> " + entry.Text,
-        ActivityKind.Error => "! " + entry.Text,
-        ActivityKind.Result => "  " + entry.Text,
-        ActivityKind.Note => "# " + entry.Text,
-        _ => "  " + entry.Text,
-    };
+        var text = ActivityRedaction.Apply(entry.Text);
+        return entry.Kind switch
+        {
+            ActivityKind.Command => "> " + text,
+            ActivityKind.Error => "! " + text,
+            ActivityKind.Result => "  " + text,
+            ActivityKind.Note => "# " + text,
+            _ => "  " + text,
+        };
+    }
 
     /// <summary>The longest a command is shown in the busy strip, so a long gh api call does not push the Cancel button away.</summary>
     public const int ShortCommandLength = 70;
