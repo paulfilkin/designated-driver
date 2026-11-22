@@ -37,11 +37,11 @@ public sealed class Workspace
     /// <summary>The current repository's manifest, when it has been set up by the tool.</summary>
     public Manifest? Manifest { get; private set; }
 
-    /// <summary>The board for the current repository: from the manifest, else the settings override, else none.</summary>
-    public BoardReference? Board
-        => Manifest?.Board is { Number: > 0 } fromManifest ? fromManifest
-         : Current.HasBoardOverride ? new BoardReference(Current.BoardOwner, Current.BoardNumber)
-         : null;
+    /// <summary>
+    /// The board for the current repository: from the manifest, else the settings override, else none. A repository
+    /// that keeps its own conventions uses its settings only.
+    /// </summary>
+    public BoardReference? Board => OwnConventions.BoardFor(Manifest, Current);
 
     /// <summary>The signed-in GitHub user, once known.</summary>
     public string Login { get; private set; } = "";

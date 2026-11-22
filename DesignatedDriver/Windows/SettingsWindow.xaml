@@ -99,6 +99,10 @@
                 <TextBlock Text="{x:Static res:Strings.Settings_RequiredCheck}" Style="{StaticResource LabelText}"/>
                 <TextBox x:Name="RequiredCheckBox" Style="{StaticResource ModernTextBox}" Width="300" HorizontalAlignment="Left" AutomationProperties.Name="{x:Static res:Strings.Settings_RequiredCheck}"/>
                 <TextBlock Text="{x:Static res:Strings.Settings_RequiredCheckHelp}" Style="{StaticResource HelperText}"/>
+
+                <CheckBox x:Name="KeepsOwnBox" Content="{x:Static res:Strings.Settings_KeepsOwnConventions}" Margin="0,12,0,0"
+                          AutomationProperties.Name="{x:Static res:Strings.Settings_KeepsOwnConventions}" AutomationProperties.HelpText="{x:Static res:Strings.Settings_KeepsOwnConventionsHelp}"/>
+                <TextBlock Text="{x:Static res:Strings.Settings_KeepsOwnConventionsHelp}" Style="{StaticResource HelperText}" Margin="24,2,0,0"/>
             </StackPanel>
         </Border>
 

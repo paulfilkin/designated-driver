@@ -43,10 +43,12 @@ public partial class StatusScreen : ScreenBase
         UserRoleText.Text = Workspace.IdentityKnown
             ? string.Format(Strings.Status_UserAndRole, Workspace.Login, Workspace.IsAdmin ? Strings.Role_Admin : Strings.Role_Contributor, Workspace.Permission)
             : Strings.Status_NotSignedIn;
-        ConventionText.Text = Workspace.Manifest is { } m
+        // A repository that keeps its own conventions says so, and has no Check to open.
+        ConventionText.Text = Repo.KeepsOwnConventions ? Strings.Status_KeepsOwn
+            : Workspace.Manifest is { } m
             ? string.Format(Strings.Status_ConventionVersion, m.ConventionVersion, m.SetUp) + (Workspace.LastChecks.TryGetValue(Repo.OwnerAndName, out var lastCheck) ? "  ·  " + lastCheck.Report.Summary : "")
             : Strings.Status_NoConvention;
-        CheckLink.Visibility = Workspace.Manifest is not null ? Visibility.Visible : Visibility.Collapsed;
+        CheckLink.Visibility = Workspace.Manifest is not null && !Repo.KeepsOwnConventions ? Visibility.Visible : Visibility.Collapsed;
         BoardText.Text = Workspace.Board is { } b ? string.Format(Strings.Status_BoardLine, b.Owner, b.Number) : Strings.Status_NoBoard;
 
         // 3. What the plan allows, from the repository's visibility and a probe of the branch rules endpoint.

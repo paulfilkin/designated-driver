@@ -39,10 +39,11 @@ public partial class SettingsWindow : Window
         ReadyColumnBox.Text = s.ReadyColumn;
         InProgressColumnBox.Text = s.InProgressColumn;
         InReviewColumnBox.Text = s.InReviewColumn;
+        KeepsOwnBox.IsChecked = s.KeepsOwnConventions;
         StoredAtText.Text = string.Format(Strings.Settings_StoredAt, Settings.FilePath);
 
-        // While the manifest names a board, the override boxes don't apply.
-        if (!_adding && s.HasFolder && Manifest.Load(s.Folder)?.Board is { Number: > 0 } fromManifest)
+        // While the manifest names a board, the override boxes don't apply, unless the repository keeps its own conventions.
+        if (!_adding && s.HasFolder && !s.KeepsOwnConventions && Manifest.Load(s.Folder)?.Board is { Number: > 0 } fromManifest)
         {
             ProjectHelp.Text = string.Format(Strings.Settings_BoardFromManifest, fromManifest.Owner, fromManifest.Number);
             ProjectOwnerBox.IsEnabled = ProjectNumberBox.IsEnabled = false;
@@ -250,6 +251,7 @@ public partial class SettingsWindow : Window
         s.ReadyColumn = ReadyColumnBox.Text.Trim();
         s.InProgressColumn = InProgressColumnBox.Text.Trim();
         s.InReviewColumn = InReviewColumnBox.Text.Trim();
+        s.KeepsOwnConventions = KeepsOwnBox.IsChecked == true;
 
         _shell.Workspace.SaveRepository(s);
         DialogResult = true;

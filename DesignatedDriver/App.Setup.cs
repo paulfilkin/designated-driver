@@ -70,6 +70,11 @@ public partial class App
             Console.Out.WriteLine(ScanReportText.VerdictTitle(report.Verdict) + ". " + report.Summary);
             foreach (var f in report.Of(ScanSeverity.Blocker).Concat(report.Of(ScanSeverity.Warning)))
                 Console.Out.WriteLine((f.Severity == ScanSeverity.Blocker ? "  x " : "  ! ") + f.Text);
+            if (OwnConventions.SetupRefusal(facts.KeepsOwnConventions, facts.OwnerAndName) is { } refusal)
+            {
+                Console.Out.WriteLine(refusal);
+                return 2;
+            }
             if (report.Verdict == ScanVerdict.NotConvertible)
             {
                 Console.Out.WriteLine(Strings.Setup_Cli_Blocked);

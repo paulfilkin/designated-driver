@@ -93,7 +93,7 @@ public partial class App : Application
         var report = ScanRules.Assess(facts);
         Console.Out.WriteLine();
         Console.Out.Write(ScanReportText.Render(facts, report, DateTime.Now));
-        return report.Verdict switch { ScanVerdict.AlreadySetUp => 0, ScanVerdict.Convertible => 1, _ => 2 };
+        return report.Verdict switch { ScanVerdict.AlreadySetUp or ScanVerdict.KeepsOwnConventions => 0, ScanVerdict.Convertible => 1, _ => 2 };
     }
 
     private static void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

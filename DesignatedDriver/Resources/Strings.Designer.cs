@@ -172,6 +172,9 @@ public static class Strings
     /// <summary>What has drifted from the convention in the current repository: settings, labels, board...</summary>
     public static string Check_Intro => Get("Check_Intro");
 
+    /// <summary>{0} keeps its own conventions, so it isn&apos;t checked against this one. To check or conver...</summary>
+    public static string Check_KeepsOwn => Get("Check_KeepsOwn");
+
     /// <summary>Check needs the repository&apos;s clone. Set its folder on the Repositories screen.</summary>
     public static string Check_NoClone => Get("Check_NoClone");
 
@@ -1369,6 +1372,9 @@ public static class Strings
     /// <summary>Next step: run the set-up wizard on it, or --setup &lt;answers.json&gt;.</summary>
     public static string Scan_Next_Convertible_Text => Get("Scan_Next_Convertible_Text");
 
+    /// <summary>Next step: none. To convert it on purpose, clear Keeps its own conventions in its Setti...</summary>
+    public static string Scan_Next_KeepsOwn => Get("Scan_Next_KeepsOwn");
+
     /// <summary>Next step: fix the blockers above, then scan again.</summary>
     public static string Scan_Next_NotConvertible => Get("Scan_Next_NotConvertible");
 
@@ -1465,6 +1471,9 @@ public static class Strings
     /// <summary>Convertible: {0} change(s), {1} thing(s) worth knowing</summary>
     public static string Scan_Summary_Convertible => Get("Scan_Summary_Convertible");
 
+    /// <summary>Its entry in the list says it keeps its own conventions, so it isn&apos;t offered for conver...</summary>
+    public static string Scan_Summary_KeepsOwn => Get("Scan_Summary_KeepsOwn");
+
     /// <summary>Not convertible: {0} blocker(s)</summary>
     public static string Scan_Summary_NotConvertible => Get("Scan_Summary_NotConvertible");
 
@@ -1491,6 +1500,9 @@ public static class Strings
 
     /// <summary>Convertible</summary>
     public static string Scan_Verdict_Convertible => Get("Scan_Verdict_Convertible");
+
+    /// <summary>Keeps its own conventions</summary>
+    public static string Scan_Verdict_KeepsOwn => Get("Scan_Verdict_KeepsOwn");
 
     /// <summary>Not convertible as it stands</summary>
     public static string Scan_Verdict_NotConvertible => Get("Scan_Verdict_NotConvertible");
@@ -1548,6 +1560,12 @@ public static class Strings
 
     /// <summary>Where this repository&apos;s clone is, and the overrides the workflow screens use.</summary>
     public static string Settings_Intro => Get("Settings_Intro");
+
+    /// <summary>Keeps its own conventions</summary>
+    public static string Settings_KeepsOwnConventions => Get("Settings_KeepsOwnConventions");
+
+    /// <summary>For a repository with rules of its own. Scan, Set up a repository and Check don&apos;t offer...</summary>
+    public static string Settings_KeepsOwnConventionsHelp => Get("Settings_KeepsOwnConventionsHelp");
 
     /// <summary>The repository has no origin remote on GitHub.</summary>
     public static string Settings_NoOrigin => Get("Settings_NoOrigin");
@@ -1803,6 +1821,9 @@ public static class Strings
 
     /// <summary>The set-up issue could not be created, so there is no number for the branch and the pul...</summary>
     public static string Setup_IssueNotCreated => Get("Setup_IssueNotCreated");
+
+    /// <summary>{0} keeps its own conventions, so it isn&apos;t set up. To set it up, clear Keeps its own co...</summary>
+    public static string Setup_KeepsOwn => Get("Setup_KeepsOwn");
 
     /// <summary>Language</summary>
     public static string Setup_Language => Get("Setup_Language");
@@ -2214,6 +2235,9 @@ public static class Strings
 
     /// <summary>Where things stand: the tools, the repository, what the plan allows, the branch, open p...</summary>
     public static string Status_Intro => Get("Status_Intro");
+
+    /// <summary>Keeps its own conventions. The workflow screens use its settings; Check doesn&apos;t apply.</summary>
+    public static string Status_KeepsOwn => Get("Status_KeepsOwn");
 
     /// <summary>Issues assigned to me</summary>
     public static string Status_MyIssues => Get("Status_MyIssues");

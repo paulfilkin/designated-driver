@@ -35,6 +35,12 @@ public sealed class RepositorySettings
     /// <summary>The column a card moves to when its pull request opens; empty means the card isn't moved.</summary>
     public string InReviewColumn { get; set; } = "";
 
+    /// <summary>
+    /// The repository keeps its own conventions: Scan, Set up a repository and Check don't offer to convert it, and
+    /// the workflow screens use these settings, the board included, rather than a manifest's. Cleared to convert it.
+    /// </summary>
+    public bool KeepsOwnConventions { get; set; }
+
     [JsonIgnore] public string OwnerAndName => string.IsNullOrEmpty(Owner) ? "" : $"{Owner}/{Name}";
     [JsonIgnore] public bool HasFolder => !string.IsNullOrWhiteSpace(Folder) && Directory.Exists(Folder);
     [JsonIgnore] public bool HasBoardOverride => BoardOwner.Length > 0 && BoardNumber > 0;

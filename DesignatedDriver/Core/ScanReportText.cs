@@ -36,6 +36,7 @@ public static class ScanReportText
     {
         ScanVerdict.NotConvertible => Strings.Scan_Verdict_NotConvertible,
         ScanVerdict.AlreadySetUp => Strings.Scan_Verdict_AlreadySetUp,
+        ScanVerdict.KeepsOwnConventions => Strings.Scan_Verdict_KeepsOwn,
         _ => Strings.Scan_Verdict_Convertible,
     };
 
@@ -47,6 +48,7 @@ public static class ScanReportText
     {
         ScanVerdict.NotConvertible => Strings.Scan_Next_NotConvertible,
         ScanVerdict.AlreadySetUp => isCurrentRepository ? Strings.Scan_Next_AlreadySetUp_Current : Strings.Scan_Next_AlreadySetUp_Other,
+        ScanVerdict.KeepsOwnConventions => Strings.Scan_Next_KeepsOwn,
         _ => Strings.Scan_Next_Convertible,
     };
 
@@ -55,6 +57,7 @@ public static class ScanReportText
     {
         ScanVerdict.NotConvertible => Strings.Scan_Next_NotConvertible,
         ScanVerdict.AlreadySetUp => Strings.Scan_Next_AlreadySetUp_Text,
+        ScanVerdict.KeepsOwnConventions => Strings.Scan_Next_KeepsOwn,
         _ => Strings.Scan_Next_Convertible_Text,
     };
 

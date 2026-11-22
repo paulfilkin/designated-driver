@@ -26,7 +26,7 @@ public enum ScanCode
     HooksOk, OtherWorkflows, OtherLabels, OwnIssueFormsKept,
 }
 
-public enum ScanVerdict { NotConvertible, Convertible, AlreadySetUp }
+public enum ScanVerdict { NotConvertible, Convertible, AlreadySetUp, KeepsOwnConventions }
 
 public sealed record ScanFinding(ScanSeverity Severity, ScanCode Code, SetupStep Step, string Text, string Detail = "");
 
@@ -88,6 +88,10 @@ public sealed class ScanFacts
     /// <summary>Whether the clone's CONTRIBUTING.md has the convention's section on how a change gets in; null when there is no file or it wasn't read.</summary>
     public bool? ContributingHasWorkflowSection { get; set; }
 
+    // From the tool's settings
+    /// <summary>The repository's entry in the list says it keeps its own conventions, so it isn't offered for conversion.</summary>
+    public bool KeepsOwnConventions { get; set; }
+
     // Derived
     public bool OriginIsGitHub => IsGitHubUrl(OriginUrl);
     /// <summary>The full name GitHub answered with when it differs from the one asked for: the repository was renamed or transferred.</summary>
@@ -130,6 +134,7 @@ public sealed class ScanReport
     {
         ScanVerdict.NotConvertible => string.Format(Strings.Scan_Summary_NotConvertible, Count(ScanSeverity.Blocker)),
         ScanVerdict.AlreadySetUp => Strings.Scan_Summary_AlreadySetUp,
+        ScanVerdict.KeepsOwnConventions => Strings.Scan_Summary_KeepsOwn,
         _ => string.Format(Strings.Scan_Summary_Convertible, Count(ScanSeverity.Change), Count(ScanSeverity.Warning)),
     };
 }
@@ -209,7 +214,9 @@ public static class ScanRules
         }
 
         var ordered = findings.OrderBy(x => x.Severity).ToList();
-        var verdict = ordered.Any(x => x.Severity == ScanSeverity.Blocker) ? ScanVerdict.NotConvertible
+        // A repository that keeps its own conventions is never offered for conversion; the findings stay, for information.
+        var verdict = f.KeepsOwnConventions ? ScanVerdict.KeepsOwnConventions
+            : ordered.Any(x => x.Severity == ScanSeverity.Blocker) ? ScanVerdict.NotConvertible
             : f.Manifest is { } current && current.ConventionVersion >= Manifest.CurrentConventionVersion && ordered.All(x => x.Severity != ScanSeverity.Change) ? ScanVerdict.AlreadySetUp
             : ScanVerdict.Convertible;
         return new ScanReport(verdict, ordered);

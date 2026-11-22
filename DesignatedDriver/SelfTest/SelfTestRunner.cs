@@ -59,6 +59,7 @@ public static partial class SelfTestRunner
             ScanNextStepChecks(Check);
             CloneAsIsChecks(Check);
             ProfileChecks(Check);
+            OwnConventionsChecks(Check);
         }
         catch (Exception ex)
         {

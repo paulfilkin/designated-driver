@@ -53,6 +53,12 @@ public partial class CheckScreen : ScreenBase
             ShowNotice(Strings.Check_NoClone);
             return;
         }
+        // A repository that keeps its own conventions isn't checked against this one.
+        if (OwnConventions.CheckNotice(Repo) is { } keepsOwn)
+        {
+            ShowNotice(keepsOwn);
+            return;
+        }
         var result = await new CheckService(Workspace).CheckAsync(Repo, ct);
         _result = result;
         _when = DateTime.Now;

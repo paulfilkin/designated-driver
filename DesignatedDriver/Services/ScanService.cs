@@ -25,6 +25,8 @@ public sealed class ScanService(Workspace workspace)
         if (askGitHub) await ReadGitHubAsync(facts, ct).ConfigureAwait(false);
         await ReadWorkflowTriggersAsync(facts, ct).ConfigureAwait(false);
 
+        // Whether the tool has been told this repository keeps its own conventions.
+        facts.KeepsOwnConventions = workspace.Settings.Find(facts.OwnerAndName)?.KeepsOwnConventions ?? false;
         return facts;
     }
 
