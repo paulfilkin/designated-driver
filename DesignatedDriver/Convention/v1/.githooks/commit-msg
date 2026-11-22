@@ -1,5 +1,5 @@
 #!/bin/sh
-# Repo Starter convention v1: the commit message rules, the same ones the tool applies.
+# Designated Driver convention v1: the commit message rules, the same ones the tool applies.
 # First line no longer than 70 characters, starting with a capital letter and an imperative verb, no
 # trailing full stop, and no em-dash anywhere. Merge, fixup, squash, amend and revert messages pass.
 file="$1"

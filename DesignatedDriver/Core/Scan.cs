@@ -78,6 +78,8 @@ public sealed class ScanFacts
     /// <summary>The labels each of the clone's issue forms applies, by path; empty when there is no clone.</summary>
     public Dictionary<string, List<string>> IssueFormLabels { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     public Manifest? Manifest { get; set; }
+    /// <summary>True when the manifest was found only under its name before the rename, .github/repo-starter.json.</summary>
+    public bool ManifestAtOldPath { get; set; }
     public string PlanName { get; set; } = "";
     /// <summary>Whether the clone's CONTRIBUTING.md has the convention's section on how a change gets in; null when there is no file or it wasn't read.</summary>
     public bool? ContributingHasWorkflowSection { get; set; }

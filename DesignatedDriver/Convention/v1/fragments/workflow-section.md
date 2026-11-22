@@ -8,7 +8,7 @@ The [project board]({{boardUrl}}) shows every issue in one of GitHub's three col
 
 - A new issue is added to the board automatically, in Todo.  One that is not ready to pick up is labelled `blocked`.
 - Opening a pull request with `Closes #42` links it to the issue.
-- You move it to In Progress when you assign it to yourself; Repo Starter's Start work does both.
+- You move it to In Progress when you assign it to yourself; Designated Driver's Start work does both.
 - Merging the pull request, or closing the issue, moves it to Done.
 
 1. Pick a ready issue and assign it to yourself, so nobody else starts the same work.

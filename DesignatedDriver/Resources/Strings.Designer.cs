@@ -301,6 +301,9 @@ public static class Strings
     /// <summary>The manifest predates the recorded set-up answers, so the files cannot be compared. Run...</summary>
     public static string Drift_ManifestAnswers => Get("Drift_ManifestAnswers");
 
+    /// <summary>The manifest is still {0}, its name from before the app was renamed. Applying writes it...</summary>
+    public static string Drift_ManifestRename => Get("Drift_ManifestRename");
+
     /// <summary>Secret scanning push protection is off.</summary>
     public static string Drift_PushProtectionOff => Get("Drift_PushProtectionOff");
 
@@ -1249,7 +1252,7 @@ public static class Strings
     /// <summary>Worth knowing</summary>
     public static string Scan_Group_Warning => Get("Scan_Group_Warning");
 
-    /// <summary>The repository has history. Convention files would go through a pull request on chore/r...</summary>
+    /// <summary>The repository has history. Convention files would go through a pull request on chore/d...</summary>
     public static string Scan_HasHistory => Get("Scan_HasHistory");
 
     /// <summary>core.hooksPath already points at .githooks.</summary>

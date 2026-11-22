@@ -1,4 +1,4 @@
-# Code scanning with CodeQL. GitHub offers it free on public repositories only, so Repo Starter writes this
+# Code scanning with CodeQL. GitHub offers it free on public repositories only, so Designated Driver writes this
 # workflow on public repositories and records it as not available on private ones.
 name: CodeQL
 

@@ -1,6 +1,6 @@
 # designated-driver: Working with Git
 
-A step-by-step guide to getting set up and making a change, for someone new to this repository.  `CONTRIBUTING.md` in the repository root explains the rules; this guide gives the commands.  Repo Starter, the desktop tool that set this repository up, has a button for each of these steps; the commands are what it runs.
+A step-by-step guide to getting set up and making a change, for someone new to this repository.  `CONTRIBUTING.md` in the repository root explains the rules; this guide gives the commands.  Designated Driver, the desktop tool that set this repository up, has a button for each of these steps; the commands are what it runs.
 
 All commands are for PowerShell on Windows.  Unless a step says otherwise, run them from the repository folder (the `designated-driver` folder the clone creates).
 

@@ -55,6 +55,7 @@ public sealed class ScanService(Workspace workspace)
         var root = await Git.RepositoryRootAsync(folder, ct).ConfigureAwait(false);
         facts.IsGitRepository = root is not null;
         facts.Manifest = Manifest.Load(folder);
+        facts.ManifestAtOldPath = Manifest.OnlyAtOldPath(folder);
 
         if (!facts.IsGitRepository)
         {
@@ -138,6 +139,12 @@ public sealed class ScanService(Workspace workspace)
         {
             facts.Files = await ListRemoteAsync(name, ct).ConfigureAwait(false);
             var manifestJson = await GitHub.FileContentAsync(name, Manifest.RelativePath.Replace('\\', '/'), ct).ConfigureAwait(false);
+            if (manifestJson is null)
+            {
+                // A repository set up before the rename has the manifest under its old name.
+                manifestJson = await GitHub.FileContentAsync(name, Manifest.OldRelativePath.Replace('\\', '/'), ct).ConfigureAwait(false);
+                facts.ManifestAtOldPath = manifestJson is not null;
+            }
             if (manifestJson is not null) facts.Manifest = Manifest.Parse(manifestJson);
         }
     }

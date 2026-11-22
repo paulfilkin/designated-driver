@@ -1,5 +1,5 @@
 # Runs on every pull request to {{defaultBranch}} and every change that lands on it.
-# The job name "{{requiredCheck}}" is the check Repo Starter and the branch rules look for.
+# The job name "{{requiredCheck}}" is the check Designated Driver and the branch rules look for.
 name: CI
 
 on:

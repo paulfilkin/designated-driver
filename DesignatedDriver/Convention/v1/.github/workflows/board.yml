@@ -2,7 +2,7 @@
 # item lands in Todo, and a closed issue or merged pull request moves to Done.
 # It needs the PROJECT_TOKEN secret, a classic token with the repo and project scopes, because the
 # workflow's own GITHUB_TOKEN cannot reach a user-owned project. Without the secret the step is skipped and
-# the workflow passes; Repo Starter adds the secret when it is given the token.
+# the workflow passes; Designated Driver adds the secret when it is given the token.
 name: Board
 
 on:
