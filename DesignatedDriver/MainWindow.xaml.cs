@@ -502,9 +502,9 @@ public partial class MainWindow : Window, IShell
     }
 
     /// <summary>Opens the settings window for a known repository, or for a new one when null.</summary>
-    public void EditRepository(RepositorySettings? repository)
+    public void EditRepository(RepositorySettings? repository, bool readFromGitHub = false)
     {
-        var dialog = new SettingsWindow(this, repository) { Owner = this };
+        var dialog = new SettingsWindow(this, repository, readFromGitHub) { Owner = this };
         Dialog(dialog.ShowDialog);
     }
 

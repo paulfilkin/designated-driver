@@ -67,6 +67,8 @@ public sealed class ScanFacts
     public List<ScanBoard> LinkedBoards { get; set; } = [];
     public ApiStatus? BranchRulesStatus { get; set; }
     public List<GhBranchRule> BranchRules { get; set; } = [];
+    /// <summary>The checks classic branch protection requires, read only when no ruleset names one.</summary>
+    public List<string> ClassicRequiredChecks { get; set; } = [];
     public bool? VulnerabilityAlerts { get; set; }
     /// <summary>Dependabot security updates, from the automated-security-fixes endpoint; null when not read, in which case the details decide.</summary>
     public bool? SecurityUpdates { get; set; }
@@ -75,6 +77,8 @@ public sealed class ScanFacts
     public List<GhRelease> Releases { get; set; } = [];
     /// <summary>Each workflow's triggers, by path, read from the clone or from GitHub.</summary>
     public Dictionary<string, WorkflowTriggers> WorkflowTriggers { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    /// <summary>Each workflow's text, by path, for the jobs and commands the profile reads.</summary>
+    public Dictionary<string, string> WorkflowTexts { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     /// <summary>The labels each of the clone's issue forms applies, by path; empty when there is no clone.</summary>
     public Dictionary<string, List<string>> IssueFormLabels { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     public Manifest? Manifest { get; set; }

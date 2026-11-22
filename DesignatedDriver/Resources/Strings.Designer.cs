@@ -1510,6 +1510,9 @@ public static class Strings
     /// <summary>{0} is already in the list. Saving replaces its settings.</summary>
     public static string Settings_AlreadyKnown => Get("Settings_AlreadyKnown");
 
+    /// <summary>Board</summary>
+    public static string Settings_Board => Get("Settings_Board");
+
     /// <summary>The board comes from the repository&apos;s manifest: {0}&apos;s project {1}. These boxes are igno...</summary>
     public static string Settings_BoardFromManifest => Get("Settings_BoardFromManifest");
 
@@ -1522,6 +1525,9 @@ public static class Strings
     /// <summary>Choose the repository folder</summary>
     public static string Settings_BrowseTitle => Get("Settings_BrowseTitle");
 
+    /// <summary>The board&apos;s columns, by name. Start work lists the ready column and moves a card to In ...</summary>
+    public static string Settings_ColumnsHelp => Get("Settings_ColumnsHelp");
+
     /// <summary>Default branch</summary>
     public static string Settings_DefaultBranch => Get("Settings_DefaultBranch");
 
@@ -1533,6 +1539,12 @@ public static class Strings
 
     /// <summary>Git repository at {0}</summary>
     public static string Settings_FolderOk => Get("Settings_FolderOk");
+
+    /// <summary>In progress</summary>
+    public static string Settings_InProgressColumn => Get("Settings_InProgressColumn");
+
+    /// <summary>In review</summary>
+    public static string Settings_InReviewColumn => Get("Settings_InReviewColumn");
 
     /// <summary>Where this repository&apos;s clone is, and the overrides the workflow screens use.</summary>
     public static string Settings_Intro => Get("Settings_Intro");
@@ -1560,6 +1572,42 @@ public static class Strings
 
     /// <summary>Board owner</summary>
     public static string Settings_ProjectOwner => Get("Settings_ProjectOwner");
+
+    /// <summary>These differ from what GitHub has: {0} Replace them with GitHub&apos;s values? No keeps yours.</summary>
+    public static string Settings_ReadAsk => Get("Settings_ReadAsk");
+
+    /// <summary>{0}: yours &quot;{1}&quot;, GitHub &quot;{2}&quot;</summary>
+    public static string Settings_ReadAskLine => Get("Settings_ReadAskLine");
+
+    /// <summary>Replace with GitHub&apos;s values?</summary>
+    public static string Settings_ReadAskTitle => Get("Settings_ReadAskTitle");
+
+    /// <summary>Couldn&apos;t read {0} from GitHub: {1}</summary>
+    public static string Settings_ReadFailed => Get("Settings_ReadFailed");
+
+    /// <summary>Filled from GitHub: {0}. Check them, then Save.</summary>
+    public static string Settings_ReadFilled => Get("Settings_ReadFilled");
+
+    /// <summary>Read from GitHub</summary>
+    public static string Settings_ReadFromGitHub => Get("Settings_ReadFromGitHub");
+
+    /// <summary>Reads the default branch, required check, board, columns and self-test command this rep...</summary>
+    public static string Settings_ReadFromGitHubHelp => Get("Settings_ReadFromGitHubHelp");
+
+    /// <summary>Reading {0} from GitHub...</summary>
+    public static string Settings_Reading => Get("Settings_Reading");
+
+    /// <summary>Kept yours: {0}.</summary>
+    public static string Settings_ReadKept => Get("Settings_ReadKept");
+
+    /// <summary>{0} wasn&apos;t found on GitHub, so nothing was read.</summary>
+    public static string Settings_ReadNotFound => Get("Settings_ReadNotFound");
+
+    /// <summary>GitHub had nothing new to fill for {0}.</summary>
+    public static string Settings_ReadNothing => Get("Settings_ReadNothing");
+
+    /// <summary>Ready to pick up</summary>
+    public static string Settings_ReadyColumn => Get("Settings_ReadyColumn");
 
     /// <summary>Repository folder</summary>
     public static string Settings_RepositoryFolder => Get("Settings_RepositoryFolder");
@@ -2020,7 +2068,7 @@ public static class Strings
     /// <summary>No board is known for this repository, so all open issues are shown. Set-up creates one...</summary>
     public static string StartWork_NoBoard => Get("StartWork_NoBoard");
 
-    /// <summary>The board has no In progress column, so the card wasn&apos;t moved.</summary>
+    /// <summary>The board has no {0} column, so the card wasn&apos;t moved.</summary>
     public static string StartWork_NoInProgressColumn => Get("StartWork_NoInProgressColumn");
 
     /// <summary>There are no open issues.</summary>
@@ -2359,6 +2407,9 @@ public static class Strings
     /// <summary>This branch has no commits beyond main yet. Commit on Save and share first.</summary>
     public static string Submit_NoCommits => Get("Submit_NoCommits");
 
+    /// <summary>The board has no {0} column, so the card wasn&apos;t moved to it.</summary>
+    public static string Submit_NoReviewColumn => Get("Submit_NoReviewColumn");
+
     /// <summary>You are on {0}. A pull request comes from a branch: go to Start work first.</summary>
     public static string Submit_OnMain => Get("Submit_OnMain");
 
@@ -2376,6 +2427,9 @@ public static class Strings
 
     /// <summary>Title</summary>
     public static string Submit_PullRequestTitle => Get("Submit_PullRequestTitle");
+
+    /// <summary>Issue #{0}&apos;s card couldn&apos;t be moved to {1}: {2}</summary>
+    public static string Submit_ReviewMoveFailed => Get("Submit_ReviewMoveFailed");
 
     /// <summary>Submit</summary>
     public static string Submit_Title => Get("Submit_Title");

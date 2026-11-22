@@ -222,6 +222,31 @@ public sealed class GhBranchRule
 {
     public string Type { get; set; } = "";
     public long RulesetId { get; set; }
+    /// <summary>Only what the profile reads: the checks a required_status_checks rule names.</summary>
+    public GhBranchRuleParameters? Parameters { get; set; }
+
+    /// <summary>The check names a required_status_checks rule asks for; empty for any other rule.</summary>
+    public IEnumerable<string> RequiredChecks
+        => Type == "required_status_checks" && Parameters is not null ? Parameters.RequiredStatusChecks.Select(c => c.Context).Where(c => c.Length > 0) : [];
+}
+
+public sealed class GhBranchRuleParameters
+{
+    public List<GhRequiredCheck> RequiredStatusChecks { get; set; } = [];
+}
+
+public sealed class GhRequiredCheck
+{
+    public string Context { get; set; } = "";
+}
+
+/// <summary>gh api repos/{owner}/{name}/branches/{branch}/protection/required_status_checks: classic branch protection.</summary>
+public sealed class GhClassicRequiredChecks
+{
+    public List<string> Contexts { get; set; } = [];
+    public List<GhRequiredCheck> Checks { get; set; } = [];
+
+    public IEnumerable<string> Names => Checks.Select(c => c.Context).Concat(Contexts).Where(c => c.Length > 0).Distinct(StringComparer.Ordinal);
 }
 
 /// <summary>gh api repos/{owner}/{name}/rulesets</summary>

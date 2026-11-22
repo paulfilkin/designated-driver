@@ -72,7 +72,7 @@ public partial class StartWorkScreen : ScreenBase
     private void ShowIssues()
     {
         bool all = ShowAllBox.IsChecked == true;
-        var shown = all ? _rows : _rows.Where(r => ConventionBoard.IsReady(r.BoardStatus)).ToList();
+        var shown = all ? _rows : _rows.Where(r => BoardColumns.IsPickUp(r.BoardStatus, Repo.ReadyColumn)).ToList();
         IssuesTitle.Text = all ? Strings.StartWork_AllIssues : Strings.StartWork_ReadyIssues;
 
         IssueList.Items.Clear();
@@ -271,8 +271,9 @@ public partial class StartWorkScreen : ScreenBase
 
             if (row.ProjectItemId is not null)
             {
-                if (!await gh.MoveCardAsync(row.ProjectItemId, ConventionBoard.InProgress, ct))
-                    Workspace.Runner.Note(Strings.StartWork_NoInProgressColumn);
+                var column = BoardColumns.InProgressFor(Repo.InProgressColumn);
+                if (!await gh.MoveCardAsync(row.ProjectItemId, column, ct))
+                    Workspace.Runner.Note(string.Format(Strings.StartWork_NoInProgressColumn, column));
             }
             else if (_hasBoard)
             {

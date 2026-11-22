@@ -211,7 +211,7 @@ public partial class ScanScreen : ScreenBase
         if (_facts is null || !_facts.HasClone) return;
         var parsed = RemoteUrl.ParseOwnerAndRepository(_facts.OriginUrl);
         if (parsed is null) return;
-        Workspace.SaveRepository(new RepositorySettings
+        var added = new RepositorySettings
         {
             Folder = _facts.Folder,
             Owner = parsed.Value.Owner,
@@ -219,7 +219,10 @@ public partial class ScanScreen : ScreenBase
             DefaultBranch = _facts.DefaultBranch,
             SelfTestCommand = _facts.Manifest?.SelfTestCommand ?? "",
             RequiredCheck = string.IsNullOrEmpty(_facts.Manifest?.RequiredCheck) ? RepositorySettings.DefaultRequiredCheck : _facts.Manifest!.RequiredCheck,
-        });
+        };
+        Workspace.SaveRepository(added);
         AddButton.Visibility = Visibility.Collapsed;
+        // Without a manifest, Settings opens with what the repository already uses read from GitHub, to confirm.
+        if (_facts.Manifest is null) Shell.EditRepository(added, readFromGitHub: true);
     }
 }

@@ -28,6 +28,13 @@ public sealed class RepositorySettings
     public string BoardOwner { get; set; } = "";
     public int BoardNumber { get; set; }
 
+    /// <summary>The board's column for issues ready to pick up; empty means the convention's Todo (or Ready).</summary>
+    public string ReadyColumn { get; set; } = "";
+    /// <summary>The column a card moves to when work starts; empty means the convention's In Progress.</summary>
+    public string InProgressColumn { get; set; } = "";
+    /// <summary>The column a card moves to when its pull request opens; empty means the card isn't moved.</summary>
+    public string InReviewColumn { get; set; } = "";
+
     [JsonIgnore] public string OwnerAndName => string.IsNullOrEmpty(Owner) ? "" : $"{Owner}/{Name}";
     [JsonIgnore] public bool HasFolder => !string.IsNullOrWhiteSpace(Folder) && Directory.Exists(Folder);
     [JsonIgnore] public bool HasBoardOverride => BoardOwner.Length > 0 && BoardNumber > 0;

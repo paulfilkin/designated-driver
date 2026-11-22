@@ -1,0 +1,21 @@
+[
+  { "type": "deletion", "ruleset_source_type": "Repository", "ruleset_source": "example-org/example-app", "ruleset_id": 1001 },
+  {
+    "type": "required_status_checks",
+    "ruleset_source_type": "Repository",
+    "ruleset_source": "example-org/example-app",
+    "ruleset_id": 1001,
+    "parameters": {
+      "strict_required_status_checks_policy": true,
+      "do_not_enforce_on_create": false,
+      "required_status_checks": [ { "context": "Tests", "integration_id": 15368 }, { "context": "Lint" } ]
+    }
+  },
+  {
+    "type": "pull_request",
+    "ruleset_source_type": "Repository",
+    "ruleset_source": "example-org/example-app",
+    "ruleset_id": 1001,
+    "parameters": { "required_approving_review_count": 1, "allowed_merge_methods": ["squash"] }
+  }
+]

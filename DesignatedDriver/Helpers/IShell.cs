@@ -30,8 +30,11 @@ public interface IShell
     void NavigateToSetup(string? folder, string ownerAndName, ScanFacts? facts = null);
     /// <summary>Shows one of the tool's own windows modally. True when it was accepted.</summary>
     bool ShowDialog(System.Windows.Window dialog);
-    /// <summary>Opens the settings window for a known repository, or for a new one when null.</summary>
-    void EditRepository(RepositorySettings? repository);
+    /// <summary>
+    /// Opens the settings window for a known repository, or for a new one when null. With readFromGitHub, a
+    /// repository without a manifest has what it already uses read from GitHub into the boxes, to confirm.
+    /// </summary>
+    void EditRepository(RepositorySettings? repository, bool readFromGitHub = false);
     bool Confirm(string message, string title);
     void ShowError(string message);
     void ShowInfo(string message);

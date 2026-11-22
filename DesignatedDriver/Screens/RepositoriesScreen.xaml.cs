@@ -102,7 +102,8 @@ public partial class RepositoriesScreen : ScreenBase
             await RefreshAsync(ct);
         });
         // Once the busy work has ended: its settings, to check the board, the required check and the self-test command.
-        if (cloned is not null) Shell.EditRepository(cloned);
+        // A clone with no manifest has its settings read from GitHub into Settings, to confirm before they are kept.
+        if (cloned is not null) Shell.EditRepository(cloned, readFromGitHub: true);
     }
 
     /// <summary>Next to the current clone, as the wizard suggests; else Documents.</summary>

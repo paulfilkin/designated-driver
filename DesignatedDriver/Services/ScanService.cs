@@ -45,7 +45,9 @@ public sealed class ScanService(Workspace workspace)
             {
                 text = await GitHub.FileTextAsync(facts.OwnerAndName, path, ct).ConfigureAwait(false);
             }
-            if (text is not null) facts.WorkflowTriggers[path] = WorkflowTriggers.Parse(text);
+            if (text is null) continue;
+            facts.WorkflowTriggers[path] = WorkflowTriggers.Parse(text);
+            facts.WorkflowTexts[path] = text;
         }
     }
 
@@ -120,6 +122,9 @@ public sealed class ScanService(Workspace workspace)
         var (status, rules) = await GitHub.BranchRulesAsync(name, facts.DefaultBranch, ct).ConfigureAwait(false);
         facts.BranchRulesStatus = status;
         facts.BranchRules = rules;
+        // Classic branch protection is read only when no ruleset names a required check.
+        if (!rules.SelectMany(r => r.RequiredChecks).Any())
+            facts.ClassicRequiredChecks = await GitHub.ClassicRequiredChecksAsync(name, facts.DefaultBranch, ct).ConfigureAwait(false);
 
         facts.VulnerabilityAlerts = await GitHub.VulnerabilityAlertsEnabledAsync(name, ct).ConfigureAwait(false);
         facts.SecurityUpdates = await GitHub.AutomatedSecurityFixesEnabledAsync(name, ct).ConfigureAwait(false);
