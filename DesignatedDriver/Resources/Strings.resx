@@ -634,10 +634,10 @@ The clone and the repository on GitHub are not touched.</value></data>
   <data name="Scan_Intro" xml:space="preserve"><value>A read-only look at a repository against the convention: what stops a conversion, what the set-up would change or keep, what this plan does not allow, and what is already in place. Nothing is changed.</value></data>
   <data name="Scan_TargetCard" xml:space="preserve"><value>What to scan</value></data>
   <data name="Scan_TargetCurrent" xml:space="preserve"><value>The current repository ({0})</value></data>
-  <data name="Scan_TargetFolder" xml:space="preserve"><value>A folder on this machine</value></data>
-  <data name="Scan_FolderHelp" xml:space="preserve"><value>A clone, or a folder that is not a repository yet.</value></data>
-  <data name="Scan_TargetName" xml:space="preserve"><value>A repository on GitHub, by owner and name</value></data>
-  <data name="Scan_NameHelp" xml:space="preserve"><value>For example paulfilkin/example. Fewer facts, since nothing local can be read.</value></data>
+  <data name="Scan_TargetFolder" xml:space="preserve"><value>A clone or folder on this machine</value></data>
+  <data name="Scan_FolderHelp" xml:space="preserve"><value>Reads the clone and its repository on GitHub, so use this when you have a clone. A folder that is not a repository yet works too.</value></data>
+  <data name="Scan_TargetName" xml:space="preserve"><value>A repository on GitHub, with no clone here</value></data>
+  <data name="Scan_NameHelp" xml:space="preserve"><value>Owner and name, for example paulfilkin/example. Reads GitHub only, so it shows fewer facts than scanning a clone.</value></data>
   <data name="Scan_Run" xml:space="preserve"><value>Scan</value></data>
   <data name="Scan_RunHelp" xml:space="preserve"><value>Scan the chosen repository. Nothing is changed.</value></data>
   <data name="Scan_NoTarget" xml:space="preserve"><value>Choose a folder or type owner/name first.</value></data>

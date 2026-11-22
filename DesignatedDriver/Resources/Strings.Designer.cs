@@ -1276,7 +1276,7 @@ public static class Strings
     /// <summary>{0} repository feature(s) would change.</summary>
     public static string Scan_Features => Get("Scan_Features");
 
-    /// <summary>A clone, or a folder that is not a repository yet.</summary>
+    /// <summary>Reads the clone and its repository on GitHub, so use this when you have a clone. A fold...</summary>
     public static string Scan_FolderHelp => Get("Scan_FolderHelp");
 
     /// <summary>The repository is a fork. Pull requests and rules behave differently on forks, and noth...</summary>
@@ -1354,7 +1354,7 @@ public static class Strings
     /// <summary>Merge settings already match the convention.</summary>
     public static string Scan_MergeSettingsOk => Get("Scan_MergeSettingsOk");
 
-    /// <summary>For example paulfilkin/example. Fewer facts, since nothing local can be read.</summary>
+    /// <summary>Owner and name, for example paulfilkin/example. Reads GitHub only, so it shows fewer fa...</summary>
     public static string Scan_NameHelp => Get("Scan_NameHelp");
 
     /// <summary>Next step: none needed. Check shows anything that has drifted since; Status shows where...</summary>
@@ -1486,10 +1486,10 @@ public static class Strings
     /// <summary>The current repository ({0})</summary>
     public static string Scan_TargetCurrent => Get("Scan_TargetCurrent");
 
-    /// <summary>A folder on this machine</summary>
+    /// <summary>A clone or folder on this machine</summary>
     public static string Scan_TargetFolder => Get("Scan_TargetFolder");
 
-    /// <summary>A repository on GitHub, by owner and name</summary>
+    /// <summary>A repository on GitHub, with no clone here</summary>
     public static string Scan_TargetName => Get("Scan_TargetName");
 
     /// <summary>Scan</summary>
