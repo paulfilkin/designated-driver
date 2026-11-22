@@ -43,10 +43,12 @@ Start the tool.  The first screen is **Repositories**.  You can add a clone you 
 The wizard has three pages:
 
 1. **Where.**  A new repository, an existing folder on this machine, or an existing repository on GitHub.  Owner, name, description, visibility, the folder, the language (detected from an existing folder), the project to build, and the self-test command if the project has one.  An existing folder or repository is scanned here when you press Next; a blocker stops you, warnings are shown.  A repository that is already on GitHub keeps its visibility: the wizard shows it and you can't change it, since set-up never changes an existing repository's visibility.  Opened from Scan's **Apply the convention**, the page arrives filled in from the scan: owner, name, description, visibility, language and project.
-2. **Options.**  Review required, Discussions, the release workflow for .NET projects, CodeQL on public repositories, the pull request checklist, and the board token (section 5).
+2. **Options.**  Review required, Discussions, the release workflow for .NET projects, CodeQL on public repositories, the pull request checklist, and the board token (section 5).  The release workflow starts unticked, with the reason under it, when the repository already publishes releases another way.  A workflow of the repository's own that builds pull requests beside the convention's `ci.yml` is listed with a box to remove it in the set-up pull request, unticked.
 3. **Plan.**  The plan as a checklist.  Nothing has changed until you press Start.  Press Start and watch it tick: the repository, its settings, labels, board, the convention files, hooks, Dependabot, and on public repositories push protection and the ruleset.  Every command appears in the activity panel.  If a step fails, fix the cause and press Retry; steps already done are not repeated.
 
 A repository with history gets its convention files through an issue and a pull request, the convention's own rule applied to itself.  Merge that pull request from **Review**, then **Tidy up**.
+
+What the repository already has is kept.  Its own issue forms stay, and the convention's are not added beside them.  GitHub's `enhancement` and `documentation` labels are renamed `feature` and `docs`, so the issues they label keep them.  A CONTRIBUTING.md of its own stays, with the convention's section on how a change gets in added at the end if it hasn't one.  A name that now leads to a renamed or transferred repository stops the set-up before anything changes.
 
 ## 4. The screens
 
@@ -60,7 +62,7 @@ A repository with history gets its convention files through an issue and a pull 
 | Start work | Write a new issue from the issue forms' fields, or pick one from the board's Todo column, assign it to yourself, make the branch |
 | Save and share | Commit with the message checks, push |
 | Submit | Update the branch from main if it is behind, open the pull request from the template with its `Closes #n` line filled in, watch the check |
-| Review | Approve, request changes, merge; admins only.  A merge re-reads the pull request first and stops if main has moved under it |
+| Review | Approve, request changes, merge; admins only.  A merge re-reads the pull request first and stops if main has moved under it.  Picking another pull request while one loads shows the newest |
 | Tidy up | Back to main, pull, delete merged branches |
 | Fix a problem | The common situations, each with its commands |
 
