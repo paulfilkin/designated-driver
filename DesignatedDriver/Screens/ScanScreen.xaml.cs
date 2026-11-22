@@ -20,6 +20,9 @@ public partial class ScanScreen : ScreenBase
     private ScanFacts? _facts;
     private ScanReport? _report;
     private DateTime _when;
+    /// <summary>How the last scan's repository can be taken on as it is, and whether that marks it as keeping its own conventions.</summary>
+    private AsItIsRoute _asItIs;
+    private bool _keepsOwn;
 
     public ScanScreen(IShell shell) : base(shell)
     {
@@ -121,20 +124,20 @@ public partial class ScanScreen : ScreenBase
             _ => "NoticeStyle",
         });
 
-        // The next step in words, then as a button. A clone with a GitHub origin that isn't in the list yet can be
-        // added from here; one that is already set up and current goes straight to Check.
+        // The next step in words, then as buttons with a line each. A convertible repository can take the convention or
+        // be kept as it is: its clone added, the repository cloned, or its entry marked, each marking it as keeping its
+        // own conventions. Other verdicts add or clone it plainly; one already set up and current goes straight to Check.
         bool known = facts.OwnerAndName.Length > 0 && Workspace.Settings.Find(facts.OwnerAndName) is not null;
         bool current = facts.OwnerAndName.Length > 0 && Repo.Matches(facts.OwnerAndName);
-        NextStepText.Text = ScanReportText.NextStep(report.Verdict, current);
-        AddButton.Visibility = facts.HasClone && facts.IsGitRepository && facts.OriginIsGitHub && !known ? Visibility.Visible : Visibility.Collapsed;
-        SetUpButton.Visibility = report.Verdict == ScanVerdict.Convertible ? Visibility.Visible : Visibility.Collapsed;
-        OpenCheckButton.Visibility = report.Verdict == ScanVerdict.AlreadySetUp && current ? Visibility.Visible : Visibility.Collapsed;
-        // A repository scanned by name, with no clone here and not in the list, can be cloned and worked on as it is.
-        bool canClone = ScanRules.CanCloneAsIs(facts, known);
-        CloneButton.Visibility = canClone ? Visibility.Visible : Visibility.Collapsed;
-        if (canClone && report.Verdict == ScanVerdict.Convertible) NextStepText.Text += " " + Strings.Scan_Next_CloneToo;
-        ActionRow.Visibility = SetUpButton.Visibility == Visibility.Visible || OpenCheckButton.Visibility == Visibility.Visible || AddButton.Visibility == Visibility.Visible
-            || CloneButton.Visibility == Visibility.Visible ? Visibility.Visible : Visibility.Collapsed;
+        _asItIs = ScanRules.AsItIs(facts, report.Verdict, known);
+        _keepsOwn = ScanRules.KeepsOwnAsItIs(report.Verdict);
+        bool convertible = report.Verdict == ScanVerdict.Convertible;
+        NextStepText.Text = ScanReportText.NextStep(report.Verdict, current, canKeepAsIs: convertible && _asItIs != AsItIsRoute.None);
+        SetUpChoice.Visibility = convertible ? Visibility.Visible : Visibility.Collapsed;
+        OpenCheckChoice.Visibility = report.Verdict == ScanVerdict.AlreadySetUp && current ? Visibility.Visible : Visibility.Collapsed;
+        ShowAsItIs();
+        ActionRow.Visibility = SetUpChoice.Visibility == Visibility.Visible || OpenCheckChoice.Visibility == Visibility.Visible || AsItIsChoice.Visibility == Visibility.Visible
+            ? Visibility.Visible : Visibility.Collapsed;
 
         FindingsPanel.Children.Clear();
         foreach (var severity in Enum.GetValues<ScanSeverity>())
@@ -145,6 +148,17 @@ public partial class ScanScreen : ScreenBase
             FindingsPanel.Children.Add(heading);
             foreach (var finding in group) FindingsPanel.Children.Add(FindingRow(finding));
         }
+    }
+
+    /// <summary>The "as it is" button for the route the last scan found, with its label and line, or hidden when there is none.</summary>
+    private void ShowAsItIs()
+    {
+        var (label, help) = ScanReportText.AsItIsButton(_asItIs, _keepsOwn);
+        AsItIsChoice.Visibility = _asItIs == AsItIsRoute.None ? Visibility.Collapsed : Visibility.Visible;
+        AsItIsButton.Content = label;
+        AsItIsText.Text = help;
+        AutomationProperties.SetName(AsItIsButton, label);
+        AutomationProperties.SetHelpText(AsItIsButton, help);
     }
 
     private FrameworkElement FindingRow(ScanFinding finding)
@@ -200,13 +214,25 @@ public partial class ScanScreen : ScreenBase
 
     private void OpenCheck_Click(object sender, RoutedEventArgs e) => Shell.Navigate(Screen.Check);
 
-    private void Clone_Click(object sender, RoutedEventArgs e)
+    private void AsItIs_Click(object sender, RoutedEventArgs e)
     {
-        if (_facts is null || _facts.OwnerAndName.Length == 0) return;
-        Shell.NavigateToClone(_facts.OwnerAndName);
+        switch (_asItIs)
+        {
+            case AsItIsRoute.Add: Add(); break;
+            case AsItIsRoute.Clone: Clone(); break;
+            case AsItIsRoute.Mark: Mark(); break;
+        }
     }
 
-    private void Add_Click(object sender, RoutedEventArgs e)
+    /// <summary>Opens the clone card on Repositories; from a convertible scan the clone is marked as keeping its own conventions.</summary>
+    private void Clone()
+    {
+        if (_facts is null || _facts.OwnerAndName.Length == 0) return;
+        Shell.NavigateToClone(_facts.OwnerAndName, _keepsOwn);
+    }
+
+    /// <summary>Adds the scanned clone to the list and makes it current; from a convertible scan, marked as keeping its own conventions.</summary>
+    private void Add()
     {
         if (_facts is null || !_facts.HasClone) return;
         var parsed = RemoteUrl.ParseOwnerAndRepository(_facts.OriginUrl);
@@ -219,10 +245,32 @@ public partial class ScanScreen : ScreenBase
             DefaultBranch = _facts.DefaultBranch,
             SelfTestCommand = _facts.Manifest?.SelfTestCommand ?? "",
             RequiredCheck = string.IsNullOrEmpty(_facts.Manifest?.RequiredCheck) ? RepositorySettings.DefaultRequiredCheck : _facts.Manifest!.RequiredCheck,
+            KeepsOwnConventions = _keepsOwn && _facts.Manifest is null,
         };
         Workspace.SaveRepository(added);
-        AddButton.Visibility = Visibility.Collapsed;
+        _asItIs = AsItIsRoute.None;
+        ShowAsItIs();
         // Without a manifest, Settings opens with what the repository already uses read from GitHub, to confirm.
         if (_facts.Manifest is null) Shell.EditRepository(added, readFromGitHub: true);
+        Rescan(added.OwnerAndName);
+    }
+
+    /// <summary>Marks the entry already in the list as keeping its own conventions, without making it current, and opens its Settings.</summary>
+    private void Mark()
+    {
+        if (_facts is null || Workspace.Settings.Find(_facts.OwnerAndName) is not { } entry) return;
+        entry.KeepsOwnConventions = true;
+        Workspace.Settings.Save();
+        _asItIs = AsItIsRoute.None;
+        ShowAsItIs();
+        Shell.EditRepository(entry);
+        Rescan(entry.OwnerAndName);
+    }
+
+    /// <summary>Scans the same target again once Settings has closed, so the verdict shows what the entry now says.</summary>
+    private void Rescan(string ownerAndName)
+    {
+        if (_facts is null) return;
+        ScanTarget(_facts.HasClone ? _facts.Folder : null, ownerAndName);
     }
 }

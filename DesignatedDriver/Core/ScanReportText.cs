@@ -42,14 +42,26 @@ public static class ScanReportText
 
     /// <summary>
     /// What to do after the scan, one sentence per verdict, as the screen says it. The already-set-up wording
-    /// depends on whether the scanned repository is the one the tool is working on.
+    /// depends on whether the scanned repository is the one the tool is working on; a convertible repository that can
+    /// also be kept as it is asks for a choice between the two.
     /// </summary>
-    public static string NextStep(ScanVerdict verdict, bool isCurrentRepository) => verdict switch
+    public static string NextStep(ScanVerdict verdict, bool isCurrentRepository, bool canKeepAsIs = false) => verdict switch
     {
         ScanVerdict.NotConvertible => Strings.Scan_Next_NotConvertible,
         ScanVerdict.AlreadySetUp => isCurrentRepository ? Strings.Scan_Next_AlreadySetUp_Current : Strings.Scan_Next_AlreadySetUp_Other,
         ScanVerdict.KeepsOwnConventions => Strings.Scan_Next_KeepsOwn,
-        _ => Strings.Scan_Next_Convertible,
+        _ => canKeepAsIs ? Strings.Scan_Next_ConvertibleOrKeep : Strings.Scan_Next_Convertible,
+    };
+
+    /// <summary>The "as it is" button's label and the line beside it, for the route and whether it marks the repository as keeping its own conventions.</summary>
+    public static (string Label, string Help) AsItIsButton(AsItIsRoute route, bool keepsOwn) => (route, keepsOwn) switch
+    {
+        (AsItIsRoute.Add, true) => (Strings.Scan_KeepAsIs, Strings.Scan_KeepAsIsAddHelp),
+        (AsItIsRoute.Clone, true) => (Strings.Scan_KeepAsIs, Strings.Scan_KeepAsIsCloneHelp),
+        (AsItIsRoute.Mark, _) => (Strings.Scan_KeepAsIs, Strings.Scan_KeepAsIsMarkHelp),
+        (AsItIsRoute.Add, false) => (Strings.Scan_AddToList, Strings.Scan_AddToListHelp),
+        (AsItIsRoute.Clone, false) => (Strings.Scan_CloneAsIs, Strings.Scan_CloneAsIsHelp),
+        _ => ("", ""),
     };
 
     /// <summary>The next step as the text report says it, naming the command-line switches rather than the screens.</summary>

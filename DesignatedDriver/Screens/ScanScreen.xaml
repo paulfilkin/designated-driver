@@ -58,16 +58,36 @@
                         <TextBlock x:Name="NextStepText" Margin="0,8,0,0" TextWrapping="Wrap" FontWeight="SemiBold"/>
                     </StackPanel>
                 </Border>
-                <!-- The verdict's action as a real button, so the next step is where the eye lands. -->
-                <StackPanel x:Name="ActionRow" Orientation="Horizontal" Margin="0,10,0,0">
-                    <Button x:Name="SetUpButton" Content="{x:Static res:Strings.Scan_SetUp}" Style="{StaticResource ModernButton}" Margin="0,0,10,0" Click="SetUp_Click" Visibility="Collapsed"
-                            AutomationProperties.Name="{x:Static res:Strings.Scan_SetUp}" AutomationProperties.HelpText="{x:Static res:Strings.Scan_SetUpHelp}"/>
-                    <Button x:Name="OpenCheckButton" Content="{x:Static res:Strings.Scan_OpenCheck}" Style="{StaticResource ModernButton}" Margin="0,0,10,0" Click="OpenCheck_Click" Visibility="Collapsed"
-                            AutomationProperties.Name="{x:Static res:Strings.Scan_OpenCheck}" AutomationProperties.HelpText="{x:Static res:Strings.Scan_OpenCheckHelp}"/>
-                    <Button x:Name="AddButton" Content="{x:Static res:Strings.Scan_AddToList}" Style="{StaticResource SecondaryButton}" Margin="0,0,10,0" Click="Add_Click" Visibility="Collapsed"
-                            AutomationProperties.Name="{x:Static res:Strings.Scan_AddToList}" AutomationProperties.HelpText="{x:Static res:Strings.Scan_AddToListHelp}"/>
-                    <Button x:Name="CloneButton" Content="{x:Static res:Strings.Scan_CloneAsIs}" Style="{StaticResource SecondaryButton}" Margin="0,0,10,0" Click="Clone_Click" Visibility="Collapsed"
-                            AutomationProperties.Name="{x:Static res:Strings.Scan_CloneAsIs}" AutomationProperties.HelpText="{x:Static res:Strings.Scan_CloneAsIsHelp}"/>
+                <!-- The ways on from the verdict as real buttons, so the next step is where the eye lands. Each has a line
+                     beside it saying what it does, on screen as well as for screen readers, and the buttons share a width. -->
+                <StackPanel x:Name="ActionRow" Margin="0,10,0,0" Grid.IsSharedSizeScope="True">
+                    <Grid x:Name="SetUpChoice" Margin="0,0,0,8" Visibility="Collapsed">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="ChoiceButton"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="SetUpButton" Content="{x:Static res:Strings.Scan_SetUp}" Style="{StaticResource ModernButton}" Click="SetUp_Click"
+                                AutomationProperties.Name="{x:Static res:Strings.Scan_SetUp}" AutomationProperties.HelpText="{x:Static res:Strings.Scan_SetUpHelp}"/>
+                        <TextBlock Grid.Column="1" Text="{x:Static res:Strings.Scan_SetUpHelp}" Style="{StaticResource HelperText}" TextWrapping="Wrap" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                    </Grid>
+                    <Grid x:Name="OpenCheckChoice" Margin="0,0,0,8" Visibility="Collapsed">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="ChoiceButton"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="OpenCheckButton" Content="{x:Static res:Strings.Scan_OpenCheck}" Style="{StaticResource ModernButton}" Click="OpenCheck_Click"
+                                AutomationProperties.Name="{x:Static res:Strings.Scan_OpenCheck}" AutomationProperties.HelpText="{x:Static res:Strings.Scan_OpenCheckHelp}"/>
+                        <TextBlock Grid.Column="1" Text="{x:Static res:Strings.Scan_OpenCheckHelp}" Style="{StaticResource HelperText}" TextWrapping="Wrap" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                    </Grid>
+                    <!-- Add the clone, clone it, or mark its entry: the label and the line are set with the route (ScanReportText.AsItIsButton). -->
+                    <Grid x:Name="AsItIsChoice" Margin="0,0,0,8" Visibility="Collapsed">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="ChoiceButton"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="AsItIsButton" Style="{StaticResource SecondaryButton}" Click="AsItIs_Click"/>
+                        <TextBlock x:Name="AsItIsText" Grid.Column="1" Style="{StaticResource HelperText}" TextWrapping="Wrap" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                    </Grid>
                 </StackPanel>
                 <StackPanel x:Name="FindingsPanel" AutomationProperties.Name="{x:Static res:Strings.Scan_ResultCard}" AutomationProperties.LiveSetting="Polite"/>
             </StackPanel>
