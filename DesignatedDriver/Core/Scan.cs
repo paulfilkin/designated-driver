@@ -15,9 +15,9 @@ public enum ScanCode
     NotGitHubOrigin, RepositoryNotFound, RepositoryMoved, Archived, NotAdmin,
     // Warnings
     Fork, Organisation, DirtyTree, MergeInProgress, DefaultBranchNotMain, ExistingFilesKept, ExistingBoardOtherColumns,
-    HooksPathElsewhere, RulesAlreadyApply, NoLanguage,
+    HooksPathElsewhere, RulesAlreadyApply, NoLanguage, LabelsBothPresent, FormAppliesRenamedLabel,
     // Changes
-    InitGit, CreateRepository, MergeSettings, Features, CreateLabels, RecolourLabels, CreateBoard, WriteFiles, PointHooks,
+    InitGit, CreateRepository, MergeSettings, Features, CreateLabels, RecolourLabels, RenameLabels, CreateBoard, WriteFiles, PointHooks,
     DependabotAlerts, DependabotUpdates, SecretScanning, CreateRuleset, UpdateConvention, AppendWorkflowSection,
     // Not available on this plan
     RulesetsUnavailable, CodeOwnersUnavailable, PushProtectionUnavailable, CodeScanningUnavailable,
@@ -71,6 +71,8 @@ public sealed class ScanFacts
     /// <summary>Dependabot security updates, from the automated-security-fixes endpoint; null when not read, in which case the details decide.</summary>
     public bool? SecurityUpdates { get; set; }
     public List<GhWorkflow> Workflows { get; set; } = [];
+    /// <summary>The labels each of the clone's issue forms applies, by path; empty when there is no clone.</summary>
+    public Dictionary<string, List<string>> IssueFormLabels { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     public Manifest? Manifest { get; set; }
     public string PlanName { get; set; } = "";
     /// <summary>Whether the clone's CONTRIBUTING.md has the convention's section on how a change gets in; null when there is no file or it wasn't read.</summary>
@@ -236,19 +238,22 @@ public static class ScanRules
         if (d.HasWiki) features.Add(Strings.Scan_Feature_WikiOff);
         if (features.Count > 0) Add(ScanSeverity.Change, ScanCode.Features, SetupStep.Settings, string.Format(Strings.Scan_Features, features.Count), string.Join("\n", features));
 
-        // Labels (section 3.2)
-        var missing = new List<string>();
-        var differ = new List<string>();
-        foreach (var wanted in ConventionLabels.All)
-        {
-            var have = f.Labels.FirstOrDefault(l => l.Name.Equals(wanted.Name, StringComparison.OrdinalIgnoreCase));
-            if (have is null) missing.Add(wanted.Name);
-            else if (!ConventionLabels.SameColour(have.Color, wanted.Color) || !ConventionLabels.SameDescription(have.Description, wanted.Description)) differ.Add(wanted.Name);
-        }
+        // Labels (section 3.2). GitHub's enhancement and documentation are renamed to feature and docs, not duplicated.
+        var plan = ConventionLabels.Plan(f.Labels);
+        var missing = plan.Where(p => p.Change == LabelChange.Create).Select(p => p.Label.Name).ToList();
+        var differ = plan.Where(p => p.Change == LabelChange.Recolour).Select(p => p.Label.Name).ToList();
+        var renames = plan.Where(p => p.Change == LabelChange.Rename).ToList();
         if (missing.Count > 0) Add(ScanSeverity.Change, ScanCode.CreateLabels, SetupStep.Labels, string.Format(Strings.Scan_CreateLabels, missing.Count), string.Join(", ", missing));
         if (differ.Count > 0) Add(ScanSeverity.Change, ScanCode.RecolourLabels, SetupStep.Labels, string.Format(Strings.Scan_RecolourLabels, differ.Count), string.Join(", ", differ));
-        if (missing.Count == 0 && differ.Count == 0) Add(ScanSeverity.Ok, ScanCode.LabelsOk, SetupStep.Labels, string.Format(Strings.Scan_LabelsOk, ConventionLabels.All.Count));
-        int others = f.Labels.Count(l => !ConventionLabels.All.Any(w => w.Name.Equals(l.Name, StringComparison.OrdinalIgnoreCase)));
+        if (renames.Count > 0) Add(ScanSeverity.Change, ScanCode.RenameLabels, SetupStep.Labels, string.Format(Strings.Scan_RenameLabels, renames.Count), string.Join(", ", renames.Select(r => string.Format(Strings.Scan_LabelRename, r.From, r.Label.Name))));
+        if (plan.Count == 0) Add(ScanSeverity.Ok, ScanCode.LabelsOk, SetupStep.Labels, string.Format(Strings.Scan_LabelsOk, ConventionLabels.All.Count));
+        foreach (var (from, to) in ConventionLabels.BothPresent(f.Labels))
+            Add(ScanSeverity.Warning, ScanCode.LabelsBothPresent, SetupStep.Labels, string.Format(Strings.Scan_LabelsBothPresent, from, to));
+        foreach (var rename in renames)
+            foreach (var (form, applied) in f.IssueFormLabels)
+                if (applied.Contains(rename.From, StringComparer.OrdinalIgnoreCase))
+                    Add(ScanSeverity.Warning, ScanCode.FormAppliesRenamedLabel, SetupStep.Labels, string.Format(Strings.Scan_FormAppliesRenamedLabel, form, rename.From, rename.Label.Name));
+        int others = f.Labels.Count(l => !ConventionLabels.All.Any(w => w.Name.Equals(l.Name, StringComparison.OrdinalIgnoreCase)) && !renames.Any(r => r.From.Equals(l.Name, StringComparison.OrdinalIgnoreCase)));
         if (others > 0) Add(ScanSeverity.Ok, ScanCode.OtherLabels, SetupStep.Labels, string.Format(Strings.Scan_OtherLabels, others));
 
         // The board (section 3.3)
