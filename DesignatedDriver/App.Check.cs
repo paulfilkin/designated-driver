@@ -33,6 +33,13 @@ public partial class App
             repo = new RepositorySettings { Folder = folder.TrimEnd('\\'), Owner = parsed.Value.Owner, Name = parsed.Value.Repository };
         }
 
+        // A repository that keeps its own conventions has no drift to report: nothing is checked or applied.
+        if (OwnConventions.CheckNotice(repo) is { } keepsOwn)
+        {
+            Console.Out.WriteLine(keepsOwn);
+            return 0;
+        }
+
         var result = await new CheckService(workspace).CheckAsync(repo, ct);
         Console.Out.WriteLine();
         if (!result.IsSetUp)

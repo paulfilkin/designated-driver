@@ -188,6 +188,8 @@
 
 Replace them with GitHub's values? No keeps yours.</value></data>
   <data name="Settings_ReadAskLine" xml:space="preserve"><value>{0}: yours "{1}", GitHub "{2}"</value></data>
+  <data name="Settings_KeepsOwnConventions" xml:space="preserve"><value>Keeps its own conventions</value></data>
+  <data name="Settings_KeepsOwnConventionsHelp" xml:space="preserve"><value>For a repository with rules of its own. Scan, Set up a repository and Check don't offer to convert it, and the workflow screens use the values above, the board included. Clear it to convert the repository later.</value></data>
   <data name="Settings_StoredAt" xml:space="preserve"><value>Stored in {0}</value></data>
 
   <!-- Status screen -->
@@ -643,6 +645,9 @@ The clone and the repository on GitHub are not touched.</value></data>
   <data name="Scan_ScannedAt" xml:space="preserve"><value>{0}, scanned {1}</value></data>
   <data name="Scan_Verdict_NotConvertible" xml:space="preserve"><value>Not convertible as it stands</value></data>
   <data name="Scan_Verdict_Convertible" xml:space="preserve"><value>Convertible</value></data>
+  <data name="Scan_Verdict_KeepsOwn" xml:space="preserve"><value>Keeps its own conventions</value></data>
+  <data name="Scan_Summary_KeepsOwn" xml:space="preserve"><value>Its entry in the list says it keeps its own conventions, so it isn't offered for conversion.</value></data>
+  <data name="Scan_Next_KeepsOwn" xml:space="preserve"><value>Next step: none. To convert it on purpose, clear Keeps its own conventions in its Settings and scan again. The findings below are for information.</value></data>
   <data name="Scan_Verdict_AlreadySetUp" xml:space="preserve"><value>Already set up to the convention</value></data>
   <data name="Scan_Summary_NotConvertible" xml:space="preserve"><value>Not convertible: {0} blocker(s)</value></data>
   <data name="Scan_Summary_Convertible" xml:space="preserve"><value>Convertible: {0} change(s), {1} thing(s) worth knowing</value></data>
@@ -770,6 +775,7 @@ The clone and the repository on GitHub are not touched.</value></data>
   <!-- Status additions -->
   <data name="Status_Convention" xml:space="preserve"><value>Convention</value></data>
   <data name="Status_ConventionVersion" xml:space="preserve"><value>Set up to convention v{0} on {1}</value></data>
+  <data name="Status_KeepsOwn" xml:space="preserve"><value>Keeps its own conventions. The workflow screens use its settings; Check doesn't apply.</value></data>
   <data name="Status_NoConvention" xml:space="preserve"><value>Not set up by the tool yet. Scan it to see what that would involve, or set it up from Set up a repository.</value></data>
   <data name="Status_Board" xml:space="preserve"><value>Board</value></data>
   <data name="Status_BoardLine" xml:space="preserve"><value>{0}'s project {1}</value></data>
@@ -915,6 +921,7 @@ Fix the cause and press Retry. Steps already done are not repeated.</value></dat
   <data name="Token_Use" xml:space="preserve"><value>Use this token</value></data>  <!-- The setup switch, from a terminal -->
   <data name="Setup_Cli_Usage" xml:space="preserve"><value>Usage: DesignatedDriver --setup &lt;answers.json&gt;  (a SetupAnswers object in camelCase; the board token, if any, in DESIGNATED_DRIVER_BOARD_TOKEN)</value></data>
   <data name="Setup_Cli_Blocked" xml:space="preserve"><value>The scan blocks the set-up. Nothing was changed.</value></data>
+  <data name="Setup_KeepsOwn" xml:space="preserve"><value>{0} keeps its own conventions, so it isn't set up. To set it up, clear Keeps its own conventions in its Settings. Nothing was changed.</value></data>
   <data name="Setup_Cli_Repository" xml:space="preserve"><value>Repository: {0}</value></data>
   <data name="Setup_Cli_Board" xml:space="preserve"><value>Board: {0}</value></data>
   <data name="Setup_Cli_PullRequest" xml:space="preserve"><value>Pull request: {0}</value></data>
@@ -935,6 +942,7 @@ Fix the cause and press Retry. Steps already done are not repeated.</value></dat
   <data name="Check_Run" xml:space="preserve"><value>Check now</value></data>
   <data name="Check_RunHelp" xml:space="preserve"><value>Read the repository again and compare it with the convention. Nothing is changed.</value></data>
   <data name="Check_NoClone" xml:space="preserve"><value>Check needs the repository's clone. Set its folder on the Repositories screen.</value></data>
+  <data name="Check_KeepsOwn" xml:space="preserve"><value>{0} keeps its own conventions, so it isn't checked against this one. To check or convert it, clear Keeps its own conventions in its Settings.</value></data>
   <data name="Check_NotSetUp" xml:space="preserve"><value>This repository has no convention manifest, so it was not set up by the tool. Scan it to see what setting it up would involve, or set it up from Set up a repository.</value></data>
   <data name="Check_CheckedAt" xml:space="preserve"><value>{0}, set up to convention v{1} on {2}, checked {3}</value></data>
   <data name="Check_CleanText" xml:space="preserve"><value>Every setting, label, file and switch the convention covers is as the tool would set it.</value></data>

@@ -296,6 +296,8 @@ public partial class NewRepositoryScreen : ScreenBase
 
         if (_facts is not null)
         {
+            // A repository that keeps its own conventions is refused before anything else is shown.
+            if (OwnConventions.SetupRefusal(_facts.KeepsOwnConventions, _facts.OwnerAndName) is { } refusal) { Shell.ShowError(refusal); return; }
             var report = ScanRules.Assess(_facts);
             ShowScan(report);
             TakeFromScan(_facts);
