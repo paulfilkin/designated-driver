@@ -62,6 +62,7 @@ public static partial class SelfTestRunner
             OwnConventionsChecks(Check);
             ScanBoardLineChecks(Check);
             NearbyCloneChecks(Check);
+            StatusReadChecks(Check);
         }
         catch (Exception ex)
         {

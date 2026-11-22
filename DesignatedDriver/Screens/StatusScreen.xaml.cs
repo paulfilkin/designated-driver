@@ -13,6 +13,11 @@ namespace DesignatedDriver.Screens;
 /// <summary>Status: prerequisites, repository, convention, what the plan allows, branch, open pull requests and the user's issues.</summary>
 public partial class StatusScreen : ScreenBase
 {
+    /// <summary>What gh auth status reported on this load, so reads that need a scope the token lacks are skipped.</summary>
+    private AuthStatus _auth = new();
+    /// <summary>The repository's visibility from this load's capabilities read, or null when it couldn't be read.</summary>
+    private bool? _isPublic;
+
     public StatusScreen(IShell shell) : base(shell)
     {
         InitializeComponent();
@@ -33,6 +38,8 @@ public partial class StatusScreen : ScreenBase
         report.GhVersion = await Workspace.GitHub.VersionAsync(ct);
         report.GhFound = report.GhVersion.Length > 0;
         if (report.GhFound) report.Auth = await Workspace.GitHub.AuthStatusAsync(ct);
+        _auth = report.Auth;
+        _isPublic = null;
         ShowPrerequisites(report);
 
         // 2. Repository, identity, convention and board.
@@ -107,7 +114,8 @@ public partial class StatusScreen : ScreenBase
     {
         if (!Workspace.PlanProbed)
         {
-            Workspace.PlanName = await Workspace.GitHub.PlanNameAsync(ct);
+            // The plan name needs the user scope; without it the answer is always empty, so it isn't asked for.
+            Workspace.PlanName = ActionsUsage.ReadsAccount(_auth) ? await Workspace.GitHub.PlanNameAsync(ct) : "";
             Workspace.PlanProbed = true;
         }
         var details = await Workspace.GitHub.RepositoryDetailsAsync(Repo.OwnerAndName, ct);
@@ -116,6 +124,7 @@ public partial class StatusScreen : ScreenBase
             CapabilitiesLine.Text = Strings.Status_CapabilitiesUnknown;
             return;
         }
+        _isPublic = details.IsPublic;
         ApiStatus? probe = null;
         if (!details.IsPublic) probe = (await Workspace.GitHub.BranchRulesAsync(Repo.OwnerAndName, details.DefaultBranch, ct)).Status;
         var caps = Capabilities.From(Workspace.PlanName, details.IsPublic, probe);
@@ -283,11 +292,18 @@ public partial class StatusScreen : ScreenBase
             AlertsLink.Visibility = alerts.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        // Account-wide from billing when the token has the user scope; this repository's runs otherwise.
-        var billing = await Workspace.GitHub.ActionsBillingAsync(Workspace.Login, ct);
+        // Account-wide from billing when the token has the user scope; this repository's runs otherwise, unless the
+        // repository is public, where Actions minutes are free and no run is billable.
+        var billing = ActionsUsage.ReadsAccount(_auth) ? await Workspace.GitHub.ActionsBillingAsync(Workspace.Login, ct) : null;
         if (billing is not null)
         {
             ActionsText.Text = string.Format(Strings.Status_ActionsAccount, Math.Round(billing.TotalMinutesUsed), billing.IncludedMinutes);
+            ActionsNote.Visibility = Visibility.Collapsed;
+            return;
+        }
+        if (!ActionsUsage.CountsRuns(_isPublic))
+        {
+            ActionsText.Text = Strings.Status_ActionsFree;
             ActionsNote.Visibility = Visibility.Collapsed;
             return;
         }

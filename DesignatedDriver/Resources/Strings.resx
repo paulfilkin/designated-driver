@@ -1004,6 +1004,7 @@ Fix the cause and press Retry. Steps already done are not repeated.</value></dat
   <data name="Status_ActionsAccount" xml:space="preserve"><value>{0} of {1} included minutes used across the account.</value></data>
   <data name="Status_ActionsRepository" xml:space="preserve"><value>About {0} billable minute(s) in this repository's {1} run(s).</value></data>
   <data name="Status_ActionsNeedsUserScope" xml:space="preserve"><value>The account-wide figure needs the user scope: {0}</value></data>
+  <data name="Status_ActionsFree" xml:space="preserve"><value>Public repository: Actions minutes are free here, so none are counted.</value></data>
   <data name="Status_AddMissing" xml:space="preserve"><value>Add missing issues to the board</value></data>
   <data name="Status_AddMissingHelp" xml:space="preserve"><value>Put every open issue that isn't on the board onto it. GitHub's automation gives it Todo.</value></data>
   <data name="Status_AddMissingNone" xml:space="preserve"><value>Every open issue is already on the board.</value></data>

@@ -2170,6 +2170,9 @@ public static class Strings
     /// <summary>{0} of {1} included minutes used across the account.</summary>
     public static string Status_ActionsAccount => Get("Status_ActionsAccount");
 
+    /// <summary>Public repository: Actions minutes are free here, so none are counted.</summary>
+    public static string Status_ActionsFree => Get("Status_ActionsFree");
+
     /// <summary>The account-wide figure needs the user scope: {0}</summary>
     public static string Status_ActionsNeedsUserScope => Get("Status_ActionsNeedsUserScope");
 

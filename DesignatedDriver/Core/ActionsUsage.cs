@@ -26,4 +26,19 @@ public static class ActionsUsage
 
     /// <summary>Runs in the month, oldest excluded past the cap so a busy repository costs a bounded number of calls.</summary>
     public const int MaxRunsToTime = 50;
+
+    /// <summary>
+    /// Whether to ask for the account's billing, and the plan name, which both need the user scope: not when gh
+    /// auth status shows the token lacks it, since the answer can only be a 404 or nothing.
+    /// </summary>
+    public static bool ReadsAccount(AuthStatus auth) => !auth.Lacks("user");
+
+    /// <summary>
+    /// Whether to count this repository's runs. Actions minutes are free on a public repository, so its runs are
+    /// never billable and counting them costs a call per run for nothing. Unknown visibility counts, as before.
+    /// </summary>
+    public static bool CountsRuns(bool? isPublic) => isPublic != true;
+
+    /// <summary>The runs endpoint's output cut to the run ids, all the count needs, so the activity panel stays readable.</summary>
+    public const string RunIdsOnly = "{workflow_runs: [.workflow_runs[] | {id}]}";
 }
