@@ -191,6 +191,8 @@ Replace them with GitHub's values? No keeps yours.</value></data>
   <data name="Settings_ReadAskLine" xml:space="preserve"><value>{0}: yours "{1}", GitHub "{2}"</value></data>
   <data name="Settings_KeepsOwnConventions" xml:space="preserve"><value>Keeps its own conventions</value></data>
   <data name="Settings_KeepsOwnConventionsHelp" xml:space="preserve"><value>For a repository with rules of its own. Scan, Set up a repository and Check don't offer to convert it, and the workflow screens use the values above, the board included. Clear it to convert the repository later.</value></data>
+  <data name="Settings_TypeNameToMerge" xml:space="preserve"><value>Type the repository's name to merge</value></data>
+  <data name="Settings_TypeNameToMergeHelp" xml:space="preserve"><value>Merge and merge with bypass on Review ask for this repository's owner and name to be typed before they run. Clear it only for a repository you are sure of.</value></data>
   <data name="Settings_StoredAt" xml:space="preserve"><value>Stored in {0}</value></data>
 
   <!-- Status screen -->
@@ -496,6 +498,15 @@ This comment is posted first:
 
 Then the pull request is squash merged with --admin and the branch {2} is deleted.</value></data>
   <data name="Review_DidBypass" xml:space="preserve"><value>Merged #{0} with bypass; the reason is on the pull request.</value></data>
+  <data name="Confirm_Repository" xml:space="preserve"><value>Repository</value></data>
+  <data name="Confirm_ApproveIn" xml:space="preserve"><value>Approve in {0}</value></data>
+  <data name="Confirm_RequestChangesIn" xml:space="preserve"><value>Request changes in {0}</value></data>
+  <data name="Confirm_MergeInto" xml:space="preserve"><value>Merge into {0}</value></data>
+  <data name="Confirm_BypassInto" xml:space="preserve"><value>Merge with bypass into {0}</value></data>
+  <data name="Confirm_TypeLabel" xml:space="preserve"><value>Type {0} to confirm</value></data>
+  <data name="Confirm_TypeHelp" xml:space="preserve"><value>As GitHub asks before a repository is deleted: it makes sure this is the repository you mean. This repository's Settings can turn it off.</value></data>
+  <data name="Confirm_OwnedBy" xml:space="preserve"><value>Owned by {0}, not your own account.</value></data>
+  <data name="Confirm_KeepsOwn" xml:space="preserve"><value>Keeps its own conventions.</value></data>
   <!-- Fix a problem -->
   <data name="Fix_Title" xml:space="preserve"><value>Fix a problem</value></data>
   <data name="Fix_Intro" xml:space="preserve"><value>The common situations from Working with Git.md, section 8. Each card says whether it applies to your branch right now.</value></data>

@@ -68,7 +68,7 @@ What the repository already has is kept.  Its own issue forms stay, and the conv
 | Start work | Write a new issue from the issue forms' fields, or pick one from the board's Todo column (or the profile's ready column), assign it to yourself, move its card to In Progress, make the branch |
 | Save and share | Commit with the message checks, push |
 | Submit | Update the branch from main if it is behind, open the pull request from the template with its `Closes #n` line filled in, put it on the board, move the issue's card to the profile's In review column if it has one, watch the check |
-| Review | Approve, request changes, merge; admins only.  A merge re-reads the pull request first and stops if main has moved under it.  Picking another pull request while one loads shows the newest |
+| Review | Approve, request changes, merge; admins only.  Each asks first in a window that names the repository in large type; a merge also needs the repository's name typed, unless its Settings turn that off.  A merge re-reads the pull request first and stops if main has moved under it.  Picking another pull request while one loads shows the newest |
 | Tidy up | Back to main, pull, delete merged branches |
 | Fix a problem | The common situations, each with its commands |
 

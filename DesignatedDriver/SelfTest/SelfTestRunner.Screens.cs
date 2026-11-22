@@ -60,6 +60,7 @@ public static partial class SelfTestRunner
             ("Settings window", () => new SettingsWindow(shell, null)),
             ("Token window", () => new TokenWindow()),
             ("About window", () => new AboutWindow(workspace)),
+            ("Confirm window", () => new ConfirmActionWindow(Core.ReviewAction.Merge, "example-org/example-app", "Squash and merge #12?", "", typeName: true)),
         };
         foreach (var (name, build) in builders)
         {
