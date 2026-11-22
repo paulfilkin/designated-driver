@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>DesignatedDriver</RootNamespace>
+    <AssemblyName>DesignatedDriver</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <Version>0.2.6</Version>
+    <Authors>multifarious</Authors>
+    <Company>multifarious</Company>
+    <Product>Designated Driver</Product>
+    <Description>Sets up GitHub repositories for a personal account to one convention, keeps them to it, and walks the day-to-day Git workflow.</Description>
+    <Copyright>Copyright © 2026 multifarious</Copyright>
+    <!-- The design asks for warnings as errors and no NuGet packages. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- CA1416: every API here is Windows-only by design. -->
+    <NoWarn>CA1416</NoWarn>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="icon.ico" />
+    <Resource Include="icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Sample gh output read by the self-test. -->
+    <EmbeddedResource Include="SelfTest\Samples\*.json" />
+    <EmbeddedResource Include="SelfTest\Samples\*.txt" />
+    <EmbeddedResource Include="SelfTest\Samples\*.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The convention, one folder per version (section 3.6 of the design). Logical names keep the folder path. -->
+    <EmbeddedResource Include="Convention\**\*" LogicalName="Convention/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Strings.Designer.cs is regenerated from Strings.resx by Tools\Update-Strings.ps1. -->
+    <Compile Update="Resources\Strings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Resources\Strings.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>DesignatedDriver.Resources</CustomToolNamespace>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,25 @@
+{
+  "current": "paulfilkin/example",
+  "repositories": [
+    {
+      "folder": "C:\\Users\\paul\\Documents\\GIT\\example",
+      "owner": "paulfilkin",
+      "name": "example",
+      "selfTestCommand": "",
+      "requiredCheck": "Build and test",
+      "defaultBranch": "main",
+      "boardOwner": "",
+      "boardNumber": 0
+    },
+    {
+      "folder": "C:\\Users\\paul\\Documents\\GIT\\example-app",
+      "owner": "example-org",
+      "name": "example-app",
+      "selfTestCommand": "dotnet run --project app\\ExampleApp.csproj -- --self-test",
+      "requiredCheck": "Build and self-test",
+      "defaultBranch": "main",
+      "boardOwner": "example-org",
+      "boardNumber": 3
+    }
+  ]
+}

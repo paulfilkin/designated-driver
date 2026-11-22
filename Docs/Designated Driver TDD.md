@@ -1,0 +1,293 @@
+# Designated Driver: technical design
+
+A Windows desktop tool that sets up GitHub repositories for a personal account to one consistent convention, keeps them to it, and then walks the day-to-day workflow (issue, branch, commit, pull request, merge, tidy up) the way Git Helper does.  It targets what GitHub Free gives a personal account, on private and public repositories alike, and uses the paid-only features only when the repository happens to allow them.
+
+Date: 19 November 2026.  Sections 1 to 11 are the proposal as written that day.  Section 12 records what was built from it, to v0.2.3 on 21 November 2026.
+
+## 1. Goals
+
+1. Create a new repository, or bring an existing one in, so that it has the same issues, labels, board, templates, settings and automation as every other repository the owner has set up with the tool.
+2. Use every piece of free capability GitHub offers a personal account, and nothing that needs a paid plan unless it is available for the repository in hand (public repositories get more).
+3. Keep repositories to the convention over time: show what has drifted and bring it up to date in one action.
+4. Work with any number of repositories, switching between them.
+5. Carry Git Helper's workflow screens across, with the Partner Manager specifics turned into settings.
+6. Stay a single `.exe` that runs `git` and `gh` and nothing else, with every command visible, as Git Helper does.
+
+Non-goals: organisation repositories (they work where the commands are the same, but nothing is designed for them), GitHub Enterprise, anything that needs a GitHub App or a server.
+
+## 2. What GitHub Free gives a personal account
+
+Checked against GitHub's documentation on 19 November 2026.  "Private" and "public" are the repository's visibility under a personal account on the Free plan.
+
+| Capability | Private | Public | How the tool uses it |
+|---|---|---|---|
+| Issues, labels, milestones, issue forms | Yes | Yes | Labels and issue forms are part of the convention. |
+| Projects (user-owned boards), linked to repositories | Yes | Yes | One board per repository, columns set by the tool. |
+| Project built-in workflows (closed → Done, merged → Done) | Yes, on by default | Yes | Left on.  Auto-add is limited to one per project on Free and cannot be set by the API, so an Actions workflow does the adding instead. |
+| GitHub Actions | Included compute allowance per month ($12 on Free at the time of writing), standard runners | Free for standard runners | Every automation below is an Actions workflow.  The tool shows the month's usage on Status. |
+| Repository secrets and variables | Yes | Yes | One secret for the board token. |
+| Dependabot alerts, security updates, version updates | Yes | Yes | Turned on, with a `dependabot.yml` for the package ecosystems found. |
+| Merge settings: squash only, delete branch on merge, allow update branch | Yes | Yes | Set on every repository. |
+| Pull request template, CONTRIBUTING, issue template chooser | Yes | Yes | Written from the convention. |
+| Discussions | Yes | Yes | Optional, off by default. |
+| Rulesets and protected branches (required review, required checks, no direct push) | **No** | Yes | Created on public repositories.  On private ones the tool enforces the same rules itself, with local hooks and a guard workflow (section 7). |
+| CODEOWNERS and required code owner review | **No** | Yes | The file is written anyway, so it takes effect if the repository goes public or the plan changes. |
+| Draft pull requests | **No** | Yes | Not relied on. |
+| Auto-merge | Needs rules | Yes | Not relied on. |
+| Wiki, Pages | **No** | Yes | Not used.  The convention keeps documentation in `Docs\`. |
+| Secret scanning push protection | **No** (paid add-on) | Yes | Turned on for public repositories.  The CI workflow has a committed-secrets check for every repository. |
+| Code scanning (CodeQL) | **No** | Yes | A CodeQL workflow is written for public repositories only. |
+| Repository templates | Yes | Yes | Not used as the source of the convention (section 3.6 says why). |
+
+Two consequences shape the design.  Policy cannot be enforced by GitHub on a private repository, so the tool and the repository's own hooks and workflows enforce it.  And since visibility can change, every piece is written in a form that works on both, and the tool re-checks what applies when it checks the convention.
+
+## 3. The convention
+
+The convention is versioned.  Each repository records the version it was set up to in `.github/repo-starter.json` (section 3.7), so the tool can tell what has drifted.
+
+### 3.1 Files
+
+Written into the repository on set-up, with placeholders filled from the answers in the wizard.  Existing files are not overwritten without the user ticking them in the Check screen.
+
+| File | Purpose | Placeholders |
+|---|---|---|
+| `README.md` | Skeleton: name, one-line purpose, requirements, running it, layout.  Only when the repository has none. | name, description |
+| `CONTRIBUTING.md` | How issues become pull requests: branch names, commit messages, the pull request template, the checks, who merges.  Written from Partner Manager's with the project specifics removed. | name, self-test command, default branch |
+| `Docs\Working with Git.md` | The step-by-step Git and GitHub guide, including the common problems section that Fix a problem is built on. | name |
+| `.github/pull_request_template.md` | Issue, what and why, how it was tested, checklist, AI assistance. | checklist items chosen in the wizard |
+| `.github/ISSUE_TEMPLATE/bug.yml`, `feature.yml`, `config.yml` | Issue forms, each applying its label.  Blank issues off. | name |
+| `.github/CODEOWNERS` | `* @owner` | owner login |
+| `.github/workflows/ci.yml` | Build and test (section 3.5). | project file, test command |
+| `.github/workflows/guard.yml` | Pull request hygiene and direct-push detection (section 7). | default branch |
+| `.github/workflows/board.yml` | Adds new issues and pull requests to the board (section 3.3). | board number |
+| `.github/workflows/release.yml` | Optional: on a version tag, publishes the build as a release with the exe attached.  .NET desktop projects only. | project file |
+| `.github/workflows/codeql.yml` | Public repositories only. | language |
+| `.github/dependabot.yml` | Weekly version updates for the ecosystems found (nuget, github-actions, npm, pip). | ecosystems |
+| `.githooks/commit-msg`, `.githooks/pre-push` | Local enforcement (section 7). | default branch |
+| `.gitignore`, `.gitattributes`, `.editorconfig` | By language, from the tool's own copies.  `.gitignore` only when the repository has none. | language |
+| `.github/repo-starter.json` | The convention manifest (section 3.7). | all |
+
+### 3.2 Labels
+
+A fixed set, created with `gh label create --force` so colours and descriptions stay consistent:
+
+`bug`, `feature`, `docs`, `chore`, `question`, `good first issue`, `blocked`, `wontfix`.
+
+The branch prefix rule from Git Helper stays: `bug` gives `fix/`, `docs` gives `docs/`, `chore` gives `chore/`, everything else `feature/`.  Labels not in the set are left alone.
+
+### 3.3 The board
+
+One user-owned project per repository, linked to it.
+
+- Created with `gh project create --owner @me --title "<name>"`, then `gh project link`.
+- The Status field's options are set to `Ready`, `In progress`, `Done` by a GraphQL `updateProjectV2Field` call through `gh api graphql`, replacing the default `Todo`, `In Progress`, `Done`.  Git Helper already looks the field and options up by name, so the same names keep the workflow screens working.
+- The two built-in workflows that move closed issues and merged pull requests to Done are on by default and left on.
+- Adding items: `board.yml` runs `actions/add-to-project` on `issues: opened, reopened` and `pull_request: opened`.  It needs a token with the `project` scope, because the workflow's own `GITHUB_TOKEN` cannot reach user-owned projects.  The wizard asks for a classic personal access token with `repo` and `project` scopes once, stores it with `gh secret set PROJECT_TOKEN`, and the token itself is never written to settings or the activity panel.  If the user skips this, the workflow is still written but disabled, and the Status screen offers "Add missing issues to the board", which does the same with the user's own `gh` login.
+
+### 3.4 Repository settings
+
+Set with `gh repo edit` and `gh api`:
+
+- Squash merge only, with the pull request title as the commit message (`--squash-merge-commit-message pr-title`).  Merge commits and rebase merges off.
+- Delete branch on merge.  Allow update branch.
+- Issues on, projects on, wiki off (not available on private Free anyway).
+- Dependabot alerts (`PUT /repos/{o}/{r}/vulnerability-alerts`) and security updates (`PUT /repos/{o}/{r}/automated-security-fixes`) on.
+- Secret scanning and push protection on when the API accepts it (public repositories).
+- Topics and description from the wizard.
+- On public repositories, or when the account's plan allows it (`gh api user --jq .plan.name` is not `free`): a ruleset on the default branch requiring a pull request, one approving review when the wizard says so, the `Build and test` check, no force pushes and no deletion, with the owner as a bypass actor.  Created with `POST /repos/{o}/{r}/rulesets` using the same JSON shape Partner Manager's ruleset returns.  On private Free repositories this step is recorded as "not available" in the manifest, not as a failure.
+
+### 3.5 CI
+
+`ci.yml` runs on pull requests to the default branch and on pushes to it, with a job named `Build and test` so the required check name is the same everywhere.  Steps: check out, the committed-secrets check from Partner Manager's workflow (data files, keys, certificates, `.env`), then the language steps.  For .NET: set up the SDK, `dotnet build -warnaserror`, `dotnet test` if a test project exists, then the self-test command if one was given.  For other languages the wizard asks for a build command and a test command and the job runs those.  The job fails the pull request's check either way; what GitHub does with a failed check depends on whether rules exist (section 7).
+
+### 3.6 Where the convention lives
+
+In the tool, as embedded resources, one folder per convention version.  Not in a GitHub template repository, for three reasons: a template repository copies files once and offers no way to bring repositories up to date later; labels, settings, the board and secrets are not part of a template; and a template cannot fill placeholders.  The tool's convention is also what the Check screen compares against, so there is one source.
+
+### 3.7 The manifest
+
+`.github/repo-starter.json` records the convention version, the date, the language, the options chosen in the wizard (release workflow, CodeQL, discussions, review required), the board owner and number, and which steps were "not available" on this plan.  The Check screen reads it to know what the repository was set up to; the workflow screens read the board number from it, so a second machine needs no settings beyond the folder.
+
+## 4. Architecture
+
+A new solution that starts from Git Helper's code and keeps its shape: WPF on `net10.0-windows`, warnings as errors, no NuGet packages, strings in `Strings.resx`, a `--self-test` mode, a command runner that shows every `git` and `gh` call.
+
+```
+Core\            Pure logic.  From Git Helper: branch names, commit checks, review rules, template
+                 filling, conflict markers.  New: Convention (the file set and placeholders),
+                 Manifest, Plan (the ordered steps and what each needs), Drift (what differs).
+Convention\      Embedded resources: v1\files\..., v1\labels.json, v1\settings.json.
+Models\          JSON models for gh output.  New: repository, label, project field, ruleset, plan.
+Services\        CommandRunner, GitService, GitHubService (extended), SetupService (runs a Plan),
+                 ConventionService (reads embedded files, fills placeholders, compares).
+Screens\         Repositories, New repository, Check, then Status, Start work, Save and share,
+                 Submit, Review, Tidy up, Fix a problem from Git Helper.
+Windows\         Settings, About, Text viewer, Token prompt.
+SelfTest\        Checks with sample gh output, as in Git Helper.
+Tools\           Update-Strings.ps1, New-Icon.ps1.
+```
+
+The Partner Manager specifics in Git Helper become settings or are read from the repository: the label to prefix map (section 3.2), the board column names (read from the board), the pull request template (read from the repository, the convention's copy as the fallback), the self-test command and required check name (from the manifest, editable), and the nine strings that name Partner Manager.
+
+### 4.1 Plans and steps
+
+Set-up is a `Plan`: an ordered list of `Step` records, each with a name, the commands it will run, a `Check` that says whether it is already done, and an `Apply`.  The wizard builds the plan from the answers, shows it as a checklist, and `SetupService` runs it: for each step, check, skip if done, otherwise apply, then check again.  Every step is idempotent, so a plan that failed part way (no network, a refused token) is rerun from the start and only does what is left.  The same `Plan` type drives the Check screen: it builds the plan for the current convention version, runs every `Check`, and offers to apply the ones that fail.
+
+Steps, in order:
+
+1. Create the repository (`gh repo create`, with `--source` and `--push` for an existing folder, or `--clone` for a new one), or confirm an existing one.
+2. Repository settings (section 3.4, without the ruleset).
+3. Labels.
+4. Board: create, link, set the Status options.
+5. Board token secret (optional).
+6. Convention files, committed on a branch `chore/repo-starter-v1` and merged through a pull request if the repository already has history, or committed straight to the default branch if the repository is empty.  The pull request path is the convention's own rule applied to itself.
+7. Local hooks: `git config core.hooksPath .githooks`.
+8. Dependabot and secret scanning.
+9. Ruleset, where available.
+10. Write the manifest (part of step 6's commit, updated at the end).
+11. Add the repository to the tool's settings and open Status.
+
+### 4.2 Capability probe
+
+Before building a plan the tool reads `gh api user --jq .plan.name` and the repository's visibility, and records which steps apply.  It also tries nothing that the probe says is unavailable, so the activity panel stays free of expected failures.  If an API call still returns 403 or 422 with an upgrade message, the step is recorded as "not available" and the plan continues.
+
+## 5. Screens
+
+| Screen | What it does |
+|---|---|
+| Repositories | The repositories the tool knows, with convention version, drift (from the last Check), open pull request count.  Add an existing clone.  Start the wizard.  Switch the current repository. |
+| New repository | Three pages.  Where: owner (`@me` by default), name, description, visibility, new or existing folder, language.  Options: review required, release workflow, CodeQL (public only), discussions, which checklist items, the board token.  Create: the plan as a checklist that ticks as it runs, with the activity panel below. |
+| Check | Every step's check for the current repository, with what differs (a file diff, a missing label, a setting).  Tick the ones to apply, then Apply.  Also "Update to convention v2" when the tool is newer than the manifest. |
+| Status | As Git Helper, plus the convention version, the Actions usage for the month (`GET /users/{user}/settings/billing/actions`), Dependabot alert count, and "Add missing issues to the board". |
+| Start work, Save and share, Submit, Review, Tidy up, Fix a problem | As Git Helper, with the generalisations in section 4.  Review appears for the repository's admins, which on a personal repository is the owner. |
+
+A repository switcher in the header replaces Git Helper's single folder.  Settings keeps per-repository overrides (self-test command, check name, default branch) and the tool-wide ones.
+
+## 6. Settings
+
+`%AppData%\RepoStarter\settings.json`:
+
+```json
+{
+  "current": "paulfilkin/example",
+  "repositories": [
+    { "folder": "C:\\Users\\paul\\Documents\\GIT\\example", "owner": "paulfilkin", "name": "example",
+      "selfTestCommand": "", "requiredCheck": "Build and test", "defaultBranch": "main" }
+  ]
+}
+```
+
+Board owner and number come from the manifest, not settings.  No token is ever stored; `gh` holds the sign-in and the board token lives only as a repository secret.
+
+## 7. Enforcing the rules without rulesets
+
+On a private Free repository GitHub will accept a direct push to `main`, a merge with failing checks and a merge without review.  Three layers stand in for the ruleset, and all three are written on every repository so nothing changes when visibility does:
+
+1. **The tool.**  Review merges only with `--squash`, only when the required check passed, and only when the review rule is met or the user gives a bypass reason, as Git Helper does.  Save and share never commits on the default branch; it sends the user to Fix a problem.
+2. **Local hooks** in `.githooks\`, pointed to by `core.hooksPath` on every clone the tool sets up.  `commit-msg` applies the commit message rules (subject length, imperative first word, no trailing full stop, no em-dash).  `pre-push` refuses a push to the default branch unless the environment variable `REPO_STARTER_ALLOW_MAIN` is set, which the tool never sets and the user can set from a shell when they mean it.  Hooks are plain `sh`, so Git for Windows, macOS and Linux all run them.
+3. **The guard workflow.**  On `pull_request` it fails the check if the body has no `Closes #<n>` line, if the branch name does not match the convention, or if the head is behind the base by more than the wizard's limit.  On `push` to the default branch it looks up the pull request for the commit (`GET /repos/{o}/{r}/commits/{sha}/pulls`); if there is none, the workflow fails and opens an issue labelled `chore` titled "Direct push to main: <sha>", so the slip is visible on the board.  Detection, not prevention, but the owner is the only one who can push, and the Check screen shows the open guard issues.
+
+Where the ruleset does exist (public, or a paid plan), the same files are present and GitHub adds prevention on top.
+
+## 8. Self-test
+
+`--self-test`, as in Git Helper, extended with:
+
+- Every convention file fills its placeholders with no placeholder left (`{{` absent from the output).
+- The plan for each combination of visibility and plan name contains exactly the expected steps.
+- The ruleset JSON round-trips through the model and matches the shape of a saved real one.
+- The Status options GraphQL mutation is built with the right field and option names.
+- Drift detection: a changed label colour, a missing file and a changed setting are each reported, and an identical repository reports nothing.
+- The commit-msg and pre-push hooks, run with `sh` against sample inputs, accept and refuse the right cases.
+- The existing Git Helper checks (branch names, commit rules, review rules, Fix a problem commands).
+
+## 9. Testing it on itself
+
+The first repository the tool creates is its own: run the wizard with the tool's folder as the existing folder, private, .NET, release workflow on.  That exercises the existing-folder path, the pull request path for the convention files, hooks on a real clone, the private-Free capability path, and the Actions workflows on the first pull request.  Then a second run with a throwaway public repository covers the ruleset, CodeQL and push protection steps, after which the repository is deleted with `gh repo delete`.  Later, Check is run against both after editing a label and a workflow by hand, and must show exactly those two differences.
+
+## 10. Open questions
+
+1. Convention version 1's exact file contents, in particular the pull request checklist and `Working with Git.md` with the Partner Manager specifics removed.  To be written as the first task of the new project, from the Partner Manager originals.
+2. Whether the board token step is worth its friction.  Without it the tool adds issues to the board itself, which covers issues created through the tool and through "Add missing issues" on Status, but not issues created on the web between runs.
+3. Whether `release.yml` publishes a framework-dependent single-file exe (small, needs the runtime) or self-contained (large, runs anywhere).  Default: framework-dependent, matching Git Helper.
+4. Column names: `Ready`, `In progress`, `Done` as in Git Helper, or add `Backlog` so that Ready means ready to pick up.  Default: add `Backlog`; Start work lists Ready only.
+
+## 11. Phases
+
+1. **Foundation.**  New solution from Git Helper's code, multi-repository settings, the generalisations in section 4, the capability probe.  All existing screens working against any repository.  Self-test green.
+2. **Convention v1 and set-up.**  Embedded files, labels, board, settings, hooks, guard and board workflows, the plan runner, the New repository wizard.  Tested on the tool's own repository.
+3. **Check.**  Drift detection and apply, manifest versioning, the public-repository steps (ruleset, CodeQL, push protection), tested on a throwaway public repository.
+4. **Finish.**  Actions usage and Dependabot on Status, release workflow, getting started guide, icon.
+
+## 12. As built
+
+All four phases were built on 20 November 2026 and released as v0.1.0, with two further releases the same day and six more on 21 November.  The design held except where this section says otherwise.  Each point names the section it changes.
+
+### 12.1 The open questions, answered
+
+1. The convention files were written from Partner Manager's originals with the project specifics removed, as the first task of phase 2.
+2. The board token stays, and stays optional.  Without it the tool adds the issues it creates itself, and "Add missing issues to the board" on Status does the rest.
+3. The release is framework-dependent.  It is published with `-p:SelfContained=false`, not the `--self-contained false` switch, which SDK 10.0.100 ignored on the build machine.  The tag's number, without the `v`, is passed as the `Version` property, so the exe and the About window carry it whatever the project file says; v0.1.1 and v0.2.0 were built before that and report 0.1.0.
+4. The columns are GitHub's own `Todo`, `In Progress`, `Done`, with no `Backlog`.  `Ready` is accepted as an alias of `Todo` for boards made before the convention, such as Partner Manager's.  An issue is ready to pick up when it is in Todo and not labelled `blocked`.
+
+### 12.2 Where the build differs from the design
+
+**The board's Status field is never rewritten** (3.3).  The first live run showed that `updateProjectV2Field` regenerates every option id, even for options passed unchanged, and GitHub's built-in project workflows reference those ids: rewriting the field disabled five of the six.  The tool therefore leaves the columns as GitHub makes them and relies on the built-in automations to move items.  `board.yml` only adds opened issues and pull requests.  The board step reuses an open user project with the repository's name before creating one, so a failed `gh project link` cannot leave an orphan for a rerun to duplicate.
+
+**The capability probe does not read the plan name** (4.2).  `gh api user --jq .plan.name` returns nothing without the `user` scope, which the sign-in does not grant by default.  The probe reads the repository's visibility and, on a private repository, the branch rules endpoint: a 403 with an upgrade message means no rulesets, a 200 means they exist.  The same scope gap reaches Status (5): without `user` the account's Actions minutes are hidden, so the tool sums the billable time of this repository's runs since the first of the month instead, capped at 50 runs, and says which it is showing.
+
+**Clones and pushes have a protocol setting** (6).  `gitProtocol` (https or ssh) and `sshHost` (github.com or an alias from `~\.ssh\config`) are tool-wide settings, empty until chosen, with the default following gh's own per-host setting and the alias whose name or key file names the login.  The create step sets origin itself and pushes with git; gh never picks the URL.  Settings also gained a per-repository board override (owner and number), used only while the repository has no manifest, and `starredOnly` for the Repositories filter.
+
+**A Scan screen and three switches** (5).  Scan is a read-only look at the current repository, any folder, or an owner/name with no clone, against the convention.  `--scan`, `--setup <answers.json>` and `--check <folder> [--apply [--all]]` print what the screens show, with every command echoed, and exit with a code that says what they found.  The answers file is a `SetupAnswers` object in camelCase; the board token comes from the `REPO_STARTER_BOARD_TOKEN` environment variable.
+
+**Convention files reach a repository with history through an issue** (4.1).  The set-up opens an issue labelled `chore`, commits the files on `chore/<n>-repo-starter-v1` and opens a pull request with `Closes #<n>`.  An apply from Check does the same with an issue "Bring the repository up to the convention" and a branch `chore/<n>-convention-update`, one pull request per Apply.  Hooks are pointed at `.githooks` after that first push, so the push is never refused by the hook it installs.
+
+**The manifest records the wizard's answers** (3.7).  Description, project file, test project, build and test commands, checklist, behind limit and topics are kept under `answers`, so Check can render every file again and compare.  A manifest without them is a note on Check, not an item to apply; a set-up rerun records them, and rewrites the manifest whenever its answers or options differ from the ones given.  The set-up date is kept on an update.
+
+**Check's defaults** (5).  Files a project is expected to tailor (`CONTRIBUTING.md`, `Docs\Working with Git.md`, the pull request template, `ci.yml`) are reported but unticked; everything else is ticked.  Line endings, trailing spaces and the version pin on a workflow's `uses:` line do not count as drift, so Dependabot's bumps leave Check quiet.  Labels apply as a set, since they are cheap and fixed by the convention.  `README.md` is written only when the repository has none and is never compared.
+
+**Guard and Dependabot** (3.1, 7).  Guard's pull request job skips `dependabot[bot]`, whose branches have their own names and no issue.  GitHub links a commit to its pull request a few seconds after a merge, and the direct-push job once ran inside that gap and reported a merged Dependabot pull request, so the job now reads the pull request number from the merge commit's subject and accepts the commit when that pull request's merge commit is this one, and retries the lookup twice, twenty seconds apart, before it opens an issue.  `dependabot.yml` lists an ecosystem only when its manifest is among the repository's files; `github-actions` is always listed.  The public probe repository showed that a new public repository already has secret scanning and push protection on, that the ruleset POST in Partner Manager's shape is accepted, and that CodeQL fails on a repository with no source, as expected.
+
+**The convention folder holds the files directly** (4).  There is no `labels.json` or `settings.json`; labels and settings are tables in `Core`.  Extensionless dot files are stored with a leading underscore (`_gitignore`, `_gitattributes`, `_editorconfig`) so they do not act on the tool's own repository, and `release.yml` and `codeql.yml` are offered only where their options apply.  Placeholders are `{{name}}` with letters only, so GitHub's `${{ }}` expressions pass through untouched.
+
+**The command runner** (4).  Output is collected through an `ActivityBuffer` and flushed to the panel on the UI thread, so the window stays responsive while a command runs and the busy strip names the running command.
+
+**Merging** (7).  Review re-reads the pull request before merging and stops if `main` has moved under it; an unknown merge state is a blocker, not a warning.  Submit updates a branch that is behind `main` before opening the pull request.
+
+**The window places itself** (5).  WPF's `CenterScreen` centres the window on the monitor under the mouse without checking that it fits, so on a small monitor it overhung onto the next one.  The startup location is now `Manual`: on `SourceInitialized` the window reads that monitor's work area and DPI through Win32, shrinks to the work area where it has to, and centres itself there (`Core\WindowPlacement`, pure, and `Helpers\MonitorHelper`).  Monitors at different scales need the move in two passes, because WPF converts coordinates with the DPI of the monitor the handle was created on until the window has moved, and Windows only switches the DPI once the window lies mostly on the target.
+
+**Scan ends with a next step** (5).  Each verdict names what to do next, inside the notice and as a button under it: set up the repository, open Check when it is already set up and current, add it to Repositories, or fix the blockers and scan again.  The text report, and so `--scan`, says the same, naming the switches.
+
+**The wizard is called Set up a repository** (5).  "New repository" read as if a scanned repository would be created again, so the navigation entry, the wizard's title and the Repositories button are "Set up a repository", and its third page is "Plan", not "Create".  Scan's buttons are "Apply the convention" and "Work on it in Repo Starter", and the convertible next step says nothing changes until Start.  Each button's accessible name is its label, with the longer description as help text.  Sections 4, 5 and 11 keep the old name.
+
+**Screen loads give way** (5).  A reload asked for while other work runs used to be dropped, so a screen opened during another's load never loaded.  It is now held (`Core\HeldReload`) and runs when the work ends, if its screen is still shown and no load that began after the request has finished; `ScreenBase.LastLoadBegan` records when the last finished load began.  The running reload also records its screen, and asking for another screen's reload stops it (`HeldReload.GivesWay`): the activity panel names the screen stopped, and the new one loads at once instead of waiting behind, for example, Status's Actions usage calls.  A user action is never stopped; a held reload waits for it.
+
+**An existing repository keeps its visibility** (5).  The wizard took an existing folder's visibility from its radio buttons, which default to Private, so a public repository's clone was set up without CodeQL.  `SetupAnswers.PrivateOnGitHub` now decides: a repository the scan found on GitHub, from an existing folder or by owner and name, keeps GitHub's visibility, shown with the buttons disabled; a new repository, or a folder with no repository on GitHub yet, keeps the choice.  Set-up never changes an existing repository's visibility.  Scan's Apply the convention passes its `ScanFacts` to the wizard, so the first page arrives with the visibility, description, language and project; Next still scans again.
+
+**The Closes line** (7).  Submit fills the repository's pull request template.  It counts only a "Closes #" that starts a line and is outside HTML comments, the line GitHub reads and Guard checks, and adds an Issue section at the top when there is none; a template that mentions "Closes #12" only inside a comment, as paulfilkin/mycelia's does, no longer gets the number put into the comment.  The template is read from `.github/`, the root or `docs/`, as GitHub does; templates in a `.github/PULL_REQUEST_TEMPLATE/` folder are not used, since GitHub applies those only when the link names one.
+
+**The app is called Designated Driver** (6).  The tool had grown from setting repositories up into running the whole workflow, from issue to release, and "Repo Starter" no longer said that.  The window, the About window and every string say Designated Driver; the project, exe, assembly and namespace are `DesignatedDriver`, in a `DesignatedDriver\` folder; temporary files are named `designated-driver-*`; the release zip is `designated-driver-vX.Y.Z.zip`.  The icon is a DD mark drawn by `Tools\New-Icon.ps1`: a navy rounded square with a silver and a gold D linked like a chain, flatter at 24 px and below.  Settings live in `%AppData%\DesignatedDriver`; on first start, when only `%AppData%\RepoStarter` has a settings file, its files are copied across and the old folder is left as it is (`Settings.CarryOver`).  The board token comes from `DESIGNATED_DRIVER_BOARD_TOKEN`, with `REPO_STARTER_BOARD_TOKEN` read when it is not set.  The repository is renamed paulfilkin/designated-driver.  What the tool writes into repositories (the manifest's name, the hooks' variable, the set-up branch, and the text in the convention files, issues and pull requests that names the tool) keeps the old name until issue 67.  The paragraphs above and the releases table keep the old name.
+
+### 12.3 Releases
+
+| Version | Date | What it added |
+|---|---|---|
+| v0.1.0 | 20 November 2026 | The four phases: set-up, Check, the workflow screens, Status's Dependabot and Actions card, the release workflow, the getting started guide and the icon. |
+| v0.1.1 | 20 November 2026 | Check ignores action version pins; the templates' actions bumped. |
+| v0.2.0 | 20 November 2026 | Publishing with the `SelfContained` property; the responsive window; a New issue card on Start work that writes from the issue forms' fields; the Repositories filter by text and by GitHub stars; the merge safeguards. |
+| v0.2.1 | 21 November 2026 | Guard accepts a merge commit before GitHub has linked it to its pull request; the release build takes its version from the tag; the README filled and this section added. |
+| v0.2.2 | 21 November 2026 | The window opens wholly on the monitor under the mouse. |
+| v0.2.3 | 21 November 2026 | Scan ends with a next step and a button for it. |
+| v0.2.4 | 21 November 2026 | A screen opened while another is loading loads once that work ends. |
+| v0.2.5 | 21 November 2026 | The wizard is called Set up a repository and Scan's buttons say what they do; screen readers hear Scan's options and buttons by their text; copyright is multifarious. |
+| v0.2.6 | 21 November 2026 | Set-up takes an existing folder's visibility from GitHub, and Scan hands what it found to the wizard; leaving a screen stops its load. |
+
+Merged since v0.2.6 and not yet released: Submit fills only a Closes line outside comments, and reads the template from the root and `docs/` too (issue 58); the app is renamed Designated Driver (issue 66).
+
+## Sources
+
+- [About GitHub's plans](https://docs.github.com/en/get-started/learning-about-github/githubs-plans): Free versus Pro feature lists, Actions allowance.
+- [Available rules for rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets): rulesets on public repositories with Free, private with Pro and above.
+- [Adding items automatically](https://docs.github.com/en/issues/planning-and-tracking-with-projects/automating-your-project/adding-items-automatically): one auto-add workflow per project on Free.
+- [Using the built-in automations](https://docs.github.com/en/issues/planning-and-tracking-with-projects/automating-your-project/using-the-built-in-automations): the two workflows on by default.
+- `gh` 2.103.3 help for `repo create`, `repo edit`, `label clone`, `project copy`, `project link`, `ruleset`.

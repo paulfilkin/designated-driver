@@ -1,0 +1,58 @@
+<local:ScreenBase x:Class="DesignatedDriver.Screens.CheckScreen"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:DesignatedDriver.Screens"
+        xmlns:res="clr-namespace:DesignatedDriver.Resources">
+    <StackPanel MaxWidth="980" HorizontalAlignment="Left">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Text="{x:Static res:Strings.Check_Title}" Style="{StaticResource PageTitle}"/>
+                <TextBlock Text="{x:Static res:Strings.Check_Intro}" Style="{StaticResource PageIntro}"/>
+            </StackPanel>
+            <Button Grid.Column="1" x:Name="CheckButton" Content="{x:Static res:Strings.Check_Run}" Style="{StaticResource SecondaryButton}" VerticalAlignment="Top" Margin="12,4,0,0" Click="Check_Click"
+                    AutomationProperties.Name="{x:Static res:Strings.Check_Run}" AutomationProperties.HelpText="{x:Static res:Strings.Check_RunHelp}"/>
+        </Grid>
+
+        <Border x:Name="NoticeCard" Style="{StaticResource NoticeStyle}" Visibility="Collapsed">
+            <TextBlock x:Name="NoticeText" TextWrapping="Wrap"/>
+        </Border>
+
+        <Border x:Name="ResultCard" Style="{StaticResource CardStyle}" Visibility="Collapsed">
+            <StackPanel>
+                <TextBlock x:Name="CheckedText" Style="{StaticResource HelperText}" Margin="0,0,0,8"/>
+                <Border x:Name="SummaryNotice" Style="{StaticResource NoticeStyle}">
+                    <StackPanel>
+                        <TextBlock x:Name="SummaryTitle" FontWeight="SemiBold" FontSize="15"/>
+                        <TextBlock x:Name="SummaryText" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+                <StackPanel x:Name="ItemsPanel" AutomationProperties.Name="{x:Static res:Strings.Check_Title}" AutomationProperties.LiveSetting="Polite"/>
+                <StackPanel x:Name="ApplyPanel" Orientation="Horizontal" Margin="0,14,0,0" Visibility="Collapsed">
+                    <Button x:Name="ApplyButton" Content="{x:Static res:Strings.Check_Apply}" Style="{StaticResource ModernButton}" Click="Apply_Click"
+                            AutomationProperties.Name="{x:Static res:Strings.Check_Apply}" AutomationProperties.HelpText="{x:Static res:Strings.Check_ApplyHelp}"/>
+                    <Button Content="{x:Static res:Strings.Check_TickAll}" Style="{StaticResource LinkButton}" Margin="16,0,0,0" Click="TickAll_Click" AutomationProperties.Name="{x:Static res:Strings.Check_TickAll}"/>
+                    <Button Content="{x:Static res:Strings.Check_UntickAll}" Style="{StaticResource LinkButton}" Margin="12,0,0,0" Click="UntickAll_Click" AutomationProperties.Name="{x:Static res:Strings.Check_UntickAll}"/>
+                </StackPanel>
+                <TextBlock Text="{x:Static res:Strings.Check_ApplyNote}" Style="{StaticResource HelperText}" x:Name="ApplyNote" Visibility="Collapsed"/>
+            </StackPanel>
+        </Border>
+
+        <Border x:Name="ProgressCard" Style="{StaticResource CardStyle}" Visibility="Collapsed">
+            <StackPanel>
+                <TextBlock Text="{x:Static res:Strings.Check_ApplyCard}" Style="{StaticResource CardTitle}"/>
+                <StackPanel x:Name="PlanPanel" AutomationProperties.Name="{x:Static res:Strings.Check_ApplyCard}" AutomationProperties.LiveSetting="Polite"/>
+                <Border x:Name="ResultNotice" Style="{StaticResource NoticeStyle}" Visibility="Collapsed" Margin="0,12,0,0">
+                    <StackPanel>
+                        <TextBlock x:Name="ResultTitle" FontWeight="SemiBold" FontSize="15"/>
+                        <TextBlock x:Name="ResultText" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                        <StackPanel x:Name="ResultLinks" Orientation="Horizontal" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</local:ScreenBase>

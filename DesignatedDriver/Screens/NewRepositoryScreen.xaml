@@ -1,0 +1,186 @@
+<local:ScreenBase x:Class="DesignatedDriver.Screens.NewRepositoryScreen"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:DesignatedDriver.Screens"
+        xmlns:res="clr-namespace:DesignatedDriver.Resources">
+    <StackPanel MaxWidth="980" HorizontalAlignment="Left">
+        <TextBlock Text="{x:Static res:Strings.Setup_Title}" Style="{StaticResource PageTitle}"/>
+        <TextBlock Text="{x:Static res:Strings.Setup_Intro}" Style="{StaticResource PageIntro}"/>
+        <TextBlock x:Name="PageIndicator" Style="{StaticResource HelperText}" Margin="0,0,0,8" AutomationProperties.LiveSetting="Polite"/>
+
+        <!-- Page 1: where -->
+        <Border x:Name="WherePage" Style="{StaticResource CardStyle}">
+            <StackPanel>
+                <TextBlock Text="{x:Static res:Strings.Setup_WhereCard}" Style="{StaticResource CardTitle}"/>
+
+                <RadioButton x:Name="NewOption" GroupName="Source" Content="{x:Static res:Strings.Setup_SourceNew}" Margin="0,2,0,4" Checked="Source_Changed" IsChecked="True"
+                             AutomationProperties.Name="{x:Static res:Strings.Setup_SourceNew}"/>
+                <RadioButton x:Name="FolderOption" GroupName="Source" Content="{x:Static res:Strings.Setup_SourceFolder}" Margin="0,2,0,4" Checked="Source_Changed"
+                             AutomationProperties.Name="{x:Static res:Strings.Setup_SourceFolder}"/>
+                <Grid x:Name="FolderRow" Margin="24,0,0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="FolderBox" Style="{StaticResource ModernTextBox}" TextChanged="FolderBox_TextChanged"
+                             AutomationProperties.Name="{x:Static res:Strings.Setup_SourceFolder}" AutomationProperties.HelpText="{x:Static res:Strings.Setup_FolderHelp}"/>
+                    <Button Grid.Column="1" Content="{x:Static res:Strings.Settings_Browse}" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Click="BrowseFolder_Click"
+                            AutomationProperties.Name="{x:Static res:Strings.Settings_BrowseHelp}"/>
+                </Grid>
+                <TextBlock Text="{x:Static res:Strings.Setup_FolderHelp}" Style="{StaticResource HelperText}" Margin="24,0,0,8"/>
+                <RadioButton x:Name="RemoteOption" GroupName="Source" Content="{x:Static res:Strings.Setup_SourceRemote}" Margin="0,2,0,10" Checked="Source_Changed"
+                             AutomationProperties.Name="{x:Static res:Strings.Setup_SourceRemote}"/>
+
+                <Grid Margin="0,6,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="{x:Static res:Strings.Setup_Owner}" Style="{StaticResource LabelText}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="OwnerBox" Style="{StaticResource ModernTextBox}" AutomationProperties.Name="{x:Static res:Strings.Setup_Owner}" AutomationProperties.HelpText="{x:Static res:Strings.Setup_OwnerHelp}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="{x:Static res:Strings.Setup_Name}" Style="{StaticResource LabelText}" Margin="0,0,0,4"/>
+                        <TextBox x:Name="NameBox" Style="{StaticResource ModernTextBox}" TextChanged="NameBox_TextChanged" AutomationProperties.Name="{x:Static res:Strings.Setup_Name}" AutomationProperties.HelpText="{x:Static res:Strings.Setup_NameHelp}"/>
+                    </StackPanel>
+                </Grid>
+                <TextBlock Text="{x:Static res:Strings.Setup_NameHelp}" Style="{StaticResource HelperText}"/>
+
+                <TextBlock Text="{x:Static res:Strings.Setup_Description}" Style="{StaticResource LabelText}"/>
+                <TextBox x:Name="DescriptionBox" Style="{StaticResource ModernTextBox}" AutomationProperties.Name="{x:Static res:Strings.Setup_Description}" AutomationProperties.HelpText="{x:Static res:Strings.Setup_DescriptionHelp}"/>
+                <TextBlock Text="{x:Static res:Strings.Setup_DescriptionHelp}" Style="{StaticResource HelperText}"/>
+
+                <TextBlock Text="{x:Static res:Strings.Setup_Visibility}" Style="{StaticResource LabelText}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,2,0,4">
+                    <RadioButton x:Name="PrivateOption" GroupName="Visibility" Content="{x:Static res:Strings.Status_Visibility_Private}" IsChecked="True" Margin="0,0,18,0" Checked="Visibility_Changed"
+                                 AutomationProperties.Name="{x:Static res:Strings.Status_Visibility_Private}"/>
+                    <RadioButton x:Name="PublicOption" GroupName="Visibility" Content="{x:Static res:Strings.Status_Visibility_Public}" Checked="Visibility_Changed"
+                                 AutomationProperties.Name="{x:Static res:Strings.Status_Visibility_Public}"/>
+                </StackPanel>
+                <TextBlock x:Name="VisibilityHelp" Text="{x:Static res:Strings.Setup_VisibilityHelpPrivate}" Style="{StaticResource HelperText}"/>
+
+                <TextBlock Text="{x:Static res:Strings.Setup_Protocol}" Style="{StaticResource LabelText}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,2,0,4">
+                    <RadioButton x:Name="HttpsOption" GroupName="Protocol" Content="HTTPS" IsChecked="True" Margin="0,0,18,0" AutomationProperties.Name="HTTPS"/>
+                    <RadioButton x:Name="SshOption" GroupName="Protocol" Content="SSH" Checked="Protocol_Changed" Unchecked="Protocol_Changed" AutomationProperties.Name="SSH"/>
+                </StackPanel>
+                <TextBlock Text="{x:Static res:Strings.Setup_ProtocolHelp}" Style="{StaticResource HelperText}"/>
+                <StackPanel x:Name="SshHostPanel" Visibility="Collapsed">
+                    <TextBlock Text="{x:Static res:Strings.Setup_SshHost}" Style="{StaticResource LabelText}"/>
+                    <TextBox x:Name="SshHostBox" Style="{StaticResource ModernTextBox}" Width="260" HorizontalAlignment="Left" AutomationProperties.Name="{x:Static res:Strings.Setup_SshHost}" AutomationProperties.HelpText="{x:Static res:Strings.Setup_SshHostHelp}"/>
+                    <TextBlock Text="{x:Static res:Strings.Setup_SshHostHelp}" Style="{StaticResource HelperText}"/>
+                </StackPanel>
+
+                <StackPanel x:Name="ParentPanel">
+                    <TextBlock Text="{x:Static res:Strings.Setup_ParentFolder}" Style="{StaticResource LabelText}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="ParentBox" Style="{StaticResource ModernTextBox}" AutomationProperties.Name="{x:Static res:Strings.Setup_ParentFolder}" AutomationProperties.HelpText="{x:Static res:Strings.Setup_ParentFolderHelp}"/>
+                        <Button Grid.Column="1" Content="{x:Static res:Strings.Settings_Browse}" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Click="BrowseParent_Click"
+                                AutomationProperties.Name="{x:Static res:Strings.Settings_BrowseHelp}"/>
+                    </Grid>
+                    <TextBlock x:Name="ParentHelp" Text="{x:Static res:Strings.Setup_ParentFolderHelp}" Style="{StaticResource HelperText}"/>
+                </StackPanel>
+
+                <TextBlock Text="{x:Static res:Strings.Setup_Language}" Style="{StaticResource LabelText}"/>
+                <ComboBox x:Name="LanguageCombo" Width="220" HorizontalAlignment="Left" Padding="8,5" SelectionChanged="Language_Changed"
+                          AutomationProperties.Name="{x:Static res:Strings.Setup_Language}" AutomationProperties.HelpText="{x:Static res:Strings.Setup_LanguageHelp}"/>
+                <TextBlock x:Name="LanguageHelp" Text="{x:Static res:Strings.Setup_LanguageHelp}" Style="{StaticResource HelperText}"/>
+
+                <StackPanel x:Name="DotNetPanel">
+                    <TextBlock Text="{x:Static res:Strings.Setup_ProjectFile}" Style="{StaticResource LabelText}"/>
+                    <TextBox x:Name="ProjectBox" Style="{StaticResource ModernTextBox}" AutomationProperties.Name="{x:Static res:Strings.Setup_ProjectFile}" AutomationProperties.HelpText="{x:Static res:Strings.Setup_ProjectFileHelp}"/>
+                    <TextBlock Text="{x:Static res:Strings.Setup_ProjectFileHelp}" Style="{StaticResource HelperText}"/>
+                    <TextBlock Text="{x:Static res:Strings.Setup_TestProject}" Style="{StaticResource LabelText}"/>
+                    <TextBox x:Name="TestProjectBox" Style="{StaticResource ModernTextBox}" AutomationProperties.Name="{x:Static res:Strings.Setup_TestProject}" AutomationProperties.HelpText="{x:Static res:Strings.Setup_TestProjectHelp}"/>
+                    <TextBlock Text="{x:Static res:Strings.Setup_TestProjectHelp}" Style="{StaticResource HelperText}"/>
+                </StackPanel>
+
+                <StackPanel x:Name="CommandsPanel" Visibility="Collapsed">
+                    <TextBlock Text="{x:Static res:Strings.Setup_BuildCommand}" Style="{StaticResource LabelText}"/>
+                    <TextBox x:Name="BuildBox" Style="{StaticResource ModernTextBox}" AutomationProperties.Name="{x:Static res:Strings.Setup_BuildCommand}" AutomationProperties.HelpText="{x:Static res:Strings.Setup_BuildCommandHelp}"/>
+                    <TextBlock Text="{x:Static res:Strings.Setup_BuildCommandHelp}" Style="{StaticResource HelperText}"/>
+                    <TextBlock Text="{x:Static res:Strings.Setup_TestCommand}" Style="{StaticResource LabelText}"/>
+                    <TextBox x:Name="TestBox" Style="{StaticResource ModernTextBox}" AutomationProperties.Name="{x:Static res:Strings.Setup_TestCommand}" AutomationProperties.HelpText="{x:Static res:Strings.Setup_TestCommandHelp}"/>
+                    <TextBlock Text="{x:Static res:Strings.Setup_TestCommandHelp}" Style="{StaticResource HelperText}"/>
+                </StackPanel>
+
+                <TextBlock Text="{x:Static res:Strings.Setup_SelfTest}" Style="{StaticResource LabelText}"/>
+                <TextBox x:Name="SelfTestBox" Style="{StaticResource ModernTextBox}" AutomationProperties.Name="{x:Static res:Strings.Setup_SelfTest}" AutomationProperties.HelpText="{x:Static res:Strings.Setup_SelfTestHelp}"/>
+                <TextBlock Text="{x:Static res:Strings.Setup_SelfTestHelp}" Style="{StaticResource HelperText}"/>
+
+                <Border x:Name="ScanNotice" Style="{StaticResource NoticeStyle}" Visibility="Collapsed" Margin="0,12,0,0">
+                    <StackPanel>
+                        <TextBlock x:Name="ScanTitle" FontWeight="SemiBold"/>
+                        <StackPanel x:Name="ScanFindings" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <!-- Page 2: options -->
+        <Border x:Name="OptionsPage" Style="{StaticResource CardStyle}" Visibility="Collapsed">
+            <StackPanel>
+                <TextBlock Text="{x:Static res:Strings.Setup_OptionsCard}" Style="{StaticResource CardTitle}"/>
+                <CheckBox x:Name="ReviewBox" Content="{x:Static res:Strings.Setup_ReviewRequired}" IsChecked="True" Margin="0,2,0,2" AutomationProperties.Name="{x:Static res:Strings.Setup_ReviewRequired}"/>
+                <TextBlock Text="{x:Static res:Strings.Setup_ReviewRequiredHelp}" Style="{StaticResource HelperText}" Margin="24,0,0,8"/>
+                <CheckBox x:Name="DiscussionsBox" Content="{x:Static res:Strings.Setup_Discussions}" Margin="0,2,0,2" AutomationProperties.Name="{x:Static res:Strings.Setup_Discussions}"/>
+                <TextBlock Text="{x:Static res:Strings.Setup_DiscussionsHelp}" Style="{StaticResource HelperText}" Margin="24,0,0,8"/>
+                <CheckBox x:Name="ReleaseBox" Content="{x:Static res:Strings.Setup_Release}" IsEnabled="False" Margin="0,2,0,2" AutomationProperties.Name="{x:Static res:Strings.Setup_Release}"/>
+                <TextBlock Text="{x:Static res:Strings.Setup_ReleaseHelp}" Style="{StaticResource HelperText}" Margin="24,0,0,8"/>
+                <CheckBox x:Name="CodeQlBox" Content="{x:Static res:Strings.Setup_CodeQl}" IsEnabled="False" Margin="0,2,0,2" AutomationProperties.Name="{x:Static res:Strings.Setup_CodeQl}"/>
+                <TextBlock Text="{x:Static res:Strings.Setup_CodeQlHelp}" Style="{StaticResource HelperText}" Margin="24,0,0,8"/>
+
+                <TextBlock Text="{x:Static res:Strings.Setup_BehindLimit}" Style="{StaticResource LabelText}"/>
+                <TextBox x:Name="BehindBox" Style="{StaticResource ModernTextBox}" Width="80" HorizontalAlignment="Left" Text="10" AutomationProperties.Name="{x:Static res:Strings.Setup_BehindLimit}" AutomationProperties.HelpText="{x:Static res:Strings.Setup_BehindLimitHelp}"/>
+                <TextBlock Text="{x:Static res:Strings.Setup_BehindLimitHelp}" Style="{StaticResource HelperText}"/>
+
+                <TextBlock Text="{x:Static res:Strings.Setup_Checklist}" Style="{StaticResource LabelText}"/>
+                <StackPanel x:Name="ChecklistPanel" Margin="0,2,0,4" AutomationProperties.Name="{x:Static res:Strings.Setup_Checklist}"/>
+                <TextBlock Text="{x:Static res:Strings.Setup_ChecklistHelp}" Style="{StaticResource HelperText}"/>
+
+                <TextBlock Text="{x:Static res:Strings.Setup_BoardToken}" Style="{StaticResource LabelText}"/>
+                <TextBlock Text="{x:Static res:Strings.Setup_BoardTokenHelp}" Style="{StaticResource HelperText}" Margin="0,0,0,6"/>
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="TokenButton" Content="{x:Static res:Strings.Setup_EnterToken}" Style="{StaticResource SecondaryButton}" Click="Token_Click"
+                            AutomationProperties.Name="{x:Static res:Strings.Setup_EnterToken}"/>
+                    <TextBlock x:Name="TokenStatus" Text="{x:Static res:Strings.Setup_TokenNone}" VerticalAlignment="Center" Margin="12,0,0,0" Style="{StaticResource HelperText}"/>
+                    <Button x:Name="ClearTokenButton" Content="{x:Static res:Strings.Setup_ClearToken}" Style="{StaticResource LinkButton}" Margin="12,0,0,0" Click="ClearToken_Click" Visibility="Collapsed"
+                            AutomationProperties.Name="{x:Static res:Strings.Setup_ClearToken}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Page 3: create -->
+        <Border x:Name="CreatePage" Style="{StaticResource CardStyle}" Visibility="Collapsed">
+            <StackPanel>
+                <TextBlock Text="{x:Static res:Strings.Setup_CreateCard}" Style="{StaticResource CardTitle}"/>
+                <TextBlock x:Name="PlanIntro" Style="{StaticResource HelperText}" Margin="0,0,0,8"/>
+                <StackPanel x:Name="PlanPanel" AutomationProperties.Name="{x:Static res:Strings.Setup_CreateCard}" AutomationProperties.LiveSetting="Polite"/>
+                <Border x:Name="ResultNotice" Style="{StaticResource NoticeStyle}" Visibility="Collapsed" Margin="0,12,0,0">
+                    <StackPanel>
+                        <TextBlock x:Name="ResultTitle" FontWeight="SemiBold" FontSize="15"/>
+                        <TextBlock x:Name="ResultText" TextWrapping="Wrap" Margin="0,4,0,0"/>
+                        <StackPanel x:Name="ResultLinks" Orientation="Horizontal" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+            <Button x:Name="BackButton" Content="{x:Static res:Strings.Setup_Back}" Style="{StaticResource SecondaryButton}" Click="Back_Click" IsEnabled="False"
+                    AutomationProperties.Name="{x:Static res:Strings.Setup_Back}"/>
+            <Button x:Name="NextButton" Content="{x:Static res:Strings.Setup_Next}" Style="{StaticResource ModernButton}" Margin="8,0,0,0" Click="Next_Click"
+                    AutomationProperties.Name="{x:Static res:Strings.Setup_Next}"/>
+            <Button x:Name="StartButton" Content="{x:Static res:Strings.Setup_Start}" Style="{StaticResource ModernButton}" Margin="8,0,0,0" Click="Start_Click" Visibility="Collapsed"
+                    AutomationProperties.Name="{x:Static res:Strings.Setup_Start}" AutomationProperties.HelpText="{x:Static res:Strings.Setup_StartHelp}"/>
+            <Button x:Name="StartOverButton" Content="{x:Static res:Strings.Setup_StartOver}" Style="{StaticResource LinkButton}" Margin="16,0,0,0" Click="StartOver_Click" Visibility="Collapsed"
+                    AutomationProperties.Name="{x:Static res:Strings.Setup_StartOver}"/>
+        </StackPanel>
+    </StackPanel>
+</local:ScreenBase>

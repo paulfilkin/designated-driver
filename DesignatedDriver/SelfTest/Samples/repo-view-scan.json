@@ -1,0 +1,20 @@
+{
+  "defaultBranchRef": { "name": "main" },
+  "isBlankIssuesEnabled": true,
+  "isEmpty": false,
+  "isInOrganization": false,
+  "issueTemplates": [],
+  "languages": [
+    { "size": 1265366, "node": { "name": "C#" } },
+    { "size": 7436, "node": { "name": "PowerShell" } }
+  ],
+  "projectsV2": {
+    "Nodes": [
+      { "id": "PVT_kwHOAGeGo84A8IWw", "number": 4, "title": "example", "url": "https://github.com/users/paulfilkin/projects/4", "closed": false }
+    ]
+  },
+  "pullRequestTemplates": [
+    { "filename": "PULL_REQUEST_TEMPLATE.md", "body": "## What this changes\n\n## Checklist\n\n- [ ] The build has 0 warnings and 0 errors.\n" }
+  ],
+  "viewerPermission": "ADMIN"
+}

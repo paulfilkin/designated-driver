@@ -1,0 +1,7 @@
+# Build and test output
+bin/
+*.test
+*.out
+
+# Local secrets
+.env

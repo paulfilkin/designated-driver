@@ -1,0 +1,11 @@
+# Dependencies and build output
+node_modules/
+dist/
+build/
+coverage/
+.cache/
+
+# Logs and local secrets
+npm-debug.log*
+yarn-error.log*
+.env

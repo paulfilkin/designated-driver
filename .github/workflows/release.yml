@@ -1,0 +1,40 @@
+# On a version tag (v1.2.3), builds the project, publishes a framework-dependent single-file exe for Windows
+# and attaches it, zipped, to a GitHub release with generated notes. .NET desktop projects only.
+# The exe carries the tag's number as its version, so the project file's own Version need not be kept in step.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish the release
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}".TrimStart('v')
+          dotnet publish "DesignatedDriver/DesignatedDriver.csproj" -c Release -r win-x64 -p:SelfContained=false -p:PublishSingleFile=true -p:DebugType=none -p:Version=$version -o publish
+
+      - name: Zip
+        shell: pwsh
+        run: Compress-Archive -Path publish\* -DestinationPath "designated-driver-${{ github.ref_name }}.zip"
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${{ github.ref_name }}" "designated-driver-${{ github.ref_name }}.zip" --title "designated-driver ${{ github.ref_name }}" --generate-notes

@@ -1,0 +1,15 @@
+{
+  "conventionVersion": 1,
+  "setUp": "2026-11-20",
+  "language": "dotnet",
+  "options": {
+    "releaseWorkflow": true,
+    "codeQl": false,
+    "discussions": false,
+    "reviewRequired": false
+  },
+  "board": { "owner": "paulfilkin", "number": 4 },
+  "selfTestCommand": "dotnet run --project GIT_Repo_Manager\\RepoStarter.csproj -- --self-test",
+  "requiredCheck": "Build and test",
+  "notAvailable": ["Ruleset"]
+}

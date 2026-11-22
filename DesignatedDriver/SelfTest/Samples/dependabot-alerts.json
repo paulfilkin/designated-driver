@@ -1,0 +1,16 @@
+[
+  {
+    "number": 2,
+    "state": "open",
+    "dependency": { "package": { "ecosystem": "nuget", "name": "Example.Package" }, "manifest_path": "app/Example.csproj" },
+    "security_advisory": { "ghsa_id": "GHSA-xxxx-yyyy-zzzz", "severity": "high", "summary": "Example.Package has a problem" },
+    "created_at": "2026-11-19T10:00:00Z"
+  },
+  {
+    "number": 1,
+    "state": "open",
+    "dependency": { "package": { "ecosystem": "github-actions", "name": "actions/checkout" }, "manifest_path": ".github/workflows/ci.yml" },
+    "security_advisory": { "ghsa_id": "GHSA-aaaa-bbbb-cccc", "severity": "low", "summary": "A minor issue" },
+    "created_at": "2026-11-18T10:00:00Z"
+  }
+]

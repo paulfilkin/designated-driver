@@ -1,0 +1,15 @@
+# Build output
+bin/
+obj/
+TestResults/
+publish/
+
+# Visual Studio and user files
+.vs/
+*.user
+*.suo
+*.csproj.user
+
+# Local secrets and data
+.env
+App_Data/

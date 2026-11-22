@@ -1,0 +1,939 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Application -->
+  <data name="App_Name" xml:space="preserve"><value>Designated Driver</value></data>
+  <data name="App_Tagline" xml:space="preserve"><value>One convention for every repository, and the workflow that keeps it</value></data>
+  <data name="App_Description" xml:space="preserve"><value>Designated Driver sets up GitHub repositories for a personal account to one convention (labels, board, templates, settings and automation), shows what has drifted, and walks the day-to-day workflow: issue, branch, commit, pull request, merge, tidy up. It runs the git and gh commands for you and shows every one in the activity panel.</value></data>
+
+  <!-- Menu and header -->
+  <data name="Menu_Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="Menu_SettingsHelp" xml:space="preserve"><value>Settings for the current repository</value></data>
+  <data name="Menu_About" xml:space="preserve"><value>About</value></data>
+  <data name="Menu_AboutHelp" xml:space="preserve"><value>Version and links</value></data>
+  <data name="Role_Admin" xml:space="preserve"><value>admin</value></data>
+  <data name="Role_Contributor" xml:space="preserve"><value>contributor</value></data>
+  <data name="Busy_Working" xml:space="preserve"><value>Working. The activity panel shows the command running.</value></data>
+  <data name="Busy_Running" xml:space="preserve"><value>Working, {0} s: {1}</value></data>
+  <data name="Busy_CancelHelp" xml:space="preserve"><value>Cancel the command that is running</value></data>
+  <data name="Busy_TryAgain" xml:space="preserve"><value>Something is still running. Wait for the busy strip to clear, then try again.</value></data>
+
+  <!-- Navigation -->
+  <data name="Nav_Name" xml:space="preserve"><value>Screens</value></data>
+  <data name="Nav_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Nav_StartWork" xml:space="preserve"><value>Start work</value></data>
+  <data name="Nav_SaveAndShare" xml:space="preserve"><value>Save and share</value></data>
+  <data name="Nav_Submit" xml:space="preserve"><value>Submit</value></data>
+  <data name="Nav_Review" xml:space="preserve"><value>Review</value></data>
+  <data name="Nav_TidyUp" xml:space="preserve"><value>Tidy up</value></data>
+  <data name="Nav_FixProblem" xml:space="preserve"><value>Fix a problem</value></data>
+
+  <!-- Activity panel -->
+  <data name="Activity_Title" xml:space="preserve"><value>Activity</value></data>
+  <data name="Activity_Help" xml:space="preserve"><value>Every command the tool runs, with its output and exit code</value></data>
+  <data name="Activity_Copy" xml:space="preserve"><value>Copy</value></data>
+  <data name="Activity_CopyHelp" xml:space="preserve"><value>Copy the activity log to the clipboard</value></data>
+  <data name="Activity_Clear" xml:space="preserve"><value>Clear</value></data>
+  <data name="Activity_ClearHelp" xml:space="preserve"><value>Clear the activity log</value></data>
+  <data name="Activity_Splitter" xml:space="preserve"><value>Resize the activity panel</value></data>
+  <data name="Activity_Cancelled" xml:space="preserve"><value>Cancelled.</value></data>
+  <data name="Activity_ReloadOnReturn" xml:space="preserve"><value>Back after a while away: reloading the screen.</value></data>
+  <data name="Activity_ReloadLeft" xml:space="preserve"><value>Stopped loading {0}: another screen was opened.</value></data>
+  <data name="Activity_OpeningUrl" xml:space="preserve"><value>Opening {0} in the browser.</value></data>
+
+  <!-- Common -->
+  <data name="Common_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Common_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Common_Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Common_Copy" xml:space="preserve"><value>Copy</value></data>
+  <data name="Common_Refresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="Common_Error" xml:space="preserve"><value>Something went wrong</value></data>
+  <data name="Common_OpenOnGitHub" xml:space="preserve"><value>Open on GitHub</value></data>
+  <data name="Error_CommandFailed" xml:space="preserve"><value>The command failed:
+
+{0}
+
+{1}</value></data>
+  <data name="Error_Unexpected" xml:space="preserve"><value>An unexpected error occurred: {0}</value></data>
+
+  <!-- Tags -->
+  <data name="Checks_Pass" xml:space="preserve"><value>checks passed</value></data>
+  <data name="Checks_Fail" xml:space="preserve"><value>checks failed</value></data>
+  <data name="Checks_Pending" xml:space="preserve"><value>checks running</value></data>
+  <data name="Checks_None" xml:space="preserve"><value>no checks</value></data>
+  <data name="Review_Approved" xml:space="preserve"><value>approved</value></data>
+  <data name="Review_ChangesRequested" xml:space="preserve"><value>changes requested</value></data>
+  <data name="Review_Required" xml:space="preserve"><value>review required</value></data>
+  <data name="Review_NoReview" xml:space="preserve"><value>no review</value></data>
+
+  <!-- Commit message checks -->
+  <data name="Commit_Check_SummaryEmpty" xml:space="preserve"><value>Write a summary line.</value></data>
+  <data name="Commit_Check_SummaryTooLong" xml:space="preserve"><value>The summary is longer than about {0} characters.</value></data>
+  <data name="Commit_Check_SummaryNotImperative" xml:space="preserve"><value>Start with an imperative: "Add", "Fix", "Update", not "Added" or "Fixes".</value></data>
+  <data name="Commit_Check_SummaryLowerCase" xml:space="preserve"><value>Start the summary with a capital letter.</value></data>
+  <data name="Commit_Check_SummaryTrailingFullStop" xml:space="preserve"><value>Leave the full stop off the end of the summary.</value></data>
+  <data name="Commit_Check_SummaryMultipleLines" xml:space="preserve"><value>The summary is one line; put the rest in the detail.</value></data>
+  <data name="Commit_Check_EmDash" xml:space="preserve"><value>Replace the em-dash with a normal hyphen.</value></data>
+  <data name="Commit_Check_DetailLineTooLong" xml:space="preserve"><value>Wrap the detail at about {0} characters.</value></data>
+
+  <!-- About -->
+  <data name="About_Title" xml:space="preserve"><value>About Designated Driver</value></data>
+  <data name="About_Version" xml:space="preserve"><value>Version {0}.{1}.{2}</value></data>
+  <data name="About_PurposeHeader" xml:space="preserve"><value>What it does</value></data>
+  <data name="About_LinksHeader" xml:space="preserve"><value>Links</value></data>
+  <data name="About_RepositoryLink" xml:space="preserve"><value>This repository on GitHub</value></data>
+  <data name="About_ContributingLink" xml:space="preserve"><value>How we work (CONTRIBUTING.md)</value></data>
+  <data name="About_BoardLink" xml:space="preserve"><value>This repository&apos;s project board</value></data>
+  <data name="About_Copyright" xml:space="preserve"><value>© {0} multifarious.</value></data>
+
+  <!-- Settings -->
+  <data name="Settings_Title" xml:space="preserve"><value>Repository settings</value></data>
+  <data name="Settings_Intro" xml:space="preserve"><value>Where this repository&apos;s clone is, and the overrides the workflow screens use.</value></data>
+  <data name="Settings_FirstRun" xml:space="preserve"><value>Welcome. Start by adding a repository you have cloned, or scan one to see what setting it up would involve.</value></data>
+  <data name="Settings_RepositoryFolder" xml:space="preserve"><value>Repository folder</value></data>
+  <data name="Settings_RepositoryFolderHelp" xml:space="preserve"><value>The folder the clone created, for example C:\Users\you\example. Type or paste a path, or browse.</value></data>
+  <data name="Settings_Browse" xml:space="preserve"><value>Browse</value></data>
+  <data name="Settings_BrowseHelp" xml:space="preserve"><value>Browse for the repository folder</value></data>
+  <data name="Settings_BrowseTitle" xml:space="preserve"><value>Choose the repository folder</value></data>
+  <data name="Settings_FolderMissing" xml:space="preserve"><value>That folder doesn't exist.</value></data>
+  <data name="Settings_NotARepository" xml:space="preserve"><value>That folder isn't inside a Git repository.</value></data>
+  <data name="Settings_NoOrigin" xml:space="preserve"><value>The repository has no origin remote on GitHub.</value></data>
+  <data name="Settings_FolderOk" xml:space="preserve"><value>Git repository at {0}</value></data>
+  <data name="Settings_OwnerAndRepository" xml:space="preserve"><value>GitHub repository</value></data>
+  <data name="Settings_OwnerAndRepositoryHelp" xml:space="preserve"><value>Read from the origin remote of the folder above.</value></data>
+  <data name="Settings_ProjectOwner" xml:space="preserve"><value>Board owner</value></data>
+  <data name="Settings_ProjectNumber" xml:space="preserve"><value>Board number</value></data>
+  <data name="Settings_ProjectHelp" xml:space="preserve"><value>Used while the repository has no manifest. Leave both empty for no board; set-up creates one.</value></data>
+  <data name="Settings_ProjectNumberInvalid" xml:space="preserve"><value>The board number must be a whole number greater than zero, or empty.</value></data>
+  <data name="Settings_DefaultBranch" xml:space="preserve"><value>Default branch</value></data>
+  <data name="Settings_SelfTestCommand" xml:space="preserve"><value>Self-test command</value></data>
+  <data name="Settings_SelfTestHelp" xml:space="preserve"><value>Run in the repository folder before pushing. Every line it prints should say PASS. Leave empty if the repository has none.</value></data>
+  <data name="Settings_RequiredCheck" xml:space="preserve"><value>Required check</value></data>
+  <data name="Settings_RequiredCheckHelp" xml:space="preserve"><value>The name of the GitHub check a pull request must pass before it can be merged.</value></data>
+  <data name="Settings_StoredAt" xml:space="preserve"><value>Stored in {0}</value></data>
+
+  <!-- Status screen -->
+  <data name="Status_Title" xml:space="preserve"><value>Status</value></data>
+  <data name="Status_Intro" xml:space="preserve"><value>Where things stand: the tools, the repository, what the plan allows, the branch, open pull requests and issues, Dependabot and Actions.</value></data>
+  <data name="Status_RefreshHelp" xml:space="preserve"><value>Check everything again</value></data>
+  <data name="Status_NoRepository" xml:space="preserve"><value>No repository has been chosen yet. Add a clone on the Repositories screen, or scan one first.</value></data>
+  <data name="Status_ChooseFolder" xml:space="preserve"><value>Go to Repositories</value></data>
+  <data name="Status_Prerequisites" xml:space="preserve"><value>Prerequisites</value></data>
+  <data name="Prereq_Git" xml:space="preserve"><value>Git</value></data>
+  <data name="Prereq_Gh" xml:space="preserve"><value>GitHub CLI (gh)</value></data>
+  <data name="Prereq_NotFound" xml:space="preserve"><value>Not found. Install it, then close and reopen Designated Driver.</value></data>
+  <data name="Prereq_SignedIn" xml:space="preserve"><value>Signed in</value></data>
+  <data name="Prereq_SignedInAs" xml:space="preserve"><value>{0} on {1}</value></data>
+  <data name="Prereq_NotSignedIn" xml:space="preserve"><value>Not signed in. Run the command in PowerShell and choose GitHub.com, HTTPS and the browser.</value></data>
+  <data name="Prereq_Scope" xml:space="preserve"><value>Token scope: {0}</value></data>
+  <data name="Prereq_ScopePresent" xml:space="preserve"><value>Present</value></data>
+  <data name="Prereq_ScopeMissing" xml:space="preserve"><value>Missing. Run the command in PowerShell, then refresh.</value></data>
+  <data name="Prereq_FixWith" xml:space="preserve"><value>Fix:</value></data>
+  <data name="Prereq_CopyCommand" xml:space="preserve"><value>Copy the command {0}</value></data>
+  <data name="Status_Repository" xml:space="preserve"><value>Repository</value></data>
+  <data name="Status_Folder" xml:space="preserve"><value>Folder</value></data>
+  <data name="Status_Change" xml:space="preserve"><value>Change</value></data>
+  <data name="Status_ChangeHelp" xml:space="preserve"><value>Go to the Repositories screen</value></data>
+  <data name="Status_NotChosen" xml:space="preserve"><value>Not chosen yet</value></data>
+  <data name="Status_GitHubRepository" xml:space="preserve"><value>On GitHub</value></data>
+  <data name="Status_Unknown" xml:space="preserve"><value>Unknown</value></data>
+  <data name="Status_SignedInAs" xml:space="preserve"><value>Signed in as</value></data>
+  <data name="Status_UserAndRole" xml:space="preserve"><value>{0}, {1} ({2})</value></data>
+  <data name="Status_NotSignedIn" xml:space="preserve"><value>Not signed in</value></data>
+  <data name="Status_Branch" xml:space="preserve"><value>Branch</value></data>
+  <data name="Status_CurrentBranch" xml:space="preserve"><value>Current branch</value></data>
+  <data name="Status_UncommittedChanges" xml:space="preserve"><value>Uncommitted changes</value></data>
+  <data name="Status_Clean" xml:space="preserve"><value>None, the working tree is clean</value></data>
+  <data name="Status_ChangedFiles" xml:space="preserve"><value>{0} file(s) changed</value></data>
+  <data name="Status_AgainstMain" xml:space="preserve"><value>Against main</value></data>
+  <data name="Status_AheadBehind" xml:space="preserve"><value>{0} commit(s) ahead of and {1} behind origin/{2}</value></data>
+  <data name="Status_FetchFailed" xml:space="preserve"><value>Couldn't fetch from GitHub, so the figures may be out of date</value></data>
+  <data name="Status_MyPullRequests" xml:space="preserve"><value>Open pull requests</value></data>
+  <data name="Status_NoPullRequests" xml:space="preserve"><value>There are no open pull requests.</value></data>
+  <data name="Status_ReviewPullRequest" xml:space="preserve"><value>Review</value></data>
+  <data name="Status_ReviewPullRequestFor" xml:space="preserve"><value>Review pull request {0}</value></data>
+  <data name="Status_OpenPullRequest" xml:space="preserve"><value>Open pull request {0} on GitHub</value></data>
+  <data name="Status_MyIssues" xml:space="preserve"><value>Issues assigned to me</value></data>
+  <data name="Status_NoIssues" xml:space="preserve"><value>No open issues are assigned to you.</value></data>
+  <data name="Status_OpenIssue" xml:space="preserve"><value>Open issue {0} on GitHub</value></data>
+  <data name="Status_SignInFirst" xml:space="preserve"><value>Sign in to GitHub and choose the repository folder to see these.</value></data>
+
+  <!-- Start work screen -->
+  <data name="StartWork_Title" xml:space="preserve"><value>Start work</value></data>
+  <data name="StartWork_Intro" xml:space="preserve"><value>Pick an issue from the board&apos;s Todo column. The tool gets the latest main, assigns the issue to you, moves its card to In Progress and makes the branch.</value></data>
+  <data name="StartWork_Dirty" xml:space="preserve"><value>You have {0} uncommitted file(s) on branch {1}, so new work can't start yet.</value></data>
+  <data name="StartWork_DirtyOptions" xml:space="preserve"><value>Commit them on Save and share if they belong to the current branch. To move them to a new branch or throw them away, use Fix a problem.</value></data>
+  <data name="StartWork_GoToSaveAndShare" xml:space="preserve"><value>Go to Save and share</value></data>
+  <data name="StartWork_ReadyIssues" xml:space="preserve"><value>Issues ready to work on</value></data>
+  <data name="StartWork_AllIssues" xml:space="preserve"><value>All open issues</value></data>
+  <data name="StartWork_ShowAll" xml:space="preserve"><value>Show all open issues</value></data>
+  <data name="StartWork_ShowAllHelp" xml:space="preserve"><value>Include issues that aren&apos;t in the Todo column</value></data>
+  <data name="StartWork_IssueListHelp" xml:space="preserve"><value>Select the issue you will work on</value></data>
+  <data name="StartWork_BoardNote" xml:space="preserve"><value>Ready means the Todo column (Ready on older boards) of {0}&apos;s project board {1}. An issue labelled blocked is held back.</value></data>
+  <data name="StartWork_BoardUnavailable" xml:space="preserve"><value>The project board couldn't be read ({0}), so all open issues are shown.</value></data>
+  <data name="StartWork_NoReadyIssues" xml:space="preserve"><value>Nothing is in the Todo column. Tick &quot;Show all open issues&quot; to see the rest.</value></data>
+  <data name="StartWork_NoIssues" xml:space="preserve"><value>There are no open issues.</value></data>
+  <data name="StartWork_AssignedTo" xml:space="preserve"><value>assigned to {0}</value></data>
+  <data name="StartWork_NotOnBoard" xml:space="preserve"><value>not on the board</value></data>
+  <data name="StartWork_NotReadyTip" xml:space="preserve"><value>This issue is labelled blocked.</value></data>
+  <data name="StartWork_BranchCard" xml:space="preserve"><value>Branch</value></data>
+  <data name="StartWork_NoneSelected" xml:space="preserve"><value>Select an issue above.</value></data>
+  <data name="StartWork_BranchName" xml:space="preserve"><value>Branch name</value></data>
+  <data name="StartWork_BranchNameHelp" xml:space="preserve"><value>Built from the issue's labels, number and title. You can change it before the branch is created.</value></data>
+  <data name="StartWork_BranchEmpty" xml:space="preserve"><value>Give the branch a name.</value></data>
+  <data name="StartWork_BranchConvention" xml:space="preserve"><value>Branch names are feature/, fix/ or docs/, then the issue number and a short name, for example feature/42-feedback-export.</value></data>
+  <data name="StartWork_BranchWrongIssue" xml:space="preserve"><value>The branch name should carry the issue number {0}.</value></data>
+  <data name="StartWork_BranchInvalid" xml:space="preserve"><value>Git doesn't accept "{0}" as a branch name.</value></data>
+  <data name="StartWork_BranchExists" xml:space="preserve"><value>A local branch called {0} already exists.</value></data>
+  <data name="StartWork_WhatHappens" xml:space="preserve"><value>Starting work switches to main, pulls the latest code, assigns the issue to you, moves its card to In progress and creates the branch.</value></data>
+  <data name="StartWork_Start" xml:space="preserve"><value>Start work on this issue</value></data>
+  <data name="StartWork_Confirm" xml:space="preserve"><value>This will:
+
+1. switch to {0} and pull the latest code
+2. assign issue #{1} to you
+3. move its card to In progress
+4. create and switch to the branch {2}
+
+Go ahead?</value></data>
+  <data name="StartWork_StillDirty" xml:space="preserve"><value>There are uncommitted changes, so nothing was started. Refresh and try again.</value></data>
+  <data name="StartWork_NoInProgressColumn" xml:space="preserve"><value>The board has no In progress column, so the card wasn't moved.</value></data>
+  <data name="StartWork_IssueNotOnBoard" xml:space="preserve"><value>Issue #{0} isn't on the board, so there was no card to move.</value></data>
+  <data name="StartWork_Done" xml:space="preserve"><value>You are on branch {0}, working on issue #{1}. Make your change, then come back to Save and share.</value></data>
+  <data name="NewIssue_Card" xml:space="preserve"><value>New issue</value></data>
+  <data name="NewIssue_Show" xml:space="preserve"><value>Write one</value></data>
+  <data name="NewIssue_Hide" xml:space="preserve"><value>Hide</value></data>
+  <data name="NewIssue_Intro" xml:space="preserve"><value>Write an issue with the same headings as the repository's issue forms, so it reads like one made on GitHub. It gets the label for its kind and goes onto the board, where GitHub puts it in Todo.</value></data>
+  <data name="NewIssue_Bug" xml:space="preserve"><value>Bug</value></data>
+  <data name="NewIssue_Feature" xml:space="preserve"><value>Feature</value></data>
+  <data name="NewIssue_Chore" xml:space="preserve"><value>Chore</value></data>
+  <data name="NewIssue_Docs" xml:space="preserve"><value>Docs</value></data>
+  <data name="NewIssue_TitleLabel" xml:space="preserve"><value>Title</value></data>
+  <data name="NewIssue_TitleHelp" xml:space="preserve"><value>One line saying what is wrong or what should change</value></data>
+  <data name="NewIssue_Optional" xml:space="preserve"><value>{0} (optional)</value></data>
+  <data name="NewIssue_Note" xml:space="preserve"><value>Labelled {0}. Create is enabled once the title and the required fields are filled.</value></data>
+  <data name="NewIssue_Create" xml:space="preserve"><value>Create issue</value></data>
+  <data name="NewIssue_CreateHelp" xml:space="preserve"><value>Creates the issue with gh, adds it to the board and selects it in the list below</value></data>
+  <data name="NewIssue_Done" xml:space="preserve"><value>Issue #{0} is created and selected below. Start work on it, or write another.</value></data>
+  <data name="NewIssue_BoardFailed" xml:space="preserve"><value>Issue #{0} was created but could not be added to the board: {1}</value></data>
+
+  <!-- Save and share screen -->
+  <data name="Save_Title" xml:space="preserve"><value>Save and share</value></data>
+  <data name="Save_Intro" xml:space="preserve"><value>Check what changed, run the self-test, commit, and push the branch to GitHub.</value></data>
+  <data name="Save_OnMain" xml:space="preserve"><value>You are on {0}. Changes belong on a branch: go to Start work first, or if you have already made changes here, move them to a branch from Fix a problem.</value></data>
+  <data name="Save_OnBranch" xml:space="preserve"><value>On branch {0}</value></data>
+  <data name="Save_ChangedFiles" xml:space="preserve"><value>Changed files</value></data>
+  <data name="Save_ChangedFilesCount" xml:space="preserve"><value>Changed files ({0})</value></data>
+  <data name="Save_NoChanges" xml:space="preserve"><value>Nothing has changed since the last commit.</value></data>
+  <data name="Save_OpenDiff" xml:space="preserve"><value>Diff</value></data>
+  <data name="Save_OpenDiffFor" xml:space="preserve"><value>Show the diff for {0}</value></data>
+  <data name="Save_DiffTitle" xml:space="preserve"><value>Diff</value></data>
+  <data name="Save_EmptyDiff" xml:space="preserve"><value>(No differences to show. The file may be staged already, or binary.)</value></data>
+  <data name="Save_NewFileDiff" xml:space="preserve"><value>(New file, not yet tracked by Git. Its contents follow.)</value></data>
+  <data name="Save_FileNew" xml:space="preserve"><value>new</value></data>
+  <data name="Save_FileAdded" xml:space="preserve"><value>added</value></data>
+  <data name="Save_FileModified" xml:space="preserve"><value>modified</value></data>
+  <data name="Save_FileDeleted" xml:space="preserve"><value>deleted</value></data>
+  <data name="Save_FileRenamed" xml:space="preserve"><value>renamed</value></data>
+  <data name="Save_FileConflict" xml:space="preserve"><value>conflict</value></data>
+  <data name="Save_SelfTest" xml:space="preserve"><value>Self-test</value></data>
+  <data name="Save_SelfTestIntro" xml:space="preserve"><value>Run the repository&apos;s build and self-test command before you push. Every line should say PASS.</value></data>
+  <data name="Save_RunSelfTest" xml:space="preserve"><value>Run the self-test</value></data>
+  <data name="Save_SelfTestResults" xml:space="preserve"><value>Self-test results</value></data>
+  <data name="Save_SelfTestRunning" xml:space="preserve"><value>Running. The build comes first, then the checks.</value></data>
+  <data name="Save_SelfTestPassed" xml:space="preserve"><value>All {0} checks passed.</value></data>
+  <data name="Save_SelfTestFailed" xml:space="preserve"><value>{0} check(s) failed, {1} passed (exit code {2}). The full output is in the activity panel.</value></data>
+  <data name="Save_NoSelfTestCommand" xml:space="preserve"><value>No self-test command is set. Add one in Settings.</value></data>
+  <data name="Save_Commit" xml:space="preserve"><value>Commit</value></data>
+  <data name="Save_CommitIntro" xml:space="preserve"><value>A short summary in the imperative ("Add", "Fix", "Update"), then detail if it helps. British English, no em-dashes.</value></data>
+  <data name="Save_Summary" xml:space="preserve"><value>Summary</value></data>
+  <data name="Save_SummaryHelp" xml:space="preserve"><value>One line, no longer than about 70 characters</value></data>
+  <data name="Save_SummaryCount" xml:space="preserve"><value>{0} of about {1} characters</value></data>
+  <data name="Save_Detail" xml:space="preserve"><value>Detail (optional)</value></data>
+  <data name="Save_DetailHelp" xml:space="preserve"><value>What changed and why, wrapped at about 72 characters</value></data>
+  <data name="Save_MessageChecks" xml:space="preserve"><value>Commit message checks</value></data>
+  <data name="Save_MessageOk" xml:space="preserve"><value>The message follows the conventions.</value></data>
+  <data name="Save_CommitAll" xml:space="preserve"><value>Commit all changes</value></data>
+  <data name="Save_CommitAllHelp" xml:space="preserve"><value>Stages every changed file and commits with this message</value></data>
+  <data name="Save_AndMore" xml:space="preserve"><value>and {0} more</value></data>
+  <data name="Save_ConfirmCommit" xml:space="preserve"><value>Commit all {0} changed file(s) with the summary "{1}"?
+
+{2}</value></data>
+  <data name="Save_Committed" xml:space="preserve"><value>Committed: {0}</value></data>
+  <data name="Save_Push" xml:space="preserve"><value>Push</value></data>
+  <data name="Save_PushFirstTime" xml:space="preserve"><value>The branch {0} isn't on GitHub yet. The first push sends it and sets origin as its upstream.</value></data>
+  <data name="Save_PushAhead" xml:space="preserve"><value>{0} commit(s) are waiting to be pushed to {1}.</value></data>
+  <data name="Save_PushUpToDate" xml:space="preserve"><value>Everything is pushed; {0} is up to date.</value></data>
+  <data name="Save_PushButton" xml:space="preserve"><value>Push to GitHub</value></data>
+  <data name="Save_PushHelp" xml:space="preserve"><value>Sends your commits to GitHub</value></data>
+  <data name="Save_ConfirmPushFirst" xml:space="preserve"><value>Push the branch {0} to GitHub for the first time?</value></data>
+  <data name="Save_ConfirmPush" xml:space="preserve"><value>Push {0} commit(s) to {1}?</value></data>
+  <data name="Save_Pushed" xml:space="preserve"><value>Pushed {0} to GitHub.</value></data>
+
+  <!-- Submit screen -->
+  <data name="Submit_Title" xml:space="preserve"><value>Submit</value></data>
+  <data name="Submit_Intro" xml:space="preserve"><value>Open the pull request from the repository&apos;s template, then watch the required check.</value></data>
+  <data name="Submit_OnMain" xml:space="preserve"><value>You are on {0}. A pull request comes from a branch: go to Start work first.</value></data>
+  <data name="Submit_Existing" xml:space="preserve"><value>Pull request #{0} is already open for this branch: {1}</value></data>
+  <data name="Submit_PullRequest" xml:space="preserve"><value>Pull request</value></data>
+  <data name="Submit_FromBranch" xml:space="preserve"><value>From {0} into {1}</value></data>
+  <data name="Submit_IssueNumber" xml:space="preserve"><value>Issue</value></data>
+  <data name="Submit_IssueNumberHelp" xml:space="preserve"><value>The issue this pull request closes, read from the branch name</value></data>
+  <data name="Submit_IssueNotFound" xml:space="preserve"><value>Issue #{0} couldn't be read. Check the number.</value></data>
+  <data name="Submit_PullRequestTitle" xml:space="preserve"><value>Title</value></data>
+  <data name="Submit_UseIssueTitle" xml:space="preserve"><value>Use the issue title</value></data>
+  <data name="Submit_Body" xml:space="preserve"><value>Description</value></data>
+  <data name="Submit_BodyHelp" xml:space="preserve"><value>The template with "Closes #" filled in. Say what changed, why and how you tested it; tick the checklist with an x; say whether an AI assistant was used.</value></data>
+  <data name="Submit_BodyIssueMismatch" xml:space="preserve"><value>The description should say "Closes #{0}" under Issue.</value></data>
+  <data name="Submit_NoCommits" xml:space="preserve"><value>This branch has no commits beyond main yet. Commit on Save and share first.</value></data>
+  <data name="Submit_WillPushFirst" xml:space="preserve"><value>The branch {0} isn't on GitHub yet; it will be pushed first.</value></data>
+  <data name="Submit_WillPushAhead" xml:space="preserve"><value>{0} commit(s) aren't pushed yet; they will be pushed first.</value></data>
+  <data name="Submit_Behind" xml:space="preserve"><value>This branch is {0} commit(s) behind {1}. Update it first, so the pull request starts current and the checks run on what will be merged.</value></data>
+  <data name="Submit_UpdateFromMain" xml:space="preserve"><value>Update from {0}</value></data>
+  <data name="Submit_UpdateFromMainHelp" xml:space="preserve"><value>Merges the latest main into this branch; conflicts go to Fix a problem</value></data>
+  <data name="Submit_DidUpdate" xml:space="preserve"><value>Updated the branch from {0}.</value></data>
+  <data name="Submit_UpdateConflicts" xml:space="preserve"><value>Updating from {0} hit conflicts. Resolve them on Fix a problem, then come back to open the pull request.</value></data>
+  <data name="Submit_Uncommitted" xml:space="preserve"><value>{0} file(s) are changed but not committed and won't be in the pull request.</value></data>
+  <data name="Submit_Create" xml:space="preserve"><value>Open the pull request</value></data>
+  <data name="Submit_CreateHelp" xml:space="preserve"><value>Pushes the branch if needed and opens the pull request on GitHub</value></data>
+  <data name="Submit_Confirm" xml:space="preserve"><value>Open the pull request "{0}", closing issue #{1}, into {2}?</value></data>
+  <data name="Submit_ConfirmPush" xml:space="preserve"><value>The branch {0} will be pushed first.</value></data>
+  <data name="Submit_Created" xml:space="preserve"><value>Opened pull request #{0}: {1}</value></data>
+  <data name="Submit_Checks" xml:space="preserve"><value>Checks</value></data>
+  <data name="Submit_CheckNow" xml:space="preserve"><value>Check now</value></data>
+  <data name="Submit_NoChecksYet" xml:space="preserve"><value>No checks have started yet. GitHub usually starts them within a minute; this screen looks again every 15 seconds.</value></data>
+  <data name="Submit_ChecksRunning" xml:space="preserve"><value>The checks are running. This screen looks again every 15 seconds.</value></data>
+  <data name="Submit_ChecksPassed" xml:space="preserve"><value>All checks passed. The pull request now waits for review.</value></data>
+  <data name="Submit_ChecksFailed" xml:space="preserve"><value>A check failed. Open its log, fix the problem on your branch, commit and push; the check runs again by itself.</value></data>
+  <data name="Submit_OpenCheck" xml:space="preserve"><value>Open</value></data>
+  <data name="Submit_OpenLog" xml:space="preserve"><value>Open the log</value></data>
+  <data name="Submit_OpenCheckFor" xml:space="preserve"><value>Open the {0} check on GitHub</value></data>
+
+  <!-- Tidy up screen -->
+  <data name="Tidy_Title" xml:space="preserve"><value>Tidy up</value></data>
+  <data name="Tidy_Intro" xml:space="preserve"><value>After a merge: back to main, pull the merged result, and delete the local branches you no longer need.</value></data>
+  <data name="Tidy_MainCard" xml:space="preserve"><value>Back to main</value></data>
+  <data name="Tidy_OnMain" xml:space="preserve"><value>You are on {0}, {1} commit(s) behind GitHub.</value></data>
+  <data name="Tidy_OnBranch" xml:space="preserve"><value>You are on {0}. Switching to {1} and pulling gets the merged result.</value></data>
+  <data name="Tidy_Uncommitted" xml:space="preserve"><value>{0} file(s) are changed but not committed. Commit or discard them before switching.</value></data>
+  <data name="Tidy_SwitchAndPull" xml:space="preserve"><value>Switch to main and pull</value></data>
+  <data name="Tidy_SwitchAndPullHelp" xml:space="preserve"><value>Runs git switch main, then git pull</value></data>
+  <data name="Tidy_SwitchedAndPulled" xml:space="preserve"><value>On {0} with the latest code.</value></data>
+  <data name="Tidy_BranchesCard" xml:space="preserve"><value>Local branches</value></data>
+  <data name="Tidy_BranchesIntro" xml:space="preserve"><value>Branches whose pull requests are merged are ticked already. Tick any others you want to delete.</value></data>
+  <data name="Tidy_NoBranches" xml:space="preserve"><value>There are no local branches apart from main.</value></data>
+  <data name="Tidy_Current" xml:space="preserve"><value>current branch</value></data>
+  <data name="Tidy_Merged" xml:space="preserve"><value>merged</value></data>
+  <data name="Tidy_OpenPullRequest" xml:space="preserve"><value>open pull request</value></data>
+  <data name="Tidy_NoPullRequest" xml:space="preserve"><value>no pull request</value></data>
+  <data name="Tidy_DeleteBranchName" xml:space="preserve"><value>Delete branch {0}</value></data>
+  <data name="Tidy_WhyForce" xml:space="preserve"><value>Deletion uses git branch -D: squash merging makes Git think the branch wasn't merged, so the ordinary delete would refuse. Work that was never pushed or merged is lost.</value></data>
+  <data name="Tidy_DeleteTicked" xml:space="preserve"><value>Delete the ticked branches</value></data>
+  <data name="Tidy_DeleteHelp" xml:space="preserve"><value>Deletes the ticked local branches with git branch -D, then prunes</value></data>
+  <data name="Tidy_ConfirmDelete" xml:space="preserve"><value>Delete {0} local branch(es)? This can't be undone for work that was never pushed or merged.
+
+{1}</value></data>
+  <data name="Tidy_Deleted" xml:space="preserve"><value>Deleted {0} local branch(es) and pruned.</value></data>
+  <data name="Tidy_PruneCard" xml:space="preserve"><value>Prune</value></data>
+  <data name="Tidy_PruneIntro" xml:space="preserve"><value>Forgets remote branches that were deleted on GitHub (git fetch --prune).</value></data>
+  <data name="Tidy_Prune" xml:space="preserve"><value>Fetch and prune</value></data>
+  <data name="Tidy_Pruned" xml:space="preserve"><value>Fetched and pruned.</value></data>
+
+  <!-- Diff window -->
+  <data name="Diff_ContentName" xml:space="preserve"><value>Diff text</value></data>
+  <data name="Diff_CopyHelp" xml:space="preserve"><value>Copy the diff to the clipboard</value></data>
+  <!-- Review (admins) -->
+  <data name="Review_Title" xml:space="preserve"><value>Review</value></data>
+  <data name="Review_Intro" xml:space="preserve"><value>Open pull requests on the repository. Pick one to see its files, approve it, ask for changes or merge it.</value></data>
+  <data name="Review_NotAdmin" xml:space="preserve"><value>Only repository admins can approve and merge. GitHub reports your role as {0}.</value></data>
+  <data name="Review_ListCard" xml:space="preserve"><value>Open pull requests</value></data>
+  <data name="Review_NoPullRequests" xml:space="preserve"><value>There are no open pull requests.</value></data>
+  <data name="Review_SelectPrompt" xml:space="preserve"><value>Pick a pull request above.</value></data>
+  <data name="Review_By" xml:space="preserve"><value>by {0}, from {1}</value></data>
+  <data name="Review_Draft" xml:space="preserve"><value>draft</value></data>
+  <data name="Review_Own" xml:space="preserve"><value>yours</value></data>
+  <data name="Review_State_Clean" xml:space="preserve"><value>ready to merge</value></data>
+  <data name="Review_State_Behind" xml:space="preserve"><value>behind main</value></data>
+  <data name="Review_State_Dirty" xml:space="preserve"><value>conflicts</value></data>
+  <data name="Review_State_Blocked" xml:space="preserve"><value>blocked by rules</value></data>
+  <data name="Review_State_Unstable" xml:space="preserve"><value>a check failed</value></data>
+  <data name="Review_State_Unknown" xml:space="preserve"><value>state not known yet</value></data>
+  <data name="Review_State_Computing" xml:space="preserve"><value>working it out</value></data>
+  <data name="Review_Why_Computing" xml:space="preserve"><value>GitHub is still working out whether the branch merges cleanly, as it does for a few seconds after main moves. Refresh in a moment.</value></data>
+  <data name="Review_StateChanged" xml:space="preserve"><value>#{0} can't be merged now. {1}</value></data>
+  <data name="Review_NeedsUpdate" xml:space="preserve"><value>{0} pull request(s) need updating from {1} before they can merge: {2}</value></data>
+  <data name="Review_Why_None" xml:space="preserve"><value>Approved, checks green and up to date: squash and merge is ready.</value></data>
+  <data name="Review_Why_Draft" xml:space="preserve"><value>This is a draft. The author marks it ready for review on GitHub first.</value></data>
+  <data name="Review_Why_NotApproved" xml:space="preserve"><value>Nobody has approved it yet. Approve it, or merge with bypass if it is yours or there is no one else to approve.</value></data>
+  <data name="Review_Why_ChangesRequested" xml:space="preserve"><value>Changes were requested. The author pushes a fix, then it can be approved.</value></data>
+  <data name="Review_Why_ChecksFailed" xml:space="preserve"><value>The checks failed. The author fixes the branch and pushes; the checks run again by themselves.</value></data>
+  <data name="Review_Why_ChecksRunning" xml:space="preserve"><value>The checks are still running. Refresh in a minute.</value></data>
+  <data name="Review_Why_Conflicts" xml:space="preserve"><value>The branch conflicts with main. The author updates it from Fix a problem and resolves the conflicts. A bypass can't merge conflicts.</value></data>
+  <data name="Review_Why_Behind" xml:space="preserve"><value>The branch is behind main. Update it, wait for the checks, then merge.</value></data>
+  <data name="Review_Why_Blocked" xml:space="preserve"><value>GitHub's rules block the merge: a required review or check is missing. Merge with bypass if there is a reason to.</value></data>
+  <data name="Review_FilesCard" xml:space="preserve"><value>Changed files</value></data>
+  <data name="Review_FilesLoading" xml:space="preserve"><value>Reading the file list...</value></data>
+  <data name="Review_FilesCount" xml:space="preserve"><value>{0} file(s), +{1} -{2}</value></data>
+  <data name="Review_FileCounts" xml:space="preserve"><value>+{0} -{1}</value></data>
+  <data name="Review_ReviewSection" xml:space="preserve"><value>Review</value></data>
+  <data name="Review_OwnCantApprove" xml:space="preserve"><value>This is your own pull request. GitHub refuses a self-approval, so merge it with bypass below, with a reason.</value></data>
+  <data name="Review_CommentLabel" xml:space="preserve"><value>Comment for the author (needed to request changes)</value></data>
+  <data name="Review_CommentHelp" xml:space="preserve"><value>Posted as the review comment when you request changes</value></data>
+  <data name="Review_Approve" xml:space="preserve"><value>Approve</value></data>
+  <data name="Review_ApproveHelp" xml:space="preserve"><value>Runs gh pr review --approve</value></data>
+  <data name="Review_ConfirmApprove" xml:space="preserve"><value>Approve pull request #{0}, {1}?</value></data>
+  <data name="Review_DidApprove" xml:space="preserve"><value>Approved #{0}.</value></data>
+  <data name="Review_RequestChanges" xml:space="preserve"><value>Request changes</value></data>
+  <data name="Review_RequestChangesHelp" xml:space="preserve"><value>Runs gh pr review --request-changes with your comment, passed through a file</value></data>
+  <data name="Review_CommentNeeded" xml:space="preserve"><value>Type a comment that tells the author what to change.</value></data>
+  <data name="Review_ConfirmRequestChanges" xml:space="preserve"><value>Request changes on #{0} with this comment?
+
+{1}</value></data>
+  <data name="Review_DidRequestChanges" xml:space="preserve"><value>Changes requested on #{0}.</value></data>
+  <data name="Review_MergeSection" xml:space="preserve"><value>Merge</value></data>
+  <data name="Review_Merge" xml:space="preserve"><value>Squash and merge</value></data>
+  <data name="Review_MergeHelp" xml:space="preserve"><value>Runs gh pr merge --squash --delete-branch</value></data>
+  <data name="Review_ConfirmMerge" xml:space="preserve"><value>Squash and merge #{0}, {1}, into {2}? The branch {3} is deleted on GitHub afterwards.</value></data>
+  <data name="Review_DidMerge" xml:space="preserve"><value>Merged #{0}.</value></data>
+  <data name="Review_UpdateBranch" xml:space="preserve"><value>Update the branch from main</value></data>
+  <data name="Review_UpdateBranchHelp" xml:space="preserve"><value>Runs gh pr update-branch; the checks run again afterwards</value></data>
+  <data name="Review_DidUpdateBranch" xml:space="preserve"><value>Branch of #{0} updated from main; the checks run again.</value></data>
+  <data name="Review_BypassCard" xml:space="preserve"><value>Merge with bypass</value></data>
+  <data name="Review_BypassIntro" xml:space="preserve"><value>Merges past the rules with --admin. Say why: the reason is posted as a comment on the pull request before the merge, so the record stays with it.</value></data>
+  <data name="Review_BypassOwn" xml:space="preserve"><value>This is your own pull request, which you can't approve, so this is the way to merge it.</value></data>
+  <data name="Review_ReasonLabel" xml:space="preserve"><value>Reason</value></data>
+  <data name="Review_ReasonHelp" xml:space="preserve"><value>Posted as a comment on the pull request before the merge</value></data>
+  <data name="Review_ReasonNeeded" xml:space="preserve"><value>Type the reason first. It is posted on the pull request.</value></data>
+  <data name="Review_Bypass" xml:space="preserve"><value>Merge with bypass</value></data>
+  <data name="Review_BypassHelp" xml:space="preserve"><value>Posts the reason as a comment, then runs gh pr merge --squash --admin --delete-branch</value></data>
+  <data name="Review_ConfirmBypass" xml:space="preserve"><value>Merge #{0} with bypass?
+
+This comment is posted first:
+{1}
+
+Then the pull request is squash merged with --admin and the branch {2} is deleted.</value></data>
+  <data name="Review_DidBypass" xml:space="preserve"><value>Merged #{0} with bypass; the reason is on the pull request.</value></data>
+  <!-- Fix a problem -->
+  <data name="Fix_Title" xml:space="preserve"><value>Fix a problem</value></data>
+  <data name="Fix_Intro" xml:space="preserve"><value>The common situations from Working with Git.md, section 8. Each card says whether it applies to your branch right now.</value></data>
+  <data name="Fix_SituationCard" xml:space="preserve"><value>Where you are</value></data>
+  <data name="Fix_OnBranch" xml:space="preserve"><value>Branch: {0}</value></data>
+  <data name="Fix_NoChanges" xml:space="preserve"><value>No uncommitted changes.</value></data>
+  <data name="Fix_Changes" xml:space="preserve"><value>{0} uncommitted file(s).</value></data>
+  <data name="Fix_Conflicted" xml:space="preserve"><value>{0} file(s) in conflict.</value></data>
+  <data name="Fix_AheadBehind" xml:space="preserve"><value>{0} commit(s) ahead of origin/{2}, {1} behind.</value></data>
+  <data name="Fix_HasPullRequest" xml:space="preserve"><value>Pull request #{0} is open for this branch.</value></data>
+  <data name="Fix_NothingWrong" xml:space="preserve"><value>Nothing here needs fixing.</value></data>
+  <data name="Fix_ConflictCard" xml:space="preserve"><value>Conflict</value></data>
+  <data name="Fix_ConflictIntro" xml:space="preserve"><value>Both main and your branch changed the same lines. In each file below, keep the right lines and remove the markers, save, then finish the merge here.</value></data>
+  <data name="Fix_ConflictMarkers" xml:space="preserve"><value>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD   starts your version
+=======        separates it from the other version
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; ...    ends it
+Delete all three marker lines and keep the lines you want.</value></data>
+  <data name="Fix_OpenInEditor" xml:space="preserve"><value>Open in editor</value></data>
+  <data name="Fix_OpenInEditorFor" xml:space="preserve"><value>Open {0} in the editor</value></data>
+  <data name="Fix_NotAMerge" xml:space="preserve"><value>No merge is in progress, so finishing makes an ordinary commit of the resolved files.</value></data>
+  <data name="Fix_FinishMerge" xml:space="preserve"><value>Finish the merge and push</value></data>
+  <data name="Fix_FinishMergeHelp" xml:space="preserve"><value>Checks that no markers remain, then runs git add -A, git commit --no-edit and git push</value></data>
+  <data name="Fix_MarkersRemain" xml:space="preserve"><value>{0} still has conflict markers at line(s) {1}. Resolve them and save the file first.</value></data>
+  <data name="Fix_ConfirmFinish" xml:space="preserve"><value>Commit the resolved files and push the branch?</value></data>
+  <data name="Fix_ResolveCommitMessage" xml:space="preserve"><value>Resolve conflicts with main</value></data>
+  <data name="Fix_DidFinish" xml:space="preserve"><value>Merge finished and pushed.</value></data>
+  <data name="Fix_AbortMerge" xml:space="preserve"><value>Abandon the merge</value></data>
+  <data name="Fix_AbortMergeHelp" xml:space="preserve"><value>Runs git merge --abort, putting the branch back to before the update</value></data>
+  <data name="Fix_ConfirmAbort" xml:space="preserve"><value>Abandon the merge? The branch goes back to before the update, and conflict edits made so far are lost.</value></data>
+  <data name="Fix_DidAbort" xml:space="preserve"><value>Merge abandoned; the branch is back to before the update.</value></data>
+  <data name="Fix_MoveCard" xml:space="preserve"><value>Changes made on main</value></data>
+  <data name="Fix_MoveIntro" xml:space="preserve"><value>Changes belong on a branch: main is protected, so a push from it is refused. Moving them to a new branch keeps every change; only the branch changes.</value></data>
+  <data name="Fix_MoveNotOnMain" xml:space="preserve"><value>You are on {0}, not {1}, so this doesn't apply.</value></data>
+  <data name="Fix_MoveNoChanges" xml:space="preserve"><value>You are on {0} with no changes, so there is nothing to move. Start work from an issue instead.</value></data>
+  <data name="Fix_BranchNameLabel" xml:space="preserve"><value>New branch name</value></data>
+  <data name="Fix_BranchNameHint" xml:space="preserve"><value>feature/, fix/ or docs/, then the issue number and a few words, for example fix/7-login-fails.</value></data>
+  <data name="Fix_Move" xml:space="preserve"><value>Move the changes to the new branch</value></data>
+  <data name="Fix_MoveHelp" xml:space="preserve"><value>Runs git switch -c with the name; the changes come along</value></data>
+  <data name="Fix_ConfirmMove" xml:space="preserve"><value>Create branch {0} and move the {1} changed file(s) to it?</value></data>
+  <data name="Fix_DidMove" xml:space="preserve"><value>Changes are now on {0}. Commit them on Save and share.</value></data>
+  <data name="Fix_DiscardCard" xml:space="preserve"><value>Throw changes away</value></data>
+  <data name="Fix_DiscardIntro" xml:space="preserve"><value>Puts the ticked files back to the last commit. New files are deleted. This can't be undone.</value></data>
+  <data name="Fix_DiscardNone" xml:space="preserve"><value>There are no changes to throw away.</value></data>
+  <data name="Fix_TickAll" xml:space="preserve"><value>Tick all</value></data>
+  <data name="Fix_DiscardFileName" xml:space="preserve"><value>Throw away the changes to {0}</value></data>
+  <data name="Fix_Discard" xml:space="preserve"><value>Throw away the ticked changes</value></data>
+  <data name="Fix_DiscardHelp" xml:space="preserve"><value>Runs git restore for changed files and git clean for new files. This can't be undone</value></data>
+  <data name="Fix_ConfirmDiscard" xml:space="preserve"><value>Throw away the changes to {0} file(s)? This can't be undone.
+
+{1}</value></data>
+  <data name="Fix_ConfirmDiscardNew" xml:space="preserve"><value>{0} of them are new files, which are deleted.</value></data>
+  <data name="Fix_DidDiscard" xml:space="preserve"><value>Threw away the changes to {0} file(s).</value></data>
+  <data name="Fix_UndoCard" xml:space="preserve"><value>Undo the last commit</value></data>
+  <data name="Fix_UndoIntro" xml:space="preserve"><value>Takes the last commit off the branch and keeps its changes as uncommitted work, so you can change them and commit again. Only for a commit that isn't pushed yet.</value></data>
+  <data name="Fix_UndoLast" xml:space="preserve"><value>Last commit, not yet pushed: {0}</value></data>
+  <data name="Fix_UndoPushed" xml:space="preserve"><value>The last commit, "{0}", is already on GitHub, so undoing it here would make the branch disagree with GitHub. Make a new commit that corrects it instead.</value></data>
+  <data name="Fix_UndoNoCommits" xml:space="preserve"><value>There is no commit on this branch beyond {0}.</value></data>
+  <data name="Fix_UndoMerging" xml:space="preserve"><value>Finish or abandon the merge first.</value></data>
+  <data name="Fix_Undo" xml:space="preserve"><value>Undo the last commit, keep the changes</value></data>
+  <data name="Fix_UndoHelp" xml:space="preserve"><value>Runs git reset --soft HEAD~1</value></data>
+  <data name="Fix_ConfirmUndo" xml:space="preserve"><value>Undo the commit "{0}"? Its changes stay in your files as uncommitted work.</value></data>
+  <data name="Fix_DidUndo" xml:space="preserve"><value>Undid the last commit; its changes are uncommitted again.</value></data>
+  <data name="Fix_BehindCard" xml:space="preserve"><value>Branch out of date with main</value></data>
+  <data name="Fix_BehindIntro" xml:space="preserve"><value>GitHub says a branch is behind main when main moved on since the branch was made. Updating brings those commits into the branch.</value></data>
+  <data name="Fix_BehindOnMain" xml:space="preserve"><value>You are on {0}; pull it from Tidy up instead.</value></data>
+  <data name="Fix_BehindUpToDate" xml:space="preserve"><value>The branch has everything on origin/{0}.</value></data>
+  <data name="Fix_BehindCount" xml:space="preserve"><value>The branch is {0} commit(s) behind origin/{1}.</value></data>
+  <data name="Fix_BehindWithPr" xml:space="preserve"><value>Pull request #{0} is open, so GitHub updates the branch and the result is pulled here.</value></data>
+  <data name="Fix_BehindNoPr" xml:space="preserve"><value>There is no pull request yet, so main is merged into the branch here.</value></data>
+  <data name="Fix_BehindDirty" xml:space="preserve"><value>Commit or throw away the uncommitted changes first; an update over uncommitted changes can go wrong.</value></data>
+  <data name="Fix_UpdateWithPr" xml:space="preserve"><value>Update on GitHub, then pull</value></data>
+  <data name="Fix_UpdateWithPrHelp" xml:space="preserve"><value>Runs gh pr update-branch, then git pull</value></data>
+  <data name="Fix_UpdateLocal" xml:space="preserve"><value>Merge main into the branch</value></data>
+  <data name="Fix_UpdateLocalHelp" xml:space="preserve"><value>Runs git merge origin/main</value></data>
+  <data name="Fix_ConfirmUpdate" xml:space="preserve"><value>Update {0} from origin/{1}?</value></data>
+  <data name="Fix_DidUpdate" xml:space="preserve"><value>Updated {0} from main.</value></data>
+  <data name="Fix_UpdateConflict" xml:space="preserve"><value>The update stopped on a conflict. The Conflict card lists the files.</value></data>
+  <data name="StartWork_GoToFixProblem" xml:space="preserve"><value>Fix a problem</value></data>
+  <!-- Header and navigation (Designated Driver) -->
+  <data name="Header_Repository" xml:space="preserve"><value>Repository</value></data>
+  <data name="Header_NoRepository" xml:space="preserve"><value>No repository chosen</value></data>
+  <data name="Header_SwitchHelp" xml:space="preserve"><value>Switch the current repository</value></data>
+  <data name="Nav_Repositories" xml:space="preserve"><value>Repositories</value></data>
+  <data name="Nav_Scan" xml:space="preserve"><value>Scan</value></data>
+  <data name="Board_None" xml:space="preserve"><value>No board is known for this repository.</value></data>
+
+  <!-- Repositories screen -->
+  <data name="Repos_Title" xml:space="preserve"><value>Repositories</value></data>
+  <data name="Repos_Intro" xml:space="preserve"><value>The repositories the tool knows. Add a clone, make one current, open its settings, scan it, check it against the convention, or set one up.</value></data>
+  <data name="Repos_Add" xml:space="preserve"><value>Add a clone</value></data>
+  <data name="Repos_AddHelp" xml:space="preserve"><value>Add an existing clone to the list</value></data>
+  <data name="Repos_Wizard" xml:space="preserve"><value>Set up a repository</value></data>
+  <data name="Repos_WizardHelp" xml:space="preserve"><value>Create a repository, or set an existing one up, to the convention</value></data>
+  <data name="Repos_None" xml:space="preserve"><value>No repositories yet. Add a clone, or go to Scan to look at one first.</value></data>
+  <data name="Repos_Filter" xml:space="preserve"><value>Filter</value></data>
+  <data name="Repos_FilterHelp" xml:space="preserve"><value>Type part of an owner, a name or a folder to narrow the list</value></data>
+  <data name="Repos_StarredOnly" xml:space="preserve"><value>Starred only</value></data>
+  <data name="Repos_StarredOnlyHelp" xml:space="preserve"><value>Show only the repositories you have starred on GitHub</value></data>
+  <data name="Repos_StarredUnavailable" xml:space="preserve"><value>Your starred repositories could not be read: {0}</value></data>
+  <data name="Repos_Starred" xml:space="preserve"><value>Starred on GitHub</value></data>
+  <data name="Repos_Showing" xml:space="preserve"><value>Showing {0} of {1}</value></data>
+  <data name="Repos_NoneMatch" xml:space="preserve"><value>No repository matches the filter.</value></data>
+  <data name="Repos_Current" xml:space="preserve"><value>current</value></data>
+  <data name="Repos_MakeCurrent" xml:space="preserve"><value>Make current</value></data>
+  <data name="Repos_MakeCurrentFor" xml:space="preserve"><value>Make {0} the current repository</value></data>
+  <data name="Repos_Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="Repos_SettingsFor" xml:space="preserve"><value>Settings for {0}</value></data>
+  <data name="Repos_Scan" xml:space="preserve"><value>Scan</value></data>
+  <data name="Repos_ScanFor" xml:space="preserve"><value>Scan {0}</value></data>
+  <data name="Repos_Remove" xml:space="preserve"><value>Remove</value></data>
+  <data name="Repos_RemoveFor" xml:space="preserve"><value>Remove {0} from the list</value></data>
+  <data name="Repos_ConfirmRemove" xml:space="preserve"><value>Remove {0} from the list?
+
+The clone and the repository on GitHub are not touched.</value></data>
+  <data name="Repos_Convention" xml:space="preserve"><value>Convention v{0}</value></data>
+  <data name="Repos_NotSetUp" xml:space="preserve"><value>Not set up</value></data>
+  <data name="Repos_FolderMissing" xml:space="preserve"><value>Folder missing</value></data>
+  <data name="Repos_OpenPullRequests" xml:space="preserve"><value>{0} open pull request(s)</value></data>
+  <data name="Repos_PullRequestsUnknown" xml:space="preserve"><value>Pull requests not read</value></data>
+  <data name="Repos_LastScan" xml:space="preserve"><value>Last scan: {0}</value></data>
+  <data name="Repos_NotScanned" xml:space="preserve"><value>Not scanned yet</value></data>
+
+  <!-- Scan screen -->
+  <data name="Scan_Title" xml:space="preserve"><value>Scan</value></data>
+  <data name="Scan_Intro" xml:space="preserve"><value>A read-only look at a repository against the convention: what stops a conversion, what the set-up would change or keep, what this plan does not allow, and what is already in place. Nothing is changed.</value></data>
+  <data name="Scan_TargetCard" xml:space="preserve"><value>What to scan</value></data>
+  <data name="Scan_TargetCurrent" xml:space="preserve"><value>The current repository ({0})</value></data>
+  <data name="Scan_TargetFolder" xml:space="preserve"><value>A folder on this machine</value></data>
+  <data name="Scan_FolderHelp" xml:space="preserve"><value>A clone, or a folder that is not a repository yet.</value></data>
+  <data name="Scan_TargetName" xml:space="preserve"><value>A repository on GitHub, by owner and name</value></data>
+  <data name="Scan_NameHelp" xml:space="preserve"><value>For example paulfilkin/example. Fewer facts, since nothing local can be read.</value></data>
+  <data name="Scan_Run" xml:space="preserve"><value>Scan</value></data>
+  <data name="Scan_RunHelp" xml:space="preserve"><value>Scan the chosen repository. Nothing is changed.</value></data>
+  <data name="Scan_NoTarget" xml:space="preserve"><value>Choose a folder or type owner/name first.</value></data>
+  <data name="Scan_BadName" xml:space="preserve"><value>Type the repository as owner/name, for example paulfilkin/example.</value></data>
+  <data name="Scan_ResultCard" xml:space="preserve"><value>Result</value></data>
+  <data name="Scan_ScannedAt" xml:space="preserve"><value>{0}, scanned {1}</value></data>
+  <data name="Scan_Verdict_NotConvertible" xml:space="preserve"><value>Not convertible as it stands</value></data>
+  <data name="Scan_Verdict_Convertible" xml:space="preserve"><value>Convertible</value></data>
+  <data name="Scan_Verdict_AlreadySetUp" xml:space="preserve"><value>Already set up to the convention</value></data>
+  <data name="Scan_Summary_NotConvertible" xml:space="preserve"><value>Not convertible: {0} blocker(s)</value></data>
+  <data name="Scan_Summary_Convertible" xml:space="preserve"><value>Convertible: {0} change(s), {1} thing(s) worth knowing</value></data>
+  <data name="Scan_Summary_AlreadySetUp" xml:space="preserve"><value>Already set up</value></data>
+  <data name="Scan_Group_Blocker" xml:space="preserve"><value>Blockers</value></data>
+  <data name="Scan_Group_Warning" xml:space="preserve"><value>Worth knowing</value></data>
+  <data name="Scan_Group_Change" xml:space="preserve"><value>What set-up would change</value></data>
+  <data name="Scan_Group_NotAvailable" xml:space="preserve"><value>Not available on this plan</value></data>
+  <data name="Scan_Group_Ok" xml:space="preserve"><value>Already in place</value></data>
+  <data name="Scan_Step" xml:space="preserve"><value>Step: {0}</value></data>
+  <data name="Scan_CopyReport" xml:space="preserve"><value>Copy report</value></data>
+  <data name="Scan_CopyReportHelp" xml:space="preserve"><value>Copy the scan report as text</value></data>
+  <data name="Scan_AddToList" xml:space="preserve"><value>Work on it in Designated Driver</value></data>
+  <data name="Scan_AddToListHelp" xml:space="preserve"><value>Add this clone to Designated Driver's list of repositories and make it current</value></data>
+  <data name="Scan_Done" xml:space="preserve"><value>Scan finished: {0}</value></data>
+  <data name="Scan_Next_NotConvertible" xml:space="preserve"><value>Next step: fix the blockers above, then scan again.</value></data>
+  <data name="Scan_Next_Convertible" xml:space="preserve"><value>Next step: bring this repository into the convention. The set-up wizard opens with it chosen; nothing changes until you press Start on its last page.</value></data>
+  <data name="Scan_Next_Convertible_Text" xml:space="preserve"><value>Next step: run the set-up wizard on it, or --setup &lt;answers.json&gt;.</value></data>
+  <data name="Scan_Next_AlreadySetUp_Current" xml:space="preserve"><value>Next step: none needed. Check shows anything that has drifted since; Status shows where the repository stands.</value></data>
+  <data name="Scan_Next_AlreadySetUp_Other" xml:space="preserve"><value>Next step: none needed. Work on it in Designated Driver to use Check and Status on it.</value></data>
+  <data name="Scan_Next_AlreadySetUp_Text" xml:space="preserve"><value>Next step: none needed. --check &lt;folder&gt; shows anything that has drifted since.</value></data>
+  <data name="Scan_OpenCheck" xml:space="preserve"><value>Open Check</value></data>
+  <data name="Scan_OpenCheckHelp" xml:space="preserve"><value>Open the Check screen for the current repository</value></data>
+
+  <!-- Set-up steps, as scan findings name them -->
+  <data name="Step_None" xml:space="preserve"><value>Before set-up</value></data>
+  <data name="Step_CreateRepository" xml:space="preserve"><value>Create the repository</value></data>
+  <data name="Step_Settings" xml:space="preserve"><value>Repository settings</value></data>
+  <data name="Step_Labels" xml:space="preserve"><value>Labels</value></data>
+  <data name="Step_Board" xml:space="preserve"><value>Board</value></data>
+  <data name="Step_BoardToken" xml:space="preserve"><value>Board token</value></data>
+  <data name="Step_Files" xml:space="preserve"><value>Convention files</value></data>
+  <data name="Step_Hooks" xml:space="preserve"><value>Local hooks</value></data>
+  <data name="Step_Security" xml:space="preserve"><value>Dependabot and secret scanning</value></data>
+  <data name="Step_Ruleset" xml:space="preserve"><value>Ruleset</value></data>
+  <data name="Step_Manifest" xml:space="preserve"><value>Manifest</value></data>
+
+  <!-- Scan findings -->
+  <data name="Scan_NotGitHubOrigin" xml:space="preserve"><value>The origin remote is not on GitHub: {0}</value></data>
+  <data name="Scan_RepositoryNotFound" xml:space="preserve"><value>{0} was not found on GitHub, or the signed-in account cannot see it.</value></data>
+  <data name="Scan_Archived" xml:space="preserve"><value>The repository is archived. Unarchive it on GitHub before setting it up.</value></data>
+  <data name="Scan_NotAdmin" xml:space="preserve"><value>The signed-in account is not an admin of {0} ({1}). Set-up changes settings, labels and rules, which need admin.</value></data>
+  <data name="Scan_Fork" xml:space="preserve"><value>The repository is a fork. Pull requests and rules behave differently on forks, and nothing in the convention is designed for them.</value></data>
+  <data name="Scan_Organisation" xml:space="preserve"><value>The repository belongs to an organisation ({0}). The tool is designed for a personal account; the commands are the same, but the board will be organisation-owned.</value></data>
+  <data name="Scan_DirtyTree" xml:space="preserve"><value>The working tree has {0} uncommitted change(s). Set-up commits the convention files, so commit or discard them first.</value></data>
+  <data name="Scan_MergeInProgress" xml:space="preserve"><value>A merge is in progress. Finish or abandon it before setting up.</value></data>
+  <data name="Scan_DefaultBranchNotMain" xml:space="preserve"><value>The default branch is {0}, not main. The convention honours it: the files, hooks and workflows will name {0}.</value></data>
+  <data name="Scan_ExistingFilesKept" xml:space="preserve"><value>{0} convention file(s) already exist. Set-up keeps them as they are; Check shows how they differ.</value></data>
+  <data name="Scan_ExistingBoardOtherColumns" xml:space="preserve"><value>Board {0} ({1}) is linked but lacks Todo, In Progress and Done. Set-up creates a new board; this one is left alone.</value></data>
+  <data name="Scan_HooksPathElsewhere" xml:space="preserve"><value>core.hooksPath is {0}. Set-up points it at .githooks, so the hooks there would stop running.</value></data>
+  <data name="Scan_RulesAlreadyApply" xml:space="preserve"><value>{0} rule(s) already apply to {1}. The convention's ruleset would be added alongside them.</value></data>
+  <data name="Scan_NoLanguage" xml:space="preserve"><value>No project file was recognised near the root. The wizard will ask for a build command and a test command.</value></data>
+  <data name="Scan_InitGit" xml:space="preserve"><value>The folder is not a Git repository. Set-up would run git init first.</value></data>
+  <data name="Scan_CreateRepository" xml:space="preserve"><value>There is no origin remote. Set-up would create the repository on GitHub from this folder and push.</value></data>
+  <data name="Scan_MergeSettings" xml:space="preserve"><value>{0} merge setting(s) would change.</value></data>
+  <data name="Scan_Merge_CommitsOff" xml:space="preserve"><value>Merge commits: off</value></data>
+  <data name="Scan_Merge_RebaseOff" xml:space="preserve"><value>Rebase merges: off</value></data>
+  <data name="Scan_Merge_SquashOn" xml:space="preserve"><value>Squash merges: on</value></data>
+  <data name="Scan_Merge_SquashTitle" xml:space="preserve"><value>Squash commit message: the pull request title</value></data>
+  <data name="Scan_Merge_DeleteBranch" xml:space="preserve"><value>Delete branch on merge: on</value></data>
+  <data name="Scan_Merge_UpdateBranch" xml:space="preserve"><value>Allow update branch: on</value></data>
+  <data name="Scan_MergeSettingsOk" xml:space="preserve"><value>Merge settings already match the convention.</value></data>
+  <data name="Scan_Features" xml:space="preserve"><value>{0} repository feature(s) would change.</value></data>
+  <data name="Scan_Feature_IssuesOn" xml:space="preserve"><value>Issues: on</value></data>
+  <data name="Scan_Feature_ProjectsOn" xml:space="preserve"><value>Projects: on</value></data>
+  <data name="Scan_Feature_WikiOff" xml:space="preserve"><value>Wiki: off</value></data>
+  <data name="Scan_CreateLabels" xml:space="preserve"><value>{0} label(s) would be created.</value></data>
+  <data name="Scan_RecolourLabels" xml:space="preserve"><value>{0} label(s) would get the convention's colour and description.</value></data>
+  <data name="Scan_LabelsOk" xml:space="preserve"><value>All {0} convention labels are present with the right colours.</value></data>
+  <data name="Scan_OtherLabels" xml:space="preserve"><value>{0} other label(s) are left alone.</value></data>
+  <data name="Scan_CreateBoard" xml:space="preserve"><value>No usable board is linked. Set-up would create one, keeping GitHub&apos;s Todo, In Progress and Done columns, and link it.</value></data>
+  <data name="Scan_BoardUsable" xml:space="preserve"><value>Board {0} ({1}) is linked and has Todo, In Progress and Done.</value></data>
+  <data name="Scan_WriteFiles" xml:space="preserve"><value>{0} convention file(s) would be written.</value></data>
+  <data name="Scan_PointHooks" xml:space="preserve"><value>core.hooksPath would be set to .githooks, so the commit-msg and pre-push hooks run.</value></data>
+  <data name="Scan_HooksOk" xml:space="preserve"><value>core.hooksPath already points at .githooks.</value></data>
+  <data name="Scan_DependabotAlerts" xml:space="preserve"><value>Dependabot alerts would be turned on.</value></data>
+  <data name="Scan_DependabotUpdates" xml:space="preserve"><value>Dependabot security updates would be turned on.</value></data>
+  <data name="Scan_SecretScanning" xml:space="preserve"><value>Secret scanning and push protection would be turned on.</value></data>
+  <data name="Scan_CreateRuleset" xml:space="preserve"><value>A ruleset on {0} would be created: pull requests only, the Build and test check, no force pushes, no deletion.</value></data>
+  <data name="Scan_UpdateConvention" xml:space="preserve"><value>Set up to convention v{0}; the tool knows v{1}. Check would offer the update.</value></data>
+  <data name="Scan_RulesetsUnavailable" xml:space="preserve"><value>Rulesets: not available on a private repository with this plan. The tool, the local hooks and the guard workflow enforce the rules instead.</value></data>
+  <data name="Scan_CodeOwnersUnavailable" xml:space="preserve"><value>Required code owner review: not available. CODEOWNERS is written anyway, so it takes effect if the repository goes public.</value></data>
+  <data name="Scan_PushProtectionUnavailable" xml:space="preserve"><value>Secret scanning push protection: not available. The CI workflow's committed-secrets check stands in.</value></data>
+  <data name="Scan_CodeScanningUnavailable" xml:space="preserve"><value>Code scanning (CodeQL): not available. No CodeQL workflow is written.</value></data>
+  <data name="Scan_AlreadySetUp" xml:space="preserve"><value>Set up to convention v{0} on {1}.</value></data>
+  <data name="Scan_VisibilityPublic" xml:space="preserve"><value>Public repository: every GitHub feature the convention uses is available.</value></data>
+  <data name="Scan_VisibilityPrivate" xml:space="preserve"><value>Private repository. Plan: {0}.</value></data>
+  <data name="Scan_LanguageDetected" xml:space="preserve"><value>Language: {0}, from {1}.</value></data>
+  <data name="Scan_EmptyRepository" xml:space="preserve"><value>The repository has no commits. Convention files would be committed straight to {0}.</value></data>
+  <data name="Scan_HasHistory" xml:space="preserve"><value>The repository has history. Convention files would go through a pull request on chore/repo-starter-v1.</value></data>
+  <data name="Scan_OtherWorkflows" xml:space="preserve"><value>{0} other workflow(s) are left alone.</value></data>
+
+  <!-- Plan and capabilities -->
+  <data name="Plan_Free" xml:space="preserve"><value>Free</value></data>
+  <data name="Plan_Unknown" xml:space="preserve"><value>unknown (the token hides it, so features are probed instead)</value></data>
+  <data name="Capability_Rulesets" xml:space="preserve"><value>Rulesets and protected branches</value></data>
+  <data name="Capability_CodeOwners" xml:space="preserve"><value>Required code owner review</value></data>
+  <data name="Capability_DraftPullRequests" xml:space="preserve"><value>Draft pull requests</value></data>
+  <data name="Capability_PushProtection" xml:space="preserve"><value>Secret scanning push protection</value></data>
+  <data name="Capability_CodeScanning" xml:space="preserve"><value>Code scanning (CodeQL)</value></data>
+  <data name="Capability_Wiki" xml:space="preserve"><value>Wiki and Pages</value></data>
+  <data name="Capability_Available" xml:space="preserve"><value>available</value></data>
+  <data name="Capability_NotAvailable" xml:space="preserve"><value>not available</value></data>
+
+  <!-- Status additions -->
+  <data name="Status_Convention" xml:space="preserve"><value>Convention</value></data>
+  <data name="Status_ConventionVersion" xml:space="preserve"><value>Set up to convention v{0} on {1}</value></data>
+  <data name="Status_NoConvention" xml:space="preserve"><value>Not set up by the tool yet. Scan it to see what that would involve, or set it up from Set up a repository.</value></data>
+  <data name="Status_Board" xml:space="preserve"><value>Board</value></data>
+  <data name="Status_BoardLine" xml:space="preserve"><value>{0}'s project {1}</value></data>
+  <data name="Status_NoBoard" xml:space="preserve"><value>None known</value></data>
+  <data name="Status_Capabilities" xml:space="preserve"><value>What this plan allows</value></data>
+  <data name="Status_CapabilitiesLine" xml:space="preserve"><value>{0} repository. Plan: {1}.</value></data>
+  <data name="Status_Visibility_Public" xml:space="preserve"><value>Public</value></data>
+  <data name="Status_Visibility_Private" xml:space="preserve"><value>Private</value></data>
+  <data name="Status_CapabilitiesUnknown" xml:space="preserve"><value>Not probed yet: sign in and refresh.</value></data>
+
+  <!-- Start work additions -->
+  <data name="StartWork_NoBoard" xml:space="preserve"><value>No board is known for this repository, so all open issues are shown. Set-up creates one; until then a board can be named in the repository's settings.</value></data>
+
+  <!-- Settings additions -->
+  <data name="Settings_AddTitle" xml:space="preserve"><value>Add a repository</value></data>
+  <data name="Settings_BoardFromManifest" xml:space="preserve"><value>The board comes from the repository's manifest: {0}'s project {1}. These boxes are ignored while the manifest names one.</value></data>
+  <data name="Settings_AlreadyKnown" xml:space="preserve"><value>{0} is already in the list. Saving replaces its settings.</value></data>  <!-- New repository wizard -->
+  <data name="Nav_NewRepository" xml:space="preserve"><value>Set up a repository</value></data>
+  <data name="Step_Register" xml:space="preserve"><value>Add to the tool</value></data>
+  <data name="Scan_SetUp" xml:space="preserve"><value>Apply the convention</value></data>
+  <data name="Scan_SetUpHelp" xml:space="preserve"><value>Open the set-up wizard with this folder or repository chosen. Nothing changes until you press Start on its last page.</value></data>
+  <data name="Setup_Title" xml:space="preserve"><value>Set up a repository</value></data>
+  <data name="Setup_Intro" xml:space="preserve"><value>Create a repository, or bring an existing one in, so that it has the same labels, board, templates, settings and automation as every other repository set up with the tool. Three pages: where, options, plan.</value></data>
+  <data name="Setup_PageOf" xml:space="preserve"><value>Page {0} of {1}: {2}</value></data>
+  <data name="Setup_WhereCard" xml:space="preserve"><value>Where</value></data>
+  <data name="Setup_SourceNew" xml:space="preserve"><value>A new repository, created on GitHub and cloned here</value></data>
+  <data name="Setup_SourceFolder" xml:space="preserve"><value>An existing folder on this machine</value></data>
+  <data name="Setup_FolderHelp" xml:space="preserve"><value>A clone, or a folder that is not a repository yet. Its origin remote, when it has one, decides owner and name.</value></data>
+  <data name="Setup_SourceRemote" xml:space="preserve"><value>An existing repository on GitHub, cloned here</value></data>
+  <data name="Setup_Owner" xml:space="preserve"><value>Owner</value></data>
+  <data name="Setup_OwnerHelp" xml:space="preserve"><value>Your login, or @me</value></data>
+  <data name="Setup_Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Setup_NameHelp" xml:space="preserve"><value>Letters, digits, hyphens, underscores and dots, as GitHub allows. The board gets the same name.</value></data>
+  <data name="Setup_Description" xml:space="preserve"><value>Description</value></data>
+  <data name="Setup_DescriptionHelp" xml:space="preserve"><value>One line, shown on GitHub and in the README. Optional.</value></data>
+  <data name="Setup_Visibility" xml:space="preserve"><value>Visibility</value></data>
+  <data name="Setup_VisibilityHelpPrivate" xml:space="preserve"><value>Private: rulesets, code owner review, push protection and CodeQL are not available on GitHub Free. The tool, the hooks and the guard workflow enforce the rules instead.</value></data>
+  <data name="Setup_VisibilityHelpPublic" xml:space="preserve"><value>Public: every feature the convention uses is available, so the plan adds push protection, the ruleset and CodeQL.</value></data>
+  <data name="Setup_VisibilityFromGitHub" xml:space="preserve"><value>Taken from the repository on GitHub.</value></data>
+  <data name="Setup_ParentFolder" xml:space="preserve"><value>Clone into</value></data>
+  <data name="Setup_ParentFolderHelp" xml:space="preserve"><value>The folder where you keep projects. The clone is made inside it, named after the repository.</value></data>
+  <data name="Setup_CloneWillBe" xml:space="preserve"><value>The clone will be {0}</value></data>
+  <data name="Setup_ParentMissing" xml:space="preserve"><value>Choose the folder to clone into.</value></data>
+  <data name="Setup_Language" xml:space="preserve"><value>Language</value></data>
+  <data name="Setup_LanguageHelp" xml:space="preserve"><value>Decides the CI steps, the .gitignore and the Dependabot ecosystems. Detected from the project files of an existing folder or repository.</value></data>
+  <data name="Setup_ProjectFile" xml:space="preserve"><value>Project to build</value></data>
+  <data name="Setup_ProjectFileHelp" xml:space="preserve"><value>Relative to the repository root, for example app\Example.csproj. Leave empty for a new repository that has no project yet.</value></data>
+  <data name="Setup_TestProject" xml:space="preserve"><value>Test project</value></data>
+  <data name="Setup_TestProjectHelp" xml:space="preserve"><value>Relative to the repository root. Leave empty when there is none; the CI job then has no test step.</value></data>
+  <data name="Setup_BuildCommand" xml:space="preserve"><value>Build command</value></data>
+  <data name="Setup_BuildCommandHelp" xml:space="preserve"><value>Run by the CI job on Linux after the language's set-up step.</value></data>
+  <data name="Setup_TestCommand" xml:space="preserve"><value>Test command</value></data>
+  <data name="Setup_TestCommandHelp" xml:space="preserve"><value>Run after the build. Leave empty when there are no tests.</value></data>
+  <data name="Setup_SelfTest" xml:space="preserve"><value>Self-test command</value></data>
+  <data name="Setup_SelfTestHelp" xml:space="preserve"><value>Run from Save and share before pushing, and by the CI job after the build. Every line it prints should say PASS. Leave empty if the project has none.</value></data>
+  <data name="Setup_ProjectFileMissing" xml:space="preserve"><value>Name the project to build, relative to the repository root.</value></data>
+  <data name="Setup_BuildCommandMissing" xml:space="preserve"><value>Give the CI job a build command.</value></data>
+  <data name="Setup_OwnerMissing" xml:space="preserve"><value>Give the owner's login, or @me.</value></data>
+  <data name="Setup_NameInvalid" xml:space="preserve"><value>The name may only have letters, digits, hyphens, underscores and dots.</value></data>
+  <data name="Setup_AlreadyExists" xml:space="preserve"><value>{0} already exists on GitHub. Choose "An existing repository on GitHub" to set it up.</value></data>
+  <data name="Setup_FolderNotEmpty" xml:space="preserve"><value>{0} exists and is not empty. Choose another name or folder, or use "An existing folder on this machine".</value></data>
+  <data name="Setup_ScanBlocked" xml:space="preserve"><value>The scan found something that stops the set-up:</value></data>
+  <data name="Setup_ScanAlreadySetUp" xml:space="preserve"><value>Already set up to the convention. The plan will find every step done and change nothing.</value></data>
+  <data name="Setup_ScanSummary" xml:space="preserve"><value>Scanned: {0}</value></data>
+
+  <data name="Setup_OptionsCard" xml:space="preserve"><value>Options</value></data>
+  <data name="Setup_ReviewRequired" xml:space="preserve"><value>Review required before a merge</value></data>
+  <data name="Setup_ReviewRequiredHelp" xml:space="preserve"><value>Recorded in the manifest and applied by the Review screen. On a public repository the ruleset enforces it too.</value></data>
+  <data name="Setup_Discussions" xml:space="preserve"><value>Turn on Discussions</value></data>
+  <data name="Setup_DiscussionsHelp" xml:space="preserve"><value>Off by default. Issues carry the work; Discussions are for questions and ideas.</value></data>
+  <data name="Setup_Release" xml:space="preserve"><value>Release workflow: on a version tag, publish the exe as a GitHub release</value></data>
+  <data name="Setup_ReleaseHelp" xml:space="preserve"><value>.NET projects only. A push of a tag such as v1.2.0 builds a framework-dependent single-file exe on a Windows runner, zips it and creates the release with generated notes.</value></data>
+  <data name="Setup_CodeQl" xml:space="preserve"><value>CodeQL code scanning (public repositories)</value></data>
+  <data name="Setup_CodeQlHelp" xml:space="preserve"><value>Public repositories only: GitHub offers CodeQL free there. Written for the language&apos;s CodeQL analyser; recorded as not available on a private repository.</value></data>
+  <data name="Setup_BehindLimit" xml:space="preserve"><value>Guard: fail a pull request more than this many commits behind the default branch</value></data>
+  <data name="Setup_BehindLimitHelp" xml:space="preserve"><value>Keeps branches fresh. Update branch on the Review screen fixes it.</value></data>
+  <data name="Setup_BehindLimitInvalid" xml:space="preserve"><value>The limit must be a whole number of at least 1.</value></data>
+  <data name="Setup_Checklist" xml:space="preserve"><value>Pull request checklist</value></data>
+  <data name="Setup_ChecklistHelp" xml:space="preserve"><value>Written into the pull request template. Untick what does not apply to this project.</value></data>
+  <data name="Setup_BoardToken" xml:space="preserve"><value>Board token</value></data>
+  <data name="Setup_BoardTokenHelp" xml:space="preserve"><value>The board workflow adds new issues and pull requests to the board; GitHub&apos;s own automations then move them. It needs a classic personal access token with the repo and project scopes, stored as the repository secret PROJECT_TOKEN. Optional: without it the workflow is written but skips itself, and the tool adds issues to the board as it creates them.</value></data>
+  <data name="Setup_EnterToken" xml:space="preserve"><value>Enter a token</value></data>
+  <data name="Setup_TokenNone" xml:space="preserve"><value>No token. The secret step is left out.</value></data>
+  <data name="Setup_TokenHeld" xml:space="preserve"><value>A token is held in memory until the secret is stored.</value></data>
+  <data name="Setup_ClearToken" xml:space="preserve"><value>Forget it</value></data>
+
+  <data name="Setup_CreateCard" xml:space="preserve"><value>Plan</value></data>
+  <data name="Setup_PlanIntro" xml:space="preserve"><value>{0} steps for {1}. Each is checked first and skipped when already done, so the plan can be run again after a failure.</value></data>
+  <data name="Setup_Back" xml:space="preserve"><value>Back</value></data>
+  <data name="Setup_Next" xml:space="preserve"><value>Next</value></data>
+  <data name="Setup_Start" xml:space="preserve"><value>Start</value></data>
+  <data name="Setup_StartHelp" xml:space="preserve"><value>Run the plan. Every command is shown in the activity panel.</value></data>
+  <data name="Setup_Retry" xml:space="preserve"><value>Retry</value></data>
+  <data name="Setup_StartOver" xml:space="preserve"><value>Start over</value></data>
+  <data name="Setup_Started" xml:space="preserve"><value>Set-up started</value></data>
+  <data name="Setup_StepChecking" xml:space="preserve"><value>Checking…</value></data>
+  <data name="Setup_StepRunning" xml:space="preserve"><value>Running…</value></data>
+  <data name="Setup_StepAlreadyDone" xml:space="preserve"><value>Already done</value></data>
+  <data name="Setup_StepApplied" xml:space="preserve"><value>Done</value></data>
+  <data name="Setup_CheckStillFails" xml:space="preserve"><value>Applied, but the check still fails. Look at the activity panel.</value></data>
+  <data name="Setup_DoneTitle" xml:space="preserve"><value>Set up to convention v1</value></data>
+  <data name="Setup_Done" xml:space="preserve"><value>The repository is set up and is now the current repository.</value></data>
+  <data name="Setup_DonePullRequest" xml:space="preserve"><value>The repository is set up and is now the current repository. The convention files are waiting in a pull request: merge it from Review once its checks pass, then Tidy up.</value></data>
+  <data name="Setup_OpenStatus" xml:space="preserve"><value>Open Status</value></data>
+  <data name="Setup_OpenOnGitHub" xml:space="preserve"><value>Open on GitHub</value></data>
+  <data name="Setup_OpenPullRequest" xml:space="preserve"><value>Open the pull request</value></data>
+  <data name="Setup_FailedTitle" xml:space="preserve"><value>Set-up stopped</value></data>
+  <data name="Setup_Failed" xml:space="preserve"><value>{0}: {1}
+
+Fix the cause and press Retry. Steps already done are not repeated.</value></data>
+  <data name="Setup_FailedUnknown" xml:space="preserve"><value>A step failed. Look at the activity panel, then press Retry.</value></data>
+
+  <!-- Step details and messages -->
+  <data name="Setup_Detail_CreateNew" xml:space="preserve"><value>Create {0} on GitHub ({1}) and clone it into {2} over {3}.</value></data>
+  <data name="Setup_Detail_CreateClone" xml:space="preserve"><value>Clone {0} into {1} over {2}.</value></data>
+  <data name="Setup_Detail_CreateFromFolder" xml:space="preserve"><value>Use {0}: git init if needed, create {1} on GitHub from it, and push over {2}.</value></data>
+  <data name="Setup_Detail_Settings" xml:space="preserve"><value>Squash merges only, with the pull request title as the commit message; delete branch on merge; allow update branch; issues and projects on, wiki off.</value></data>
+  <data name="Setup_Detail_Labels" xml:space="preserve"><value>Create the {0} convention labels, or bring their colours and descriptions into line. Other labels are left alone.</value></data>
+  <data name="Setup_Detail_Board" xml:space="preserve"><value>Create a project board named after the repository and link it. GitHub&apos;s columns Todo, In Progress and Done are kept as they are, so its built-in automations move the cards.</value></data>
+  <data name="Setup_Detail_BoardToken" xml:space="preserve"><value>Store the board token as the repository secret PROJECT_TOKEN. The token is passed on standard input and never shown.</value></data>
+  <data name="Setup_Detail_FilesDirect" xml:space="preserve"><value>Write {0} convention files and the manifest, and commit them straight to {1}: the repository has no history yet.</value></data>
+  <data name="Setup_Detail_FilesPullRequest" xml:space="preserve"><value>Write {0} convention files and the manifest, on a chore branch with an issue and a pull request: the convention's own rule, applied to itself. Files that already exist are kept.</value></data>
+  <data name="Setup_Detail_Hooks" xml:space="preserve"><value>Point core.hooksPath at .githooks in the clone, so commit-msg and pre-push run.</value></data>
+  <data name="Setup_Detail_Security" xml:space="preserve"><value>Turn on Dependabot alerts and security updates.</value></data>
+  <data name="Setup_Detail_Register" xml:space="preserve"><value>Add the repository to the tool's list and make it current.</value></data>
+  <data name="Setup_OriginElsewhere" xml:space="preserve"><value>The folder's origin remote is {0}, not {1}. Choose "An existing folder" with a folder whose origin is the repository, or a folder with no origin.</value></data>
+  <data name="Setup_RepositoryMissing" xml:space="preserve"><value>The folder's origin names {0}, but that repository was not found on GitHub.</value></data>
+  <data name="Setup_BoardIs" xml:space="preserve"><value>Board {0} ({1}) is linked and has Todo, In Progress and Done.</value></data>
+  <data name="Setup_NoToken" xml:space="preserve"><value>No token is held. Go back to Options and enter one, or start over without the secret step.</value></data>
+  <data name="Setup_PullRequestOpen" xml:space="preserve"><value>Already pushed; the pull request is open: {0}</value></data>
+  <data name="Setup_IssueNotCreated" xml:space="preserve"><value>The set-up issue could not be created, so there is no number for the branch and the pull request.</value></data>
+  <data name="Setup_FilesPullRequest" xml:space="preserve"><value>{0} file(s) written, {1} kept. Pull request: {2}</value></data>
+  <data name="Setup_FilesCommitted" xml:space="preserve"><value>{0} file(s) written, {1} kept, committed and pushed to {2}.</value></data>
+
+  <!-- Token window -->
+  <data name="Token_Title" xml:space="preserve"><value>Board token</value></data>
+  <data name="Token_Intro" xml:space="preserve"><value>A classic personal access token with the repo and project scopes, for the board workflow. It is stored as the repository secret PROJECT_TOKEN and nowhere else.</value></data>
+  <data name="Token_How" xml:space="preserve"><value>Open GitHub's new token page (the scopes are pre-selected), give the token an expiry, generate it, and paste it here. When it expires, run the wizard again on the repository with a new token; every other step is found done.</value></data>
+  <data name="Token_OpenGitHub" xml:space="preserve"><value>Open the new token page on GitHub</value></data>
+  <data name="Token_OpenGitHubHelp" xml:space="preserve"><value>Open github.com/settings/tokens/new with the repo and project scopes selected</value></data>
+  <data name="Token_Label" xml:space="preserve"><value>Token</value></data>
+  <data name="Token_Help" xml:space="preserve"><value>Starts with ghp_. It is not written to settings or shown in the activity panel.</value></data>
+  <data name="Token_Use" xml:space="preserve"><value>Use this token</value></data>  <!-- The setup switch, from a terminal -->
+  <data name="Setup_Cli_Usage" xml:space="preserve"><value>Usage: DesignatedDriver --setup &lt;answers.json&gt;  (a SetupAnswers object in camelCase; the board token, if any, in DESIGNATED_DRIVER_BOARD_TOKEN)</value></data>
+  <data name="Setup_Cli_Blocked" xml:space="preserve"><value>The scan blocks the set-up. Nothing was changed.</value></data>
+  <data name="Setup_Cli_Repository" xml:space="preserve"><value>Repository: {0}</value></data>
+  <data name="Setup_Cli_Board" xml:space="preserve"><value>Board: {0}</value></data>
+  <data name="Setup_Cli_PullRequest" xml:space="preserve"><value>Pull request: {0}</value></data>
+  <data name="Setup_Cli_Resume" xml:space="preserve"><value>Run the same command again to resume; steps already done are skipped.</value></data>  <data name="Setup_Protocol" xml:space="preserve"><value>Clone and push over</value></data>
+  <data name="Setup_ProtocolHelp" xml:space="preserve"><value>HTTPS uses the sign-in from gh auth setup-git or a credential manager; SSH needs a key registered with GitHub. The tool sets origin itself, whatever gh is configured to use, and remembers the choice for the next repository.</value></data>
+  <data name="Setup_SshHost" xml:space="preserve"><value>SSH host</value></data>
+  <data name="Setup_SshHostHelp" xml:space="preserve"><value>github.com, or a Host alias from ~\.ssh\config that picks the key for this account, for example github-paulfilkin. The suggestion is the alias whose name or key file names the owner.</value></data>  <!-- Check screen and drift (phase 3) -->
+  <data name="Nav_Check" xml:space="preserve"><value>Check</value></data>
+  <data name="Step_PushProtection" xml:space="preserve"><value>Secret scanning push protection</value></data>
+  <data name="Setup_Detail_PushProtection" xml:space="preserve"><value>Turn on secret scanning and its push protection, which GitHub offers on public repositories and paid plans.</value></data>
+  <data name="Setup_Detail_Ruleset" xml:space="preserve"><value>Create a ruleset on {0}: pull requests only, squash merges, the {1} check required, no force pushes, no deletion, admins able to bypass through a pull request.</value></data>
+  <data name="Setup_Detail_FilesUpdate" xml:space="preserve"><value>Write {0} ticked file(s) and bring the manifest up to date, through an issue and a pull request.</value></data>
+  <data name="Status_CheckLink" xml:space="preserve"><value>Check</value></data>
+  <data name="Status_CheckLinkHelp" xml:space="preserve"><value>Open the Check screen for this repository</value></data>
+  <data name="Repos_LastCheck" xml:space="preserve"><value>Check: {0}</value></data>
+  <data name="Check_Title" xml:space="preserve"><value>Check</value></data>
+  <data name="Check_Intro" xml:space="preserve"><value>What has drifted from the convention in the current repository: settings, labels, board, hooks, Dependabot, the ruleset where the plan allows it, and every convention file compared line by line. Tick what to put right, then Apply.</value></data>
+  <data name="Check_Run" xml:space="preserve"><value>Check now</value></data>
+  <data name="Check_RunHelp" xml:space="preserve"><value>Read the repository again and compare it with the convention. Nothing is changed.</value></data>
+  <data name="Check_NoClone" xml:space="preserve"><value>Check needs the repository's clone. Set its folder on the Repositories screen.</value></data>
+  <data name="Check_NotSetUp" xml:space="preserve"><value>This repository has no convention manifest, so it was not set up by the tool. Scan it to see what setting it up would involve, or set it up from Set up a repository.</value></data>
+  <data name="Check_CheckedAt" xml:space="preserve"><value>{0}, set up to convention v{1} on {2}, checked {3}</value></data>
+  <data name="Check_CleanText" xml:space="preserve"><value>Every setting, label, file and switch the convention covers is as the tool would set it.</value></data>
+  <data name="Check_DriftText" xml:space="preserve"><value>Ticked items are put right by Apply. Files a project may tailor are listed unticked; open the difference before deciding.</value></data>
+  <data name="Check_UpdateAvailable" xml:space="preserve"><value>Convention v{0} is available and this repository is on v{1}. Apply brings the ticked items and the manifest up to date.</value></data>
+  <data name="Check_Apply" xml:space="preserve"><value>Apply ticked</value></data>
+  <data name="Check_ApplyHelp" xml:space="preserve"><value>Run the set-up steps for the ticked items. Files go through an issue and a pull request.</value></data>
+  <data name="Check_ApplyNote" xml:space="preserve"><value>Settings, labels, board, hooks and switches are applied at once. Files are written on a chore branch with an issue and a pull request, the convention's own rule; merge it from Review.</value></data>
+  <data name="Check_ApplyCard" xml:space="preserve"><value>Applying</value></data>
+  <data name="Check_TickAll" xml:space="preserve"><value>Tick all</value></data>
+  <data name="Check_UntickAll" xml:space="preserve"><value>Untick all</value></data>
+  <data name="Check_ShowDiff" xml:space="preserve"><value>Show difference</value></data>
+  <data name="Check_ShowDiffFor" xml:space="preserve"><value>Show how {0} differs from the convention</value></data>
+  <data name="Check_DiffTitle" xml:space="preserve"><value>Difference from the convention</value></data>
+  <data name="Check_DiffHeading" xml:space="preserve"><value>{0}: "-" is the convention's line, "+" is the file's</value></data>
+  <data name="Check_TailoredNote" xml:space="preserve"><value>A file projects often tailor, so it is not ticked. Ticking it replaces the file with the convention's text.</value></data>
+  <data name="Check_Applying" xml:space="preserve"><value>Applying the ticked items</value></data>
+  <data name="Check_AppliedTitle" xml:space="preserve"><value>Applied</value></data>
+  <data name="Check_Applied" xml:space="preserve"><value>The ticked items are in place. The check below is fresh.</value></data>
+  <data name="Check_AppliedPullRequest" xml:space="preserve"><value>The ticked items are in place; the files are waiting in a pull request. Merge it from Review once its checks pass, then Tidy up. The check below is fresh.</value></data>
+  <data name="Drift_Settings" xml:space="preserve"><value>{0} repository setting(s) differ from the convention.</value></data>
+  <data name="Drift_DiscussionsOn" xml:space="preserve"><value>Discussions: on</value></data>
+  <data name="Drift_DiscussionsOff" xml:space="preserve"><value>Discussions: off</value></data>
+  <data name="Drift_LabelMissing" xml:space="preserve"><value>The label {0} is missing.</value></data>
+  <data name="Drift_LabelDiffers" xml:space="preserve"><value>The label {0} has another colour or description.</value></data>
+  <data name="Drift_Board" xml:space="preserve"><value>No linked board has Todo, In Progress and Done.</value></data>
+  <data name="Drift_HooksOff" xml:space="preserve"><value>core.hooksPath is not set, so the commit-msg and pre-push hooks do not run.</value></data>
+  <data name="Drift_AlertsOff" xml:space="preserve"><value>Dependabot alerts are off.</value></data>
+  <data name="Drift_UpdatesOff" xml:space="preserve"><value>Dependabot security updates are off.</value></data>
+  <data name="Drift_PushProtectionOff" xml:space="preserve"><value>Secret scanning push protection is off.</value></data>
+  <data name="Drift_Ruleset" xml:space="preserve"><value>No active ruleset named "{0}" protects the default branch.</value></data>
+  <data name="Drift_ManifestAnswers" xml:space="preserve"><value>The manifest predates the recorded set-up answers, so the files cannot be compared. Run the set-up again on this folder (Set up a repository, or --setup with the answers) to record them; every other step is found done.</value></data>
+  <data name="Drift_FileMissing" xml:space="preserve"><value>{0} is missing.</value></data>
+  <data name="Drift_FileDiffers" xml:space="preserve"><value>{0} differs from the convention's text ({1} line(s) of the convention's missing, {2} added).</value></data>
+  <data name="Drift_Summary_Clean" xml:space="preserve"><value>In step with convention v{0}</value></data>
+  <data name="Drift_Summary" xml:space="preserve"><value>{0} difference(s) from the convention</value></data>
+  <data name="Drift_Summary_Update" xml:space="preserve"><value>On convention v{0}; v{1} is available, {2} difference(s)</value></data>  <data name="Check_Cli_Usage" xml:space="preserve"><value>Usage: DesignatedDriver --check &lt;folder&gt; [--apply [--all]]  (a clone the tool has set up; --apply puts the ticked items right, --all ticks the tailored files too)</value></data>  <data name="Check_Cli_Applying" xml:space="preserve"><value>Applying {0} ticked item(s) in {1} step(s).</value></data>
+  <data name="Check_Cli_NothingTicked" xml:space="preserve"><value>Nothing is ticked: the differences are all in tailored files. Add --all to apply those too.</value></data>  <!-- Status automation card (phase 4) -->
+  <data name="Status_Automation" xml:space="preserve"><value>Dependabot and Actions</value></data>
+  <data name="Status_Dependabot" xml:space="preserve"><value>Dependabot alerts</value></data>
+  <data name="Status_DependabotUnknown" xml:space="preserve"><value>Not readable: alerts are off, or the token cannot see them.</value></data>
+  <data name="Status_DependabotNone" xml:space="preserve"><value>No open alerts.</value></data>
+  <data name="Status_DependabotOpen" xml:space="preserve"><value>{0} open alert(s), {1} high or critical.</value></data>
+  <data name="Status_OpenAlerts" xml:space="preserve"><value>Open on GitHub</value></data>
+  <data name="Status_Actions" xml:space="preserve"><value>Actions this month</value></data>
+  <data name="Status_ActionsAccount" xml:space="preserve"><value>{0} of {1} included minutes used across the account.</value></data>
+  <data name="Status_ActionsRepository" xml:space="preserve"><value>About {0} billable minute(s) in this repository's {1} run(s).</value></data>
+  <data name="Status_ActionsNeedsUserScope" xml:space="preserve"><value>The account-wide figure needs the user scope: {0}</value></data>
+  <data name="Status_AddMissing" xml:space="preserve"><value>Add missing issues to the board</value></data>
+  <data name="Status_AddMissingHelp" xml:space="preserve"><value>Put every open issue that isn't on the board onto it. GitHub's automation gives it Todo.</value></data>
+  <data name="Status_AddMissingNone" xml:space="preserve"><value>Every open issue is already on the board.</value></data>
+  <data name="Status_AddMissingDone" xml:space="preserve"><value>{0} issue(s) added to the board.</value></data>
+  <data name="Status_SetToken" xml:space="preserve"><value>Set board token</value></data>
+  <data name="Status_SetTokenHelp" xml:space="preserve"><value>Store a classic token with the repo and project scopes as the PROJECT_TOKEN secret, so the board workflow can add issues and pull requests.</value></data>
+  <data name="Status_TokenStored" xml:space="preserve"><value>The token is stored as the repository secret PROJECT_TOKEN. It was not written anywhere else.</value></data>
+  <data name="Status_AutomationHelp" xml:space="preserve"><value>Issues created through the tool go on the board at once; the board workflow adds the rest when it has a token. Minutes are rounded up per job, as GitHub bills them.</value></data></root>

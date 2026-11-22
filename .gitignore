@@ -1,0 +1,14 @@
+# Build output
+bin/
+obj/
+
+# A copy of each published build, the release zip and the exe named with its version, kept for reference
+Releases/
+
+# Visual Studio and user files
+.vs/
+*.user
+*.suo
+*.csproj.user
+
+# Local settings live in %AppData%\DesignatedDriver, not in the repository

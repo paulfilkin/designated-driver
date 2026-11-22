@@ -1,0 +1,9 @@
+[
+  { "name": ".github", "path": ".github", "sha": "a1", "size": 0, "type": "dir" },
+  { "name": ".gitignore", "path": ".gitignore", "sha": "a2", "size": 6640, "type": "file" },
+  { "name": "CONTRIBUTING.md", "path": "CONTRIBUTING.md", "sha": "a3", "size": 5120, "type": "file" },
+  { "name": "Docs", "path": "Docs", "sha": "a4", "size": 0, "type": "dir" },
+  { "name": "Example.sln", "path": "Example.sln", "sha": "a5", "size": 1200, "type": "file" },
+  { "name": "README.md", "path": "README.md", "sha": "a6", "size": 2048, "type": "file" },
+  { "name": "app", "path": "app", "sha": "a7", "size": 0, "type": "dir" }
+]

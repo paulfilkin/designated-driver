@@ -1,0 +1,34 @@
+# Runs on every pull request to {{defaultBranch}} and every change that lands on it.
+# The job name "{{requiredCheck}}" is the check Repo Starter and the branch rules look for.
+name: CI
+
+on:
+  pull_request:
+    branches: [{{defaultBranch}}]
+  push:
+    branches: [{{defaultBranch}}]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: {{requiredCheck}}
+    runs-on: {{runner}}
+    timeout-minutes: 20
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+
+      - name: Check that no data, keys or certificates are committed
+        shell: pwsh
+        run: |
+          $bad = git ls-files | Where-Object { $_ -match '(^|/)App_Data/|(^|/)keys/|\.(pfx|p12|pem|key|snk)$|(^|/)\.env$' }
+          if ($bad) {
+            Write-Error ("These files must not be in the repository:`n" + ($bad -join "`n"))
+            exit 1
+          }
+          Write-Host "No data, keys or certificates found."
+
+{{languageSteps}}

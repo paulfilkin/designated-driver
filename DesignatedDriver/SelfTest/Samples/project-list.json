@@ -1,0 +1,7 @@
+{
+  "projects": [
+    { "closed": false, "fields": { "totalCount": 13 }, "id": "PVT_kwHOAGeGo84A8IWw", "items": { "totalCount": 14 }, "number": 1, "owner": { "login": "paulfilkin", "type": "User" }, "public": false, "readme": "", "shortDescription": "", "title": "tradosClarity", "url": "https://github.com/users/paulfilkin/projects/1" },
+    { "closed": true, "fields": { "totalCount": 8 }, "id": "PVT_kwHOAGeGo84A8IWx", "items": { "totalCount": 3 }, "number": 2, "owner": { "login": "paulfilkin", "type": "User" }, "public": false, "readme": "", "shortDescription": "", "title": "Old board", "url": "https://github.com/users/paulfilkin/projects/2" }
+  ],
+  "totalCount": 2
+}

@@ -1,0 +1,12 @@
+# Build output
+target/
+build/
+.gradle/
+*.class
+
+# IDE files
+.idea/
+*.iml
+
+# Local secrets
+.env

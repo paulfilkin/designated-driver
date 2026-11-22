@@ -1,0 +1,51 @@
+<local:ScreenBase x:Class="DesignatedDriver.Screens.RepositoriesScreen"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:DesignatedDriver.Screens"
+        xmlns:res="clr-namespace:DesignatedDriver.Resources">
+    <StackPanel MaxWidth="980" HorizontalAlignment="Left">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Text="{x:Static res:Strings.Repos_Title}" Style="{StaticResource PageTitle}"/>
+                <TextBlock Text="{x:Static res:Strings.Repos_Intro}" Style="{StaticResource PageIntro}"/>
+            </StackPanel>
+            <Button Grid.Column="1" Content="{x:Static res:Strings.Common_Refresh}" Style="{StaticResource SecondaryButton}" VerticalAlignment="Top" Margin="12,4,0,0" Click="Refresh_Click"
+                    AutomationProperties.Name="{x:Static res:Strings.Common_Refresh}"/>
+        </Grid>
+
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+            <Button Content="{x:Static res:Strings.Repos_Add}" Style="{StaticResource ModernButton}" Click="Add_Click"
+                    AutomationProperties.Name="{x:Static res:Strings.Repos_Add}" AutomationProperties.HelpText="{x:Static res:Strings.Repos_AddHelp}"/>
+            <Button Content="{x:Static res:Strings.Repos_Wizard}" Style="{StaticResource SecondaryButton}" Click="Wizard_Click"
+                    AutomationProperties.Name="{x:Static res:Strings.Repos_Wizard}" AutomationProperties.HelpText="{x:Static res:Strings.Repos_WizardHelp}"/>
+            <Button Content="{x:Static res:Strings.Nav_Scan}" Style="{StaticResource SecondaryButton}" Click="Scan_Click"
+                    AutomationProperties.Name="{x:Static res:Strings.Nav_Scan}" AutomationProperties.HelpText="{x:Static res:Strings.Scan_Intro}"/>
+        </StackPanel>
+
+        <Grid Margin="0,0,0,4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="{x:Static res:Strings.Repos_Filter}" Style="{StaticResource LabelText}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <TextBox Grid.Column="1" x:Name="FilterBox" Style="{StaticResource ModernTextBox}" TextChanged="Filter_Changed"
+                     AutomationProperties.Name="{x:Static res:Strings.Repos_Filter}" AutomationProperties.HelpText="{x:Static res:Strings.Repos_FilterHelp}"/>
+            <CheckBox Grid.Column="2" x:Name="StarredBox" Content="{x:Static res:Strings.Repos_StarredOnly}" Margin="14,0,0,0" VerticalAlignment="Center" Checked="Starred_Changed" Unchecked="Starred_Changed"
+                      AutomationProperties.Name="{x:Static res:Strings.Repos_StarredOnly}" AutomationProperties.HelpText="{x:Static res:Strings.Repos_StarredOnlyHelp}"/>
+        </Grid>
+        <TextBlock x:Name="FilterNote" Style="{StaticResource HelperText}" Margin="0,0,0,10" AutomationProperties.LiveSetting="Polite"/>
+
+        <Border Style="{StaticResource CardStyle}">
+            <StackPanel>
+                <StackPanel x:Name="ListPanel" AutomationProperties.Name="{x:Static res:Strings.Repos_Title}"/>
+                <TextBlock x:Name="NoneText" Text="{x:Static res:Strings.Repos_None}" Style="{StaticResource HelperText}" Visibility="Collapsed"/>
+                <TextBlock x:Name="NoMatchText" Text="{x:Static res:Strings.Repos_NoneMatch}" Style="{StaticResource HelperText}" Visibility="Collapsed"/>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</local:ScreenBase>

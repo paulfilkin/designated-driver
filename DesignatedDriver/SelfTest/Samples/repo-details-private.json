@@ -1,0 +1,32 @@
+{
+  "id": 1067532101,
+  "name": "tidy",
+  "full_name": "paulfilkin/tidy",
+  "private": true,
+  "owner": { "login": "paulfilkin", "id": 6784803, "type": "User" },
+  "html_url": "https://github.com/paulfilkin/tidy",
+  "description": "A private repository already set to the convention's settings.",
+  "fork": false,
+  "default_branch": "main",
+  "language": "C#",
+  "has_issues": true,
+  "has_projects": true,
+  "has_wiki": false,
+  "has_discussions": false,
+  "archived": false,
+  "disabled": false,
+  "visibility": "private",
+  "permissions": { "admin": true, "maintain": true, "push": true, "triage": true, "pull": true },
+  "allow_squash_merge": true,
+  "allow_merge_commit": false,
+  "allow_rebase_merge": false,
+  "allow_auto_merge": false,
+  "delete_branch_on_merge": true,
+  "allow_update_branch": true,
+  "squash_merge_commit_message": "BLANK",
+  "squash_merge_commit_title": "PR_TITLE",
+  "topics": [],
+  "security_and_analysis": {
+    "dependabot_security_updates": { "status": "enabled" }
+  }
+}
