@@ -451,6 +451,8 @@ public partial class NewRepositoryScreen : ScreenBase
         TestCommand = TestBox.Text.Trim(),
         SelfTestCommand = SelfTestBox.Text.Trim(),
         DefaultBranch = _facts?.DefaultBranch ?? RepositorySettings.DefaultDefaultBranch,
+        // The check the repository's own rules already require, since its workflows report that one; else the convention's.
+        RequiredCheck = RuleCoverage.CheckFor(_facts?.BranchRules ?? [], RepositorySettings.DefaultRequiredCheck),
         ReviewRequired = ReviewBox.IsChecked == true,
         Discussions = DiscussionsBox.IsChecked == true,
         ReleaseWorkflow = ReleaseBox.IsChecked == true,

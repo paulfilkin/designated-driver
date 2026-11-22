@@ -42,11 +42,17 @@ public sealed partial class SetupService
             SetupStep.Hooks => Step(kind, Strings.Setup_Detail_Hooks, CheckHooksAsync, ApplyHooksAsync),
             SetupStep.Security => Step(kind, Strings.Setup_Detail_Security, CheckSecurityAsync, ApplySecurityAsync),
             SetupStep.PushProtection => Step(kind, Strings.Setup_Detail_PushProtection, CheckPushProtectionAsync, ApplyPushProtectionAsync),
-            SetupStep.Ruleset => Step(kind, string.Format(Strings.Setup_Detail_Ruleset, _a.DefaultBranch, _a.RequiredCheck), CheckRulesetAsync, ApplyRulesetAsync),
+            SetupStep.Ruleset => Step(kind, RulesetDetail(), CheckRulesetAsync, ApplyRulesetAsync),
             _ => throw new InvalidOperationException(kind.ToString()),
         }).ToList();
         return new SetupPlan(answers, steps);
     }
+
+    /// <summary>What the ruleset step will do: nothing when the rules the scan found already cover it, else create the convention's.</summary>
+    private string RulesetDetail()
+        => _facts is { } f && RuleCoverage.Covers(f.BranchRules)
+            ? string.Format(Strings.Setup_Detail_RulesCover, _a.DefaultBranch, RuleCoverage.RequiredCheck(f.BranchRules))
+            : string.Format(Strings.Setup_Detail_Ruleset, _a.DefaultBranch, _a.RequiredCheck);
 
     // What the files step writes and says, in a set-up and in an update
 
@@ -76,10 +82,16 @@ public sealed partial class SetupService
 
     // The ruleset (public repositories and paid plans)
 
+    /// <summary>
+    /// Done when the convention's ruleset is active, or when the rules already in force on the default branch do what
+    /// it would, whatever their ruleset is called: a second ruleset beside them would only add a check to wait for.
+    /// </summary>
     private async Task<bool> CheckRulesetAsync(CancellationToken ct)
     {
         var rulesets = await GitHub.RulesetsAsync(Name, ct).ConfigureAwait(false);
-        return rulesets.Any(r => Convention.IsConventionRuleset(r.Name) && r.Enforcement.Equals("active", StringComparison.OrdinalIgnoreCase));
+        if (rulesets.Any(r => Convention.IsConventionRuleset(r.Name) && r.Enforcement.Equals("active", StringComparison.OrdinalIgnoreCase))) return true;
+        var (_, rules) = await GitHub.BranchRulesAsync(Name, _a.DefaultBranch, ct).ConfigureAwait(false);
+        return RuleCoverage.Covers(rules);
     }
 
     private Task ApplyRulesetAsync(CancellationToken ct)

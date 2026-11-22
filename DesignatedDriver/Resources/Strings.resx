@@ -708,7 +708,8 @@ The clone and the repository on GitHub are not touched.</value></data>
   <data name="Scan_ExistingFilesKept" xml:space="preserve"><value>{0} convention file(s) already exist. Set-up keeps them as they are; Check shows how they differ.</value></data>
   <data name="Scan_ExistingBoardOtherColumns" xml:space="preserve"><value>Board {0} ({1}) is linked but lacks Todo, In Progress and Done. Set-up creates a new board; this one is left alone.</value></data>
   <data name="Scan_HooksPathElsewhere" xml:space="preserve"><value>core.hooksPath is {0}. Set-up points it at .githooks, so the hooks there would stop running.</value></data>
-  <data name="Scan_RulesAlreadyApply" xml:space="preserve"><value>{0} rule(s) already apply to {1}. The convention's ruleset would be added alongside them.</value></data>
+  <data name="Scan_RulesAlreadyApply" xml:space="preserve"><value>{0} rule(s) already apply to {1}, but they don't do everything the convention's ruleset does, so set-up would add it beside them.</value></data>
+  <data name="Scan_RulesCover" xml:space="preserve"><value>The rules already on {0} cover the convention's ruleset: no deletion, no force pushes, pull requests only, and the {1} check. Set-up adds no ruleset.</value></data>
   <data name="Scan_NoLanguage" xml:space="preserve"><value>No project file was recognised near the root. The wizard will ask for a build command and a test command.</value></data>
   <data name="Scan_InitGit" xml:space="preserve"><value>The folder is not a Git repository. Set-up would run git init first.</value></data>
   <data name="Scan_CreateRepository" xml:space="preserve"><value>There is no origin remote. Set-up would create the repository on GitHub from this folder and push.</value></data>
@@ -741,7 +742,7 @@ The clone and the repository on GitHub are not touched.</value></data>
   <data name="Scan_DependabotAlerts" xml:space="preserve"><value>Dependabot alerts would be turned on.</value></data>
   <data name="Scan_DependabotUpdates" xml:space="preserve"><value>Dependabot security updates would be turned on.</value></data>
   <data name="Scan_SecretScanning" xml:space="preserve"><value>Secret scanning and push protection would be turned on.</value></data>
-  <data name="Scan_CreateRuleset" xml:space="preserve"><value>A ruleset on {0} would be created: pull requests only, the Build and test check, no force pushes, no deletion.</value></data>
+  <data name="Scan_CreateRuleset" xml:space="preserve"><value>A ruleset on {0} would be created: pull requests only, the {1} check, no force pushes, no deletion.</value></data>
   <data name="Scan_UpdateConvention" xml:space="preserve"><value>Set up to convention v{0}; the tool knows v{1}. Check would offer the update.</value></data>
   <data name="Scan_RulesetsUnavailable" xml:space="preserve"><value>Rulesets: not available on a private repository with this plan. The tool, the local hooks and the guard workflow enforce the rules instead.</value></data>
   <data name="Scan_CodeOwnersUnavailable" xml:space="preserve"><value>Required code owner review: not available. CODEOWNERS is written anyway, so it takes effect if the repository goes public.</value></data>
@@ -945,6 +946,7 @@ Fix the cause and press Retry. Steps already done are not repeated.</value></dat
   <data name="Step_PushProtection" xml:space="preserve"><value>Secret scanning push protection</value></data>
   <data name="Setup_Detail_PushProtection" xml:space="preserve"><value>Turn on secret scanning and its push protection, which GitHub offers on public repositories and paid plans.</value></data>
   <data name="Setup_Detail_Ruleset" xml:space="preserve"><value>Create a ruleset on {0}: pull requests only, squash merges, the {1} check required, no force pushes, no deletion, admins able to bypass through a pull request.</value></data>
+  <data name="Setup_Detail_RulesCover" xml:space="preserve"><value>None needed: the rules already on {0} cover it, requiring the {1} check.</value></data>
   <data name="Setup_Detail_FilesUpdate" xml:space="preserve"><value>Write {0} ticked file(s) and bring the manifest up to date, through an issue and a pull request.</value></data>
   <data name="Status_CheckLink" xml:space="preserve"><value>Check</value></data>
   <data name="Status_CheckLinkHelp" xml:space="preserve"><value>Open the Check screen for this repository</value></data>

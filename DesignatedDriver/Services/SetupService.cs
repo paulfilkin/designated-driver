@@ -60,7 +60,7 @@ public sealed partial class SetupService(Workspace workspace)
         var steps = PlanOutline.For(answers, _capabilities).Select(kind => kind switch
         {
             SetupStep.PushProtection => Step(kind, Strings.Setup_Detail_PushProtection, CheckPushProtectionAsync, ApplyPushProtectionAsync),
-            SetupStep.Ruleset => Step(kind, string.Format(Strings.Setup_Detail_Ruleset, answers.DefaultBranch, answers.RequiredCheck), CheckRulesetAsync, ApplyRulesetAsync),
+            SetupStep.Ruleset => Step(kind, RulesetDetail(), CheckRulesetAsync, ApplyRulesetAsync),
             SetupStep.CreateRepository => Step(kind, CreateDetail(), CheckRepositoryAsync, CreateRepositoryAsync),
             SetupStep.Settings => Step(kind, Strings.Setup_Detail_Settings, CheckSettingsAsync, ApplySettingsAsync),
             SetupStep.Labels => Step(kind, string.Format(Strings.Setup_Detail_Labels, ConventionLabels.All.Count), CheckLabelsAsync, ApplyLabelsAsync),

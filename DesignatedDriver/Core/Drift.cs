@@ -130,7 +130,9 @@ public static partial class DriftRules
             }
             if (caps.Rulesets)
             {
-                if (!input.Rulesets.Any(r => Convention.IsConventionRuleset(r.Name) && r.Enforcement.Equals("active", StringComparison.OrdinalIgnoreCase)))
+                // Rules already in force that do what the convention's ruleset would need no ruleset of its own (issue 56).
+                if (!input.Rulesets.Any(r => Convention.IsConventionRuleset(r.Name) && r.Enforcement.Equals("active", StringComparison.OrdinalIgnoreCase))
+                    && !RuleCoverage.Covers(f.BranchRules))
                     Add("ruleset", SetupStep.Ruleset, DriftKind.Missing, string.Format(Strings.Drift_Ruleset, Convention.RulesetName(f.DefaultBranch)));
             }
             else
