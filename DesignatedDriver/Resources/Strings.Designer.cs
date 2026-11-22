@@ -1342,6 +1342,9 @@ public static class Strings
     /// <summary>{0} other workflow(s) are left alone.</summary>
     public static string Scan_OtherWorkflows => Get("Scan_OtherWorkflows");
 
+    /// <summary>{0} issue form(s) of the repository&apos;s own are kept, and the convention&apos;s bug.yml and fe...</summary>
+    public static string Scan_OwnIssueFormsKept => Get("Scan_OwnIssueFormsKept");
+
     /// <summary>core.hooksPath would be set to .githooks, so the commit-msg and pre-push hooks run.</summary>
     public static string Scan_PointHooks => Get("Scan_PointHooks");
 

@@ -310,6 +310,20 @@ public static partial class SelfTestRunner
             check(prBody.Contains("Closes #12", StringComparison.Ordinal) && prBody.Contains("`README.md`", StringComparison.Ordinal), "History: the pull request body closes the issue and lists the kept files");
             check(host3.Runner.Calls.First(c => c.Is("commit")).FileContent?.Contains("Closes #12", StringComparison.Ordinal) == true, "History: the commit message closes the issue too");
             check(plan3.Steps.First(s => s.Kind == SetupStep.Files).Message.Contains("/pull/13", StringComparison.Ordinal), "History: the files step reports the pull request");
+
+            // An existing folder with its own issue forms: they are kept, and the convention's are not added beside them.
+            var folder5 = Path.Combine(root, "forms");
+            Directory.CreateDirectory(Path.Combine(folder5, ".github", "ISSUE_TEMPLATE"));
+            File.WriteAllText(Path.Combine(folder5, ".github", "ISSUE_TEMPLATE", "bug_report.yml"), "name: Bug report\n");
+            var host5 = new FakeHost(folder5, hasHistory: true);
+            var setup5 = new SetupService(new Workspace(new Settings { SavePath = Path.Combine(root, "settings5.json") }, host5.Runner));
+            var answers5 = DotNetAnswers();
+            answers5.Source = SetupSource.ExistingFolder; answers5.ExistingFolder = folder5; answers5.ProjectFile = "Example.csproj"; answers5.TestProject = "";
+            var plan5 = setup5.Build(answers5, new ScanFacts { Folder = folder5, OwnerAndName = "paulfilkin/example", IsGitRepository = true, HasCommits = true, OriginUrl = "https://github.com/paulfilkin/example.git" });
+            bool ok5 = setup5.RunAsync(plan5, CancellationToken.None).GetAwaiter().GetResult();
+            check(ok5 && !setup5.Written.Contains(".github/ISSUE_TEMPLATE/bug.yml") && !setup5.Written.Contains(".github/ISSUE_TEMPLATE/feature.yml") && setup5.Written.Contains(".github/ISSUE_TEMPLATE/config.yml")
+                && setup5.Kept.Contains(".github/ISSUE_TEMPLATE/bug_report.yml") && !File.Exists(Path.Combine(folder5, ".github", "ISSUE_TEMPLATE", "bug.yml")),
+                ok5 ? "Set-up: a folder with its own issue form keeps it, writes config.yml, and adds no bug.yml or feature.yml" : $"Set-up with own forms failed at {plan5.FailedStep?.Title}: {plan5.FailedStep?.Message}");
         }
         finally
         {
