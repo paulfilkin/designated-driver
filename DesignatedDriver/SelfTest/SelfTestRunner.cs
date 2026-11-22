@@ -60,6 +60,7 @@ public static partial class SelfTestRunner
             CloneAsIsChecks(Check);
             ProfileChecks(Check);
             OwnConventionsChecks(Check);
+            ScanBoardLineChecks(Check);
         }
         catch (Exception ex)
         {

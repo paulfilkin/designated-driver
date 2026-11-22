@@ -100,6 +100,7 @@
   <data name="Activity_OpeningUrl" xml:space="preserve"><value>Opening {0} in the browser.</value></data>
 
   <!-- Common -->
+  <data name="Common_And" xml:space="preserve"><value>and</value></data>
   <data name="Common_Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="Common_Close" xml:space="preserve"><value>Close</value></data>
   <data name="Common_Save" xml:space="preserve"><value>Save</value></data>
@@ -728,7 +729,7 @@ The clone and the repository on GitHub are not touched.</value></data>
   <data name="Scan_OtherLabels" xml:space="preserve"><value>{0} other label(s) are left alone.</value></data>
   <data name="Scan_OwnIssueFormsKept" xml:space="preserve"><value>{0} issue form(s) of the repository's own are kept, and the convention's bug.yml and feature.yml are not added beside them.</value></data>
   <data name="Scan_CreateBoard" xml:space="preserve"><value>No usable board is linked. Set-up would create one, keeping GitHub&apos;s Todo, In Progress and Done columns, and link it.</value></data>
-  <data name="Scan_BoardUsable" xml:space="preserve"><value>Board {0} ({1}) is linked and has Todo, In Progress and Done.</value></data>
+  <data name="Scan_BoardUsable" xml:space="preserve"><value>Board {0} ({1}) is linked and has {2}. {3} is used to pick up work and {4} for work under way.</value></data>
   <data name="Scan_WriteFiles" xml:space="preserve"><value>{0} convention file(s) would be written.</value></data>
   <data name="Scan_PointHooks" xml:space="preserve"><value>core.hooksPath would be set to .githooks, so the commit-msg and pre-push hooks run.</value></data>
   <data name="Scan_HooksOk" xml:space="preserve"><value>core.hooksPath already points at .githooks.</value></data>
@@ -903,7 +904,7 @@ Fix the cause and press Retry. Steps already done are not repeated.</value></dat
   <data name="Setup_Detail_Register" xml:space="preserve"><value>Add the repository to the tool's list and make it current.</value></data>
   <data name="Setup_OriginElsewhere" xml:space="preserve"><value>The folder's origin remote is {0}, not {1}. Choose "An existing folder" with a folder whose origin is the repository, or a folder with no origin.</value></data>
   <data name="Setup_RepositoryMissing" xml:space="preserve"><value>The folder's origin names {0}, but that repository was not found on GitHub.</value></data>
-  <data name="Setup_BoardIs" xml:space="preserve"><value>Board {0} ({1}) is linked and has Todo, In Progress and Done.</value></data>
+  <data name="Setup_BoardIs" xml:space="preserve"><value>Board {0} ({1}) is linked and has {2}. {3} is used to pick up work and {4} for work under way.</value></data>
   <data name="Setup_NoToken" xml:space="preserve"><value>No token is held. Go back to Options and enter one, or start over without the secret step.</value></data>
   <data name="Setup_PullRequestOpen" xml:space="preserve"><value>Already pushed; the pull request is open: {0}</value></data>
   <data name="Setup_IssueNotCreated" xml:space="preserve"><value>The set-up issue could not be created, so there is no number for the branch and the pull request.</value></data>

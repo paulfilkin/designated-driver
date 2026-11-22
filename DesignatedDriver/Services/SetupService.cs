@@ -292,7 +292,9 @@ public sealed partial class SetupService(Workspace workspace)
                 if (ConventionBoard.HasRequiredColumns(fields.StatusOptions))
                 {
                     _board = board;
-                    _note = string.Format(Strings.Setup_BoardIs, project.Number, project.Title);
+                    // The board's own columns, as it spells them, and which of them the workflow screens use.
+                    var columns = BoardColumns.Match(fields.StatusOptions);
+                    _note = string.Format(Strings.Setup_BoardIs, project.Number, project.Title, TextList.And(fields.StatusOptions), columns.Ready, columns.InProgress);
                     return true;
                 }
             }

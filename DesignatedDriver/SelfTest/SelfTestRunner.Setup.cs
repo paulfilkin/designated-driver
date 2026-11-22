@@ -302,6 +302,8 @@ public static partial class SelfTestRunner
             int edits = host2.Runner.Calls.Count(c => c.Is("repo", "edit"));
             bool resumed = setup2.RunAsync(plan2, CancellationToken.None).GetAwaiter().GetResult();
             check(resumed && plan2.Succeeded && host2.Runner.Calls.Count(c => c.Is("repo", "edit")) == edits && host2.Runner.Calls.Count(c => c.Is("project", "create")) == 1, "Set-up: the rerun resumes at the board step; settings aren't edited again and the project isn't created twice");
+            check(plan2.Steps.First(s => s.Kind == SetupStep.Board).Message == string.Format(Resources.Strings.Setup_BoardIs, 7, "example", "Todo, In Progress and Done", "Todo", "In Progress"),
+                "Set-up: the board step names the board's own columns and the ones used for picking up and doing work");
 
             // An existing folder with history: issue, chore branch, pull request, existing files kept.
             var folder3 = Path.Combine(root, "history");
