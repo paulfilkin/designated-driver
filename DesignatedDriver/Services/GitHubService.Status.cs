@@ -34,21 +34,19 @@ public sealed partial class GitHubService
     }
 
     /// <summary>
-    /// Puts every open issue that isn't on the board onto it. GitHub's own automation then gives it Todo.
-    /// Returns how many were added.
+    /// Puts every open issue and open pull request that isn't on the board onto it, so a board with no token and no
+    /// Auto-add still catches up, a bot's pull requests included (issue 68). GitHub's own automation then gives each
+    /// Todo. Returns how many of each were added.
     /// </summary>
-    public async Task<int> AddMissingIssuesToBoardAsync(BoardReference board, CancellationToken ct)
+    public async Task<(int Issues, int PullRequests)> AddMissingToBoardAsync(BoardReference board, CancellationToken ct)
     {
         var issues = await OpenIssuesAsync(ct).ConfigureAwait(false);
+        var pullRequests = await OpenPullRequestsAsync(ct).ConfigureAwait(false);
         var items = await ProjectItemsAsync(ct).ConfigureAwait(false);
-        var onBoard = items.Items.Where(i => i.IsIssue).Select(i => i.Number).ToHashSet();
-        int added = 0;
-        foreach (var issue in issues.Where(i => !onBoard.Contains(i.Number)))
-        {
-            await AddToBoardAsync(board, issue.Url, ct).ConfigureAwait(false);
-            added++;
-        }
-        return added;
+        var (missingIssues, missingPullRequests) = BoardMissing.Find(issues, pullRequests, items.Items);
+        foreach (var url in missingIssues.Concat(missingPullRequests))
+            await AddToBoardAsync(board, url, ct).ConfigureAwait(false);
+        return (missingIssues.Count, missingPullRequests.Count);
     }
 
     /// <summary>The repositories the signed-in user has starred, as owner/name, every page of them.</summary>

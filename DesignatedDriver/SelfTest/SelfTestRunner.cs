@@ -31,6 +31,7 @@ public static partial class SelfTestRunner
             ScreenChecks(Check);
             BypassFlowChecks(Check);
             BoardMoveChecks(Check);
+            BoardMissingChecks(Check);
             CommandLineChecks(Check);
             ReviewRuleChecks(Check);
             MergeRereadChecks(Check);
