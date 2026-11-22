@@ -40,7 +40,9 @@ The tool clones and pushes with git itself, over HTTPS or SSH, and never lets gh
 
 Start the tool.  The first screen is **Repositories**.  You can add a clone you already have, scan any folder or repository to see what setting it up would involve, or press **Set up a repository**.  The set-up works on a new repository or one that already exists.
 
-To work on a repository that is already on GitHub without changing it, press **Clone a repository**, give its owner/name and a parent folder, and press **Clone**.  Only `git clone` and reads from GitHub run.  The clone is added to the list as the current repository, with the default branch from GitHub and, if it was set up to the convention, the self-test command and required check from its manifest.  Settings then opens for it, to add the board.  Scan offers the same as **Clone and work on it as it is** after a scan by name.
+To work on a repository that is already on GitHub without changing it, press **Clone a repository**, give its owner/name and a parent folder, and press **Clone**.  Only `git clone` and reads from GitHub run.  The clone is added to the list as the current repository, with the default branch from GitHub and, if it was set up to the convention, the self-test command and required check from its manifest.  Settings then opens for it.  Scan offers the same as **Clone and work on it as it is** after a scan by name.
+
+A repository without a manifest keeps its own settings in its entry in the tool's settings, its profile.  When you clone one, add one with **Add a clone**, or add a scanned clone from Scan, Settings reads what it already uses from GitHub and fills the boxes: the default branch, the required check from its ruleset or branch protection, its linked board and that board's columns for ready to pick up, in progress and in review, and the self-test command from its CI workflow.  Check them and press Save; nothing is kept until you do, and nothing is written to the repository or to GitHub.  **Read from GitHub** reads again later: an empty box is filled, and a value of yours that differs from GitHub's is replaced only if you say so.
 
 The wizard has three pages:
 
@@ -61,9 +63,9 @@ What the repository already has is kept.  Its own issue forms stay, and the conv
 | Set up a repository | The wizard, for a new repository or an existing one |
 | Status | Prerequisites, the repository, what the plan allows, the branch, open pull requests and issues, Dependabot alerts, Actions minutes, and two board actions |
 | Check | What has drifted from the convention; tick and Apply |
-| Start work | Write a new issue from the issue forms' fields, or pick one from the board's Todo column, assign it to yourself, make the branch |
+| Start work | Write a new issue from the issue forms' fields, or pick one from the board's Todo column (or the profile's ready column), assign it to yourself, move its card to In Progress, make the branch |
 | Save and share | Commit with the message checks, push |
-| Submit | Update the branch from main if it is behind, open the pull request from the template with its `Closes #n` line filled in, watch the check |
+| Submit | Update the branch from main if it is behind, open the pull request from the template with its `Closes #n` line filled in, move the issue's card to the profile's In review column if it has one, watch the check |
 | Review | Approve, request changes, merge; admins only.  A merge re-reads the pull request first and stops if main has moved under it.  Picking another pull request while one loads shows the newest |
 | Tidy up | Back to main, pull, delete merged branches |
 | Fix a problem | The common situations, each with its commands |
@@ -73,6 +75,8 @@ Every screen loads what GitHub says now each time you open it.  You can move to 
 ## 5. The board
 
 Each repository gets its own project board, linked to it, with GitHub's own columns: Todo, In Progress and Done.  The columns are left as GitHub made them, so GitHub's built-in automations do the moving: a new issue lands in Todo, a linked pull request moves it to In Progress, a merge or a close moves it to Done.
+
+A repository that keeps its own board, with columns such as Ready, In progress and In review, works through its profile (section 3): Start work lists the issues in its ready column and moves a card to its in-progress column, and Submit moves the card to its in-review column when the pull request opens.  Column names are matched without regard to case.
 
 Adding issues to the board from a workflow needs a token, because the workflow's own token cannot reach a user-owned project.  The wizard and the Status screen take a classic personal access token with the `repo` and `project` scopes and store it as the repository secret `PROJECT_TOKEN`; it is never written anywhere else.  Without it, the tool adds the issues it creates itself, and **Add missing issues to the board** on Status does the rest.
 

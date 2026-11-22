@@ -1,0 +1,6 @@
+{
+  "url": "https://api.github.com/repos/example-org/example-app/branches/develop/protection/required_status_checks",
+  "strict": true,
+  "contexts": ["Unit tests"],
+  "checks": [ { "context": "Unit tests", "app_id": 15368 } ]
+}

@@ -5,6 +5,7 @@ using DesignatedDriver.Core;
 using DesignatedDriver.Helpers;
 using DesignatedDriver.Models;
 using DesignatedDriver.Resources;
+using DesignatedDriver.Services;
 using Microsoft.Win32;
 
 namespace DesignatedDriver.Windows;
@@ -16,8 +17,10 @@ public partial class SettingsWindow : Window
     private readonly RepositorySettings _repository;
     private readonly bool _adding;
     private CancellationTokenSource? _probe;
+    private CancellationTokenSource? _read;
 
-    public SettingsWindow(IShell shell, RepositorySettings? repository)
+    /// <param name="readFromGitHub">Read what the repository already uses from GitHub as the window opens, for a repository just added.</param>
+    public SettingsWindow(IShell shell, RepositorySettings? repository, bool readFromGitHub = false)
     {
         _shell = shell;
         _adding = repository is null;
@@ -33,6 +36,9 @@ public partial class SettingsWindow : Window
         DefaultBranchBox.Text = s.DefaultBranch;
         SelfTestBox.Text = s.SelfTestCommand;
         RequiredCheckBox.Text = s.RequiredCheck;
+        ReadyColumnBox.Text = s.ReadyColumn;
+        InProgressColumnBox.Text = s.InProgressColumn;
+        InReviewColumnBox.Text = s.InReviewColumn;
         StoredAtText.Text = string.Format(Strings.Settings_StoredAt, Settings.FilePath);
 
         // While the manifest names a board, the override boxes don't apply.
@@ -41,8 +47,15 @@ public partial class SettingsWindow : Window
             ProjectHelp.Text = string.Format(Strings.Settings_BoardFromManifest, fromManifest.Owner, fromManifest.Number);
             ProjectOwnerBox.IsEnabled = ProjectNumberBox.IsEnabled = false;
         }
-        Closed += (_, _) => _probe?.Cancel();
+        UpdateReadPanel();
+        if (readFromGitHub && CanRead) Loaded += (_, _) => _ = ReadAsync(firstRead: true);
+        Closed += (_, _) => { _probe?.Cancel(); _read?.Cancel(); };
     }
+
+    /// <summary>A repository with a manifest takes its values from there, so only one without can be read from GitHub.</summary>
+    private bool CanRead => OwnerRepoBox.Text.Contains('/') && !(Directory.Exists(FolderBox.Text) && Manifest.Load(FolderBox.Text) is not null);
+
+    private void UpdateReadPanel() => ReadPanel.Visibility = CanRead ? Visibility.Visible : Visibility.Collapsed;
 
     private void Browse_Click(object sender, RoutedEventArgs e)
     {
@@ -65,6 +78,7 @@ public partial class SettingsWindow : Window
         var cts = _probe = new CancellationTokenSource();
         OwnerRepoBox.Text = "";
         KnownNote.Visibility = Visibility.Collapsed;
+        UpdateReadPanel();
         if (!Directory.Exists(folder))
         {
             FolderNote.Text = folder.Length == 0 ? "" : Strings.Settings_FolderMissing;
@@ -95,6 +109,7 @@ public partial class SettingsWindow : Window
             OwnerRepoBox.Text = $"{parsed.Value.Owner}/{parsed.Value.Repository}";
             FolderNote.Text = string.Format(Strings.Settings_FolderOk, root);
             FolderNote.Foreground = UiHelpers.Brush("SuccessBrush");
+            UpdateReadPanel();
 
             var known = _shell.Workspace.Settings.Find(OwnerRepoBox.Text);
             if (_adding && known is not null)
@@ -102,9 +117,105 @@ public partial class SettingsWindow : Window
                 KnownNote.Text = string.Format(Strings.Settings_AlreadyKnown, OwnerRepoBox.Text);
                 KnownNote.Visibility = Visibility.Visible;
             }
+            // A clone being added that has no manifest has what it already uses read from GitHub, to confirm.
+            else if (_adding && CanRead)
+            {
+                await ReadAsync(firstRead: true);
+            }
         }
         catch (OperationCanceledException) { }
     }
+
+    private void Read_Click(object sender, RoutedEventArgs e) => _ = ReadAsync(firstRead: false);
+
+    /// <summary>
+    /// Scans the repository and fills the boxes from what GitHub says it uses. Only reads run, and nothing is saved
+    /// until Save. On the first read every value GitHub has fills its box; after that an empty box is filled and a
+    /// value that differs from GitHub's is replaced only if the user says so.
+    /// </summary>
+    private async Task ReadAsync(bool firstRead)
+    {
+        if (!CanRead) return;
+        _read?.Cancel();
+        var cts = _read = new CancellationTokenSource();
+        var name = OwnerRepoBox.Text.Trim();
+        var folder = Directory.Exists(FolderBox.Text) ? FolderBox.Text.Trim() : null;
+        ReadButton.IsEnabled = false;
+        ShowReadNote(string.Format(Strings.Settings_Reading, name));
+        try
+        {
+            var facts = await new ScanService(_shell.Workspace).ScanAsync(folder, name, cts.Token);
+            if (cts.IsCancellationRequested) return;
+            if (!facts.RemoteFound) { ShowReadNote(string.Format(Strings.Settings_ReadNotFound, name)); return; }
+
+            var profile = RepositoryProfile.From(facts);
+            var (fill, ask) = ProfileComparison.Compare(CurrentValues(), profile, firstRead);
+            foreach (var change in fill) Apply(change.Field, profile);
+
+            var kept = new List<ProfileValue>();
+            if (ask.Count > 0)
+            {
+                var lines = string.Join("\n", ask.Select(a => string.Format(Strings.Settings_ReadAskLine, Label(a.Field), a.Current, a.FromGitHub)));
+                var answer = MessageBox.Show(this, string.Format(Strings.Settings_ReadAsk, lines), Strings.Settings_ReadAskTitle, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                if (answer == MessageBoxResult.Yes) foreach (var change in ask) Apply(change.Field, profile);
+                else kept = ask;
+            }
+
+            var filled = fill.Concat(ask.Except(kept)).Select(c => Label(c.Field)).ToList();
+            var note = filled.Count > 0 ? string.Format(Strings.Settings_ReadFilled, string.Join(", ", filled)) : string.Format(Strings.Settings_ReadNothing, name);
+            if (kept.Count > 0) note += " " + string.Format(Strings.Settings_ReadKept, string.Join(", ", kept.Select(c => Label(c.Field))));
+            ShowReadNote(note);
+        }
+        catch (OperationCanceledException) { }
+        catch (CommandFailedException ex) { ShowReadNote(string.Format(Strings.Settings_ReadFailed, name, ex.Message)); }
+        finally { if (_read == cts) ReadButton.IsEnabled = true; }
+    }
+
+    private void ShowReadNote(string text)
+    {
+        ReadNote.Text = text;
+        ReadNote.Visibility = Visibility.Visible;
+    }
+
+    private Dictionary<ProfileField, string> CurrentValues() => new()
+    {
+        [ProfileField.DefaultBranch] = DefaultBranchBox.Text,
+        [ProfileField.RequiredCheck] = RequiredCheckBox.Text,
+        [ProfileField.Board] = ProfileComparison.BoardText(ProjectOwnerBox.Text, int.TryParse(ProjectNumberBox.Text.Trim(), out var n) ? n : 0),
+        [ProfileField.ReadyColumn] = ReadyColumnBox.Text,
+        [ProfileField.InProgressColumn] = InProgressColumnBox.Text,
+        [ProfileField.InReviewColumn] = InReviewColumnBox.Text,
+        [ProfileField.SelfTestCommand] = SelfTestBox.Text,
+    };
+
+    private void Apply(ProfileField field, RepositoryProfile p)
+    {
+        switch (field)
+        {
+            case ProfileField.DefaultBranch: DefaultBranchBox.Text = p.DefaultBranch; break;
+            case ProfileField.RequiredCheck: RequiredCheckBox.Text = p.RequiredCheck; break;
+            case ProfileField.Board:
+                if (!ProjectOwnerBox.IsEnabled || p.Board is null) break;
+                ProjectOwnerBox.Text = p.Board.Owner;
+                ProjectNumberBox.Text = p.Board.Number.ToString();
+                break;
+            case ProfileField.ReadyColumn: ReadyColumnBox.Text = p.ReadyColumn; break;
+            case ProfileField.InProgressColumn: InProgressColumnBox.Text = p.InProgressColumn; break;
+            case ProfileField.InReviewColumn: InReviewColumnBox.Text = p.InReviewColumn; break;
+            case ProfileField.SelfTestCommand: SelfTestBox.Text = p.SelfTestCommand; break;
+        }
+    }
+
+    private static string Label(ProfileField field) => field switch
+    {
+        ProfileField.DefaultBranch => Strings.Settings_DefaultBranch,
+        ProfileField.RequiredCheck => Strings.Settings_RequiredCheck,
+        ProfileField.Board => Strings.Settings_Board,
+        ProfileField.ReadyColumn => Strings.Settings_ReadyColumn,
+        ProfileField.InProgressColumn => Strings.Settings_InProgressColumn,
+        ProfileField.InReviewColumn => Strings.Settings_InReviewColumn,
+        _ => Strings.Settings_SelfTestCommand,
+    };
 
     private void Save_Click(object sender, RoutedEventArgs e)
     {
@@ -136,6 +247,9 @@ public partial class SettingsWindow : Window
         s.DefaultBranch = string.IsNullOrWhiteSpace(DefaultBranchBox.Text) ? RepositorySettings.DefaultDefaultBranch : DefaultBranchBox.Text.Trim();
         s.SelfTestCommand = SelfTestBox.Text.Trim();
         s.RequiredCheck = string.IsNullOrWhiteSpace(RequiredCheckBox.Text) ? RepositorySettings.DefaultRequiredCheck : RequiredCheckBox.Text.Trim();
+        s.ReadyColumn = ReadyColumnBox.Text.Trim();
+        s.InProgressColumn = InProgressColumnBox.Text.Trim();
+        s.InReviewColumn = InReviewColumnBox.Text.Trim();
 
         _shell.Workspace.SaveRepository(s);
         DialogResult = true;

@@ -26,7 +26,7 @@ public static partial class SelfTestRunner
         public void NavigateToScan(string? folder, string ownerAndName) { }
         public void NavigateToClone(string ownerAndName) { }
         public void NavigateToSetup(string? folder, string ownerAndName, ScanFacts? facts = null) { }
-        public void EditRepository(RepositorySettings? repository) { }
+        public void EditRepository(RepositorySettings? repository, bool readFromGitHub = false) { }
         public bool ShowDialog(Window dialog) => false;
         public bool Confirm(string message, string title) => false;
         public void ShowError(string message) { }

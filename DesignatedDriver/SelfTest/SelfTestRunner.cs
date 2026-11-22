@@ -58,6 +58,7 @@ public static partial class SelfTestRunner
             WindowPlacementChecks(Check);
             ScanNextStepChecks(Check);
             CloneAsIsChecks(Check);
+            ProfileChecks(Check);
         }
         catch (Exception ex)
         {

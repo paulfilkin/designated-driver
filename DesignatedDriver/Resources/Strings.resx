@@ -168,6 +168,26 @@
   <data name="Settings_SelfTestHelp" xml:space="preserve"><value>Run in the repository folder before pushing. Every line it prints should say PASS. Leave empty if the repository has none.</value></data>
   <data name="Settings_RequiredCheck" xml:space="preserve"><value>Required check</value></data>
   <data name="Settings_RequiredCheckHelp" xml:space="preserve"><value>The name of the GitHub check a pull request must pass before it can be merged.</value></data>
+  <data name="Settings_Board" xml:space="preserve"><value>Board</value></data>
+  <data name="Settings_ReadyColumn" xml:space="preserve"><value>Ready to pick up</value></data>
+  <data name="Settings_InProgressColumn" xml:space="preserve"><value>In progress</value></data>
+  <data name="Settings_InReviewColumn" xml:space="preserve"><value>In review</value></data>
+  <data name="Settings_ColumnsHelp" xml:space="preserve"><value>The board's columns, by name. Start work lists the ready column and moves a card to In progress; Submit moves it to In review when the pull request opens. Empty uses the convention's Todo (or Ready) and In Progress, with no move to In review.</value></data>
+  <data name="Settings_ReadFromGitHub" xml:space="preserve"><value>Read from GitHub</value></data>
+  <data name="Settings_ReadFromGitHubHelp" xml:space="preserve"><value>Reads the default branch, required check, board, columns and self-test command this repository already uses. Only reads run, and nothing is saved until you press Save.</value></data>
+  <data name="Settings_Reading" xml:space="preserve"><value>Reading {0} from GitHub...</value></data>
+  <data name="Settings_ReadFilled" xml:space="preserve"><value>Filled from GitHub: {0}. Check them, then Save.</value></data>
+  <data name="Settings_ReadNothing" xml:space="preserve"><value>GitHub had nothing new to fill for {0}.</value></data>
+  <data name="Settings_ReadKept" xml:space="preserve"><value>Kept yours: {0}.</value></data>
+  <data name="Settings_ReadNotFound" xml:space="preserve"><value>{0} wasn't found on GitHub, so nothing was read.</value></data>
+  <data name="Settings_ReadFailed" xml:space="preserve"><value>Couldn't read {0} from GitHub: {1}</value></data>
+  <data name="Settings_ReadAskTitle" xml:space="preserve"><value>Replace with GitHub's values?</value></data>
+  <data name="Settings_ReadAsk" xml:space="preserve"><value>These differ from what GitHub has:
+
+{0}
+
+Replace them with GitHub's values? No keeps yours.</value></data>
+  <data name="Settings_ReadAskLine" xml:space="preserve"><value>{0}: yours "{1}", GitHub "{2}"</value></data>
   <data name="Settings_StoredAt" xml:space="preserve"><value>Stored in {0}</value></data>
 
   <!-- Status screen -->
@@ -254,7 +274,7 @@
 
 Go ahead?</value></data>
   <data name="StartWork_StillDirty" xml:space="preserve"><value>There are uncommitted changes, so nothing was started. Refresh and try again.</value></data>
-  <data name="StartWork_NoInProgressColumn" xml:space="preserve"><value>The board has no In progress column, so the card wasn't moved.</value></data>
+  <data name="StartWork_NoInProgressColumn" xml:space="preserve"><value>The board has no {0} column, so the card wasn't moved.</value></data>
   <data name="StartWork_IssueNotOnBoard" xml:space="preserve"><value>Issue #{0} isn't on the board, so there was no card to move.</value></data>
   <data name="StartWork_Done" xml:space="preserve"><value>You are on branch {0}, working on issue #{1}. Make your change, then come back to Save and share.</value></data>
   <data name="NewIssue_Card" xml:space="preserve"><value>New issue</value></data>
@@ -356,6 +376,8 @@ Go ahead?</value></data>
   <data name="Submit_Confirm" xml:space="preserve"><value>Open the pull request "{0}", closing issue #{1}, into {2}?</value></data>
   <data name="Submit_ConfirmPush" xml:space="preserve"><value>The branch {0} will be pushed first.</value></data>
   <data name="Submit_Created" xml:space="preserve"><value>Opened pull request #{0}: {1}</value></data>
+  <data name="Submit_NoReviewColumn" xml:space="preserve"><value>The board has no {0} column, so the card wasn't moved to it.</value></data>
+  <data name="Submit_ReviewMoveFailed" xml:space="preserve"><value>Issue #{0}'s card couldn't be moved to {1}: {2}</value></data>
   <data name="Submit_Checks" xml:space="preserve"><value>Checks</value></data>
   <data name="Submit_CheckNow" xml:space="preserve"><value>Check now</value></data>
   <data name="Submit_NoChecksYet" xml:space="preserve"><value>No checks have started yet. GitHub usually starts them within a minute; this screen looks again every 15 seconds.</value></data>

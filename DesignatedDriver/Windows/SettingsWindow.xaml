@@ -38,6 +38,16 @@
 
         <Border Style="{StaticResource CardStyle}">
             <StackPanel>
+                <!-- A repository without a manifest can have what it already uses read from GitHub; nothing is saved until Save. -->
+                <StackPanel x:Name="ReadPanel" Margin="0,0,0,12">
+                    <StackPanel Orientation="Horizontal">
+                        <Button x:Name="ReadButton" Content="{x:Static res:Strings.Settings_ReadFromGitHub}" Style="{StaticResource SecondaryButton}" Click="Read_Click"
+                                AutomationProperties.Name="{x:Static res:Strings.Settings_ReadFromGitHub}" AutomationProperties.HelpText="{x:Static res:Strings.Settings_ReadFromGitHubHelp}"/>
+                    </StackPanel>
+                    <TextBlock Text="{x:Static res:Strings.Settings_ReadFromGitHubHelp}" Style="{StaticResource HelperText}"/>
+                    <TextBlock x:Name="ReadNote" Style="{StaticResource HelperText}" FontWeight="SemiBold" AutomationProperties.LiveSetting="Polite" Visibility="Collapsed"/>
+                </StackPanel>
+
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -54,6 +64,29 @@
                     </StackPanel>
                 </Grid>
                 <TextBlock x:Name="ProjectHelp" Text="{x:Static res:Strings.Settings_ProjectHelp}" Style="{StaticResource HelperText}"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="{x:Static res:Strings.Settings_ReadyColumn}" Style="{StaticResource LabelText}"/>
+                        <TextBox x:Name="ReadyColumnBox" Style="{StaticResource ModernTextBox}" AutomationProperties.Name="{x:Static res:Strings.Settings_ReadyColumn}" AutomationProperties.HelpText="{x:Static res:Strings.Settings_ColumnsHelp}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="{x:Static res:Strings.Settings_InProgressColumn}" Style="{StaticResource LabelText}"/>
+                        <TextBox x:Name="InProgressColumnBox" Style="{StaticResource ModernTextBox}" AutomationProperties.Name="{x:Static res:Strings.Settings_InProgressColumn}" AutomationProperties.HelpText="{x:Static res:Strings.Settings_ColumnsHelp}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="4">
+                        <TextBlock Text="{x:Static res:Strings.Settings_InReviewColumn}" Style="{StaticResource LabelText}"/>
+                        <TextBox x:Name="InReviewColumnBox" Style="{StaticResource ModernTextBox}" AutomationProperties.Name="{x:Static res:Strings.Settings_InReviewColumn}" AutomationProperties.HelpText="{x:Static res:Strings.Settings_ColumnsHelp}"/>
+                    </StackPanel>
+                </Grid>
+                <TextBlock Text="{x:Static res:Strings.Settings_ColumnsHelp}" Style="{StaticResource HelperText}"/>
 
                 <TextBlock Text="{x:Static res:Strings.Settings_DefaultBranch}" Style="{StaticResource LabelText}"/>
                 <TextBox x:Name="DefaultBranchBox" Style="{StaticResource ModernTextBox}" Width="200" HorizontalAlignment="Left" AutomationProperties.Name="{x:Static res:Strings.Settings_DefaultBranch}"/>

@@ -174,8 +174,29 @@ public partial class SubmitScreen : ScreenBase
             if (needsPush) await Workspace.Git.PushAsync(_status.Branch, !_status.HasUpstream, ct);
             var (number, url) = await Workspace.GitHub.CreatePullRequestAsync(title, body, ct);
             Shell.Announce(string.Format(Strings.Submit_Created, number, url));
+            await MoveToReviewAsync(issueNumber, ct);
             await RefreshAsync(ct);
         });
+    }
+
+    /// <summary>
+    /// When the repository's profile names an In review column, the issue's card moves there once its pull request
+    /// is open. A failure is noted, not raised: the pull request is already open.
+    /// </summary>
+    private async Task MoveToReviewAsync(int issueNumber, CancellationToken ct)
+    {
+        var column = Repo.InReviewColumn;
+        if (column.Length == 0 || Workspace.Board is null) return;
+        try
+        {
+            var item = (await Workspace.GitHub.ProjectItemsAsync(ct)).Items.FirstOrDefault(i => i.IsIssue && i.Number == issueNumber);
+            if (item is null) { Workspace.Runner.Note(string.Format(Strings.StartWork_IssueNotOnBoard, issueNumber)); return; }
+            if (!await Workspace.GitHub.MoveCardAsync(item.Id, column, ct)) Workspace.Runner.Note(string.Format(Strings.Submit_NoReviewColumn, column));
+        }
+        catch (CommandFailedException ex)
+        {
+            Workspace.Runner.Note(string.Format(Strings.Submit_ReviewMoveFailed, issueNumber, column, ex.Message));
+        }
     }
 
     // Checks

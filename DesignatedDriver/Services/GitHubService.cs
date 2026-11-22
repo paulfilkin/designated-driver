@@ -98,6 +98,15 @@ public sealed partial class GitHubService(ICommandRunner runner, Func<Repository
         return (r.Status, r.Ok ? GhJson.ParseRestList<GhBranchRule>(r.Output) : []);
     }
 
+    /// <summary>The checks classic branch protection requires on a branch; empty when it has none or it can't be read.</summary>
+    public async Task<List<string>> ClassicRequiredChecksAsync(string ownerAndName, string branch, CancellationToken ct)
+    {
+        var r = await ApiAsync(ct, $"repos/{ownerAndName}/branches/{branch}/protection/required_status_checks").ConfigureAwait(false);
+        if (!r.Ok || r.Output.Trim().Length == 0) return [];
+        try { return GhJson.ParseRest<GhClassicRequiredChecks>(r.Output).Names.ToList(); }
+        catch (System.Text.Json.JsonException) { return []; }
+    }
+
     public async Task<List<GhRuleset>> RulesetsAsync(string ownerAndName, CancellationToken ct)
     {
         var r = await ApiAsync(ct, $"repos/{ownerAndName}/rulesets").ConfigureAwait(false);
