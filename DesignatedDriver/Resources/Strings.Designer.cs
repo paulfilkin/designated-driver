@@ -1393,7 +1393,7 @@ public static class Strings
     /// <summary>Next step: bring this repository into the convention. The set-up wizard opens with it c...</summary>
     public static string Scan_Next_Convertible => Get("Scan_Next_Convertible");
 
-    /// <summary>Next step: run the set-up wizard on it, or --setup &lt;answers.json&gt;.</summary>
+    /// <summary>Next step: choose whether it takes the convention or keeps its own way of working. To t...</summary>
     public static string Scan_Next_Convertible_Text => Get("Scan_Next_Convertible_Text");
 
     /// <summary>Next step: choose whether it takes the convention or keeps its own way of working. Each...</summary>
