@@ -1,25 +1,20 @@
 {
   "conventionVersion": 1,
-  "setUp": "2026-11-20",
+  "setUp": "2026-11-22",
   "language": "dotnet",
   "options": {
     "releaseWorkflow": true,
-    "codeQl": false,
+    "codeQl": true,
     "discussions": false,
     "reviewRequired": true
   },
   "board": {
     "owner": "paulfilkin",
-    "number": 5
+    "number": 8
   },
   "selfTestCommand": "dotnet run --project DesignatedDriver\\DesignatedDriver.csproj -- --self-test",
   "requiredCheck": "Build and test",
-  "notAvailable": [
-    "Ruleset",
-    "CodeOwners",
-    "PushProtection",
-    "CodeScanning"
-  ],
+  "notAvailable": [],
   "answers": {
     "description": "Sets up GitHub repositories for a personal account to one convention, keeps them to it, and walks the day-to-day Git workflow.",
     "projectFile": "DesignatedDriver\\DesignatedDriver.csproj",
