@@ -707,6 +707,12 @@ public static partial class SelfTestRunner
         check(ScanRules.Assess(elsewhere) is { Verdict: ScanVerdict.NotConvertible } e && e.Has(ScanCode.NotGitHubOrigin) && !e.RemoteFindings(), "Scan: an origin that isn't GitHub is a blocker, and GitHub isn't asked");
         var missing = new ScanFacts { OwnerAndName = "paulfilkin/no-such-repository", RemoteLookedUp = true, Details = null };
         check(ScanRules.Assess(missing) is { Verdict: ScanVerdict.NotConvertible } mr && mr.Has(ScanCode.RepositoryNotFound), "Scan: a repository GitHub doesn't return is a blocker");
+        var moved = Clone(fresh);
+        moved.OwnerAndName = "paulfilkin/old-name";
+        moved.Details = Fresh();
+        check(moved.MovedTo == "paulfilkin/example" && !moved.RemoteFound && ScanRules.Assess(moved) is { Verdict: ScanVerdict.NotConvertible } mv && mv.Has(ScanCode.RepositoryMoved) && !mv.Has(ScanCode.MergeSettings)
+            && mv.Findings.First(f => f.Code == ScanCode.RepositoryMoved).Text.Contains("paulfilkin/example", StringComparison.Ordinal), "Scan: a name GitHub answers with a renamed repository is a blocker naming where it leads, and that repository isn't judged");
+        check(Fresh().IsNamed("PaulFilkin/Example") && !Fresh().IsNamed("paulfilkin/old-name") && new GhRepositoryDetails().IsNamed("a/b"), "Repository details: the full name is compared without regard to case, and a reply without one isn't judged");
 
         // Warnings and the create path.
         var fork = Clone(fresh);

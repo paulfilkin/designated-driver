@@ -166,6 +166,11 @@ public sealed class GhRepositoryDetails
     public GhSecurityAndAnalysis? SecurityAndAnalysis { get; set; }
 
     public bool IsPublic => !Private;
+    /// <summary>
+    /// True when GitHub answered for the repository asked for. A renamed or transferred repository's old name keeps
+    /// leading to it until a new repository takes the name, and the answer then carries the new full name.
+    /// </summary>
+    public bool IsNamed(string ownerAndName) => FullName.Length == 0 || FullName.Equals(ownerAndName, StringComparison.OrdinalIgnoreCase);
     public bool ViewerIsAdmin => Permissions?.Admin == true;
     public bool OwnerIsOrganization => string.Equals(Owner?.Type, "Organization", StringComparison.OrdinalIgnoreCase);
     public bool SecretScanningOn => IsEnabled(SecurityAndAnalysis?.SecretScanning);
