@@ -598,6 +598,10 @@ public static partial class SelfTestRunner
         var p = GhJson.ParseRest<GhRepositoryDetails>(Sample("repo-details-private.json"));
         check(!p.IsPublic && p.DependabotSecurityUpdatesOn && !p.SecretScanningOn && p.SquashMergeCommitTitle == "PR_TITLE", "gh api repos: a private repository with partial security_and_analysis");
 
+        // A repository made with gh repo create and no description comes back with "description": null.
+        var bare = GhJson.ParseRest<GhRepositoryDetails>(System.Text.RegularExpressions.Regex.Replace(Sample("repo-details.json"), "\"(description|language)\": (\"[^\"]*\"|null)", "\"$1\": null"));
+        check(bare.Description == "" && bare.Language == "" && bare.Description.Trim().Length == 0, "gh api repos: a null description or language reads as empty, not null");
+
         var v = GhJson.Parse<GhRepository>(Sample("repo-view-scan.json"));
         check(v.IsAdmin && !v.IsEmpty && !v.IsInOrganization && v.IsBlankIssuesEnabled, "gh repo view (scan fields): flags");
         check(v.LinkedProjects.Count() == 1 && v.LinkedProjects.First().Number == 4 && v.LinkedProjects.First().Title == "example", "gh repo view (scan fields): linked projects under projectsV2.Nodes");
