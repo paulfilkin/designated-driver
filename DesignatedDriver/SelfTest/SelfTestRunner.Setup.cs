@@ -213,6 +213,7 @@ public static partial class SelfTestRunner
             if (a[0] == "api" && a[1] == "user") return Ok("paulfilkin");
             if (a[0] == "label" && a[1] == "list") return Ok(LabelsDone ? AllLabelsJson() : Sample("label-list.json"));
             if (a[0] == "label" && a[1] == "create") { LabelsDone = true; return null; }
+            if (a[0] == "label" && a[1] == "edit") { LabelsDone = true; return null; }
             if (a[0] == "project" && a[1] == "list") return Ok(ProjectCreated ? "{\"projects\":[{\"number\":7,\"id\":\"PVT_7\",\"title\":\"example\",\"closed\":false,\"owner\":{\"login\":\"paulfilkin\"}}],\"totalCount\":1}" : "{\"projects\":[],\"totalCount\":0}");
             if (a[0] == "project" && a[1] == "create") { ProjectCreated = true; return Ok("{\"number\":7,\"id\":\"PVT_7\",\"title\":\"example\",\"url\":\"https://github.com/users/paulfilkin/projects/7\",\"owner\":{\"login\":\"paulfilkin\",\"type\":\"User\"}}"); }
             if (a[0] == "project" && a[1] == "link") { if (FailLinkOnce) { FailLinkOnce = false; return Fail("GraphQL: could not link the project"); } Linked = true; return null; }
@@ -252,10 +253,11 @@ public static partial class SelfTestRunner
 
             var lines = host.Runner.Calls.Select(c => c.Line).ToList();
             int IndexOf(string start) => lines.FindIndex(l => l.StartsWith(start, StringComparison.Ordinal));
-            var order = new[] { "gh repo create paulfilkin/example --private --description", "git clone https://github.com/paulfilkin/example.git", "gh repo edit paulfilkin/example --enable-squash-merge", "gh label create feature", "gh project create --owner @me --title example", "gh project link 7 --owner paulfilkin -R paulfilkin/example", "gh secret set PROJECT_TOKEN", "git add --", "git update-index --chmod=+x", "git commit -F", "git push -u origin main", "git config core.hooksPath .githooks", "gh api -X PUT repos/paulfilkin/example/vulnerability-alerts", "gh api -X PUT repos/paulfilkin/example/automated-security-fixes" };
+            var order = new[] { "gh repo create paulfilkin/example --private --description", "git clone https://github.com/paulfilkin/example.git", "gh repo edit paulfilkin/example --enable-squash-merge", "gh label edit enhancement --name feature", "gh project create --owner @me --title example", "gh project link 7 --owner paulfilkin -R paulfilkin/example", "gh secret set PROJECT_TOKEN", "git add --", "git update-index --chmod=+x", "git commit -F", "git push -u origin main", "git config core.hooksPath .githooks", "gh api -X PUT repos/paulfilkin/example/vulnerability-alerts", "gh api -X PUT repos/paulfilkin/example/automated-security-fixes" };
             var positions = order.Select(IndexOf).ToList();
             check(positions.All(p => p >= 0) && positions.SequenceEqual(positions.OrderBy(p => p)), "Set-up: the commands run in the design's order: create, settings, labels, board, secret, files, hooks, Dependabot");
-            check(lines.Count(l => l.StartsWith("gh label create", StringComparison.Ordinal)) == 4, "Set-up: only the four missing labels are created on a repository with GitHub's defaults");
+            check(lines.Count(l => l.StartsWith("gh label create", StringComparison.Ordinal)) == 2 && lines.Contains("gh label edit enhancement --name feature --color a2eeef --description \"New feature or request\" -R paulfilkin/example")
+                && lines.Any(l => l.StartsWith("gh label edit documentation --name docs", StringComparison.Ordinal)), "Set-up: on a repository with GitHub's defaults, enhancement and documentation are renamed and only chore and blocked are created");
             check(lines.Any(l => l.Contains("--squash-merge-commit-message pr-title", StringComparison.Ordinal) && l.Contains("--enable-wiki=false", StringComparison.Ordinal) && l.Contains("--description \"An example\"", StringComparison.Ordinal)), "Set-up: gh repo edit carries the convention's merge settings, wiki off and the description");
             var secret = host.Runner.Calls.First(c => c.Is("secret", "set"));
             check(secret.StandardInput == "ghp_selftest" && !lines.Any(l => l.Contains("ghp_", StringComparison.Ordinal)) && setup.BoardToken is null, "Set-up: the token goes in on standard input, never on a command line, and is forgotten afterwards");

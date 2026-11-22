@@ -52,6 +52,13 @@ public sealed class ScanService(Workspace workspace)
         facts.MergeInProgress = await Git.IsMergeInProgressInAsync(folder, ct).ConfigureAwait(false);
         facts.HooksPath = await Git.HooksPathInAsync(folder, ct).ConfigureAwait(false);
         facts.Files = await Git.ListFilesInAsync(folder, ct).ConfigureAwait(false);
+
+        // The labels the repository's own issue forms apply, so the scan can name a form a label rename affects.
+        foreach (var form in facts.Files.Where(IssueForms.IsForm))
+        {
+            try { facts.IssueFormLabels[form] = IssueForms.Labels(await File.ReadAllTextAsync(Path.Combine(folder, form.Replace('/', '\\')), ct).ConfigureAwait(false)); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* unreadable: no labels known */ }
+        }
     }
 
     private async Task ReadGitHubAsync(ScanFacts facts, CancellationToken ct)
