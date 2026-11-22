@@ -75,6 +75,14 @@ public sealed class ScanService(Workspace workspace)
         facts.HooksPath = await Git.HooksPathInAsync(folder, ct).ConfigureAwait(false);
         facts.Files = await Git.ListFilesInAsync(folder, ct).ConfigureAwait(false);
 
+        // A kept CONTRIBUTING.md gets the convention's section on how a change gets in, unless it already has it.
+        var contributing = Path.Combine(folder, WorkflowSection.ContributingPath);
+        if (File.Exists(contributing))
+        {
+            try { facts.ContributingHasWorkflowSection = WorkflowSection.IsIn(await File.ReadAllTextAsync(contributing, ct).ConfigureAwait(false)); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* unreadable: not known */ }
+        }
+
         // The labels the repository's own issue forms apply, so the scan can name a form a label rename affects.
         foreach (var form in facts.Files.Where(IssueForms.IsForm))
         {

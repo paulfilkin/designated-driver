@@ -162,6 +162,11 @@ public static partial class DriftRules
             Add("file:" + file.Path, SetupStep.Files, DriftKind.Different, string.Format(Strings.Drift_FileDiffers, file.Path, removed, added), LineDiff.Render(expected, actual), ticked: !IsTailored(file.Path), path: file.Path);
         }
 
+        // A CONTRIBUTING.md of the project's own without the convention's section on how a change gets in. Applying it
+        // adds the section at the end and leaves the rest alone, so it is offered on its own, unticked.
+        if (input.Actual.TryGetValue(WorkflowSection.ContributingPath, out var contributing) && !WorkflowSection.IsIn(contributing))
+            Add(WorkflowSection.DriftKey, SetupStep.Files, DriftKind.Missing, Strings.Drift_WorkflowSectionMissing, ticked: false, path: WorkflowSection.ContributingPath);
+
         bool older = m.ConventionVersion < Manifest.CurrentConventionVersion;
         return new DriftReport(items, m, older);
     }

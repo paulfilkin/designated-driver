@@ -7,6 +7,33 @@ using System.Text.RegularExpressions;
 namespace DesignatedDriver.Core;
 
 /// <summary>
+/// The convention's section on how a change gets in: section 2 of its CONTRIBUTING.md, and added to the end of a
+/// repository's own CONTRIBUTING.md that lacks it, so a contributor finds the rules Guard enforces.
+/// </summary>
+public static class WorkflowSection
+{
+    public const string FragmentPath = "fragments/workflow-section.md";
+    public const string ContributingPath = "CONTRIBUTING.md";
+    /// <summary>The Check item for a kept CONTRIBUTING.md without the section. A file: key, so applying it runs the files step.</summary>
+    public const string DriftKey = "file:CONTRIBUTING.md#workflow-section";
+
+    /// <summary>The section, its heading line first and without the heading's #s, filled for the repository.</summary>
+    public static string Text(IReadOnlyDictionary<string, string> values)
+        => ConventionContent.Fill(ConventionResources.Read(FragmentPath), values).TrimEnd('\n');
+
+    /// <summary>True when the Markdown has the section's heading, numbered or not, at any level.</summary>
+    public static bool IsIn(string markdown)
+        => Regex.IsMatch(markdown, @"^#{1,6}\s+(\d+\.\s+)?How a change gets into\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+
+    /// <summary>The file with the section added at the end as a level-two heading, in the file's own line endings; the rest is untouched.</summary>
+    public static string AppendTo(string existing, IReadOnlyDictionary<string, string> values)
+    {
+        var nl = existing.Contains("\r\n", StringComparison.Ordinal) ? "\r\n" : "\n";
+        return existing.TrimEnd('\r', '\n') + nl + nl + ("## " + Text(values)).Replace("\n", nl) + nl;
+    }
+}
+
+/// <summary>
 /// The convention's files as embedded resources, one folder per version (section 3.6 of the design). A file
 /// name that starts with an underscore stands for a dot file, so the tool's own repository is not affected by
 /// a .gitignore or .gitattributes meant for someone else's.
@@ -111,6 +138,7 @@ public static partial class ConventionContent
         values["testStep"] = TestStep(a);
         values["selfTestStep"] = a.SelfTestCommand.Length > 0 ? Step("Self-test", a.SelfTestCommand) : "";
         values["languageSteps"] = Fill(ConventionResources.Read($"languages/{LanguageFolder(a.Language)}/ci-steps.yml"), values).TrimEnd('\n');
+        values["workflowSection"] = WorkflowSection.Text(values);
         return values;
     }
 
