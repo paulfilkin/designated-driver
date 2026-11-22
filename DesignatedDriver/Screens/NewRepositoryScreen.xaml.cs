@@ -273,7 +273,7 @@ public partial class NewRepositoryScreen : ScreenBase
                 if (name.Length == 0) name = Path.GetFileName(folder.TrimEnd('\\'));
                 NameBox.Text = name;
                 if (!IsValidName(owner, name)) return;
-                if (await Workspace.GitHub.RepositoryDetailsAsync($"{owner}/{name}", ct) is not null) { Shell.ShowError(string.Format(Strings.Setup_AlreadyExists, $"{owner}/{name}")); return; }
+                if (await Workspace.GitHub.RepositoryDetailsAsync($"{owner}/{name}", ct) is { } taken) { Shell.ShowError(AlreadyTaken(taken, $"{owner}/{name}")); return; }
             }
         }
         else if (source == SetupSource.ExistingRepository)
@@ -281,7 +281,8 @@ public partial class NewRepositoryScreen : ScreenBase
             if (!IsValidName(owner, name)) return;
             if (ParentBox.Text.Trim().Length == 0) { Shell.ShowError(Strings.Setup_ParentMissing); return; }
             _facts = await new ScanService(Workspace).ScanAsync(null, $"{owner}/{name}", ct);
-            if (!_facts.RemoteFound) { Shell.ShowError(string.Format(Strings.Scan_RepositoryNotFound, $"{owner}/{name}")); return; }
+            // A renamed repository is found but blocked: the scan report below says where the name leads.
+            if (_facts.Details is null) { Shell.ShowError(string.Format(Strings.Scan_RepositoryNotFound, $"{owner}/{name}")); return; }
         }
         else
         {
@@ -289,7 +290,7 @@ public partial class NewRepositoryScreen : ScreenBase
             if (ParentBox.Text.Trim().Length == 0) { Shell.ShowError(Strings.Setup_ParentMissing); return; }
             var folder = Path.Combine(ParentBox.Text.Trim(), name);
             if (Directory.Exists(folder) && Directory.EnumerateFileSystemEntries(folder).Any()) { Shell.ShowError(string.Format(Strings.Setup_FolderNotEmpty, folder)); return; }
-            if (await Workspace.GitHub.RepositoryDetailsAsync($"{owner}/{name}", ct) is not null) { Shell.ShowError(string.Format(Strings.Setup_AlreadyExists, $"{owner}/{name}")); return; }
+            if (await Workspace.GitHub.RepositoryDetailsAsync($"{owner}/{name}", ct) is { } taken) { Shell.ShowError(AlreadyTaken(taken, $"{owner}/{name}")); return; }
             _facts = null;
         }
 
@@ -321,6 +322,10 @@ public partial class NewRepositoryScreen : ScreenBase
         if (!RepositoryName().IsMatch(name)) { Shell.ShowError(Strings.Setup_NameInvalid); return false; }
         return true;
     }
+
+    /// <summary>Why a name can't be created: the repository exists, or the name leads to a renamed or transferred one.</summary>
+    private static string AlreadyTaken(Models.GhRepositoryDetails details, string ownerAndName)
+        => details.IsNamed(ownerAndName) ? string.Format(Strings.Setup_AlreadyExists, ownerAndName) : string.Format(Strings.Scan_RepositoryMoved, ownerAndName, details.FullName);
 
     [GeneratedRegex(@"^[A-Za-z0-9_.-]{1,100}$")]
     private static partial Regex RepositoryName();

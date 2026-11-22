@@ -149,10 +149,21 @@ public sealed partial class SetupService(Workspace workspace)
         if (await Git.RepositoryRootAsync(Folder, ct).ConfigureAwait(false) is null) return false;
         var origin = await Git.OriginUrlInAsync(Folder, ct).ConfigureAwait(false);
         if (!OriginIsThisRepository(origin) || !OriginIsAsChosen(origin)) return false;
-        if (await GitHub.RepositoryDetailsAsync(Name, ct).ConfigureAwait(false) is null) return false;
+        if (await ThisRepositoryAsync(ct).ConfigureAwait(false) is null) return false;
         // A repository with commits counts as created once its default branch is on the remote.
         if (!await Git.HasCommitsInAsync(Folder, ct).ConfigureAwait(false)) return true;
         return await Git.RemoteBranchExistsAsync(Folder, _a.DefaultBranch, ct).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// The repository's details, or null when there is none. GitHub answers a renamed or transferred repository's old
+    /// name with the repository it now is; setting that up would change the wrong repository, so the step stops.
+    /// </summary>
+    private async Task<GhRepositoryDetails?> ThisRepositoryAsync(CancellationToken ct)
+    {
+        var d = await GitHub.RepositoryDetailsAsync(Name, ct).ConfigureAwait(false);
+        if (d is not null && !d.IsNamed(Name)) throw new InvalidOperationException(string.Format(Strings.Scan_RepositoryMoved, Name, d.FullName));
+        return d;
     }
 
     private bool OriginIsThisRepository(string origin)
@@ -173,7 +184,7 @@ public sealed partial class SetupService(Workspace workspace)
             case SetupSource.NewRepository:
                 Directory.CreateDirectory(_a.ParentFolder);
                 if (Directory.Exists(Folder) && Directory.EnumerateFileSystemEntries(Folder).Any()) throw new InvalidOperationException(string.Format(Strings.Setup_FolderNotEmpty, Folder));
-                if (await GitHub.RepositoryDetailsAsync(Name, ct).ConfigureAwait(false) is null)
+                if (await ThisRepositoryAsync(ct).ConfigureAwait(false) is null)
                     await GitHub.CreateAsync(Name, _a.IsPrivate, _a.Description, ct).ConfigureAwait(false);
                 await Git.CloneAsync(CloneUrl, Folder, ct).ConfigureAwait(false);
                 if (!await Git.HasCommitsInAsync(Folder, ct).ConfigureAwait(false))
@@ -200,7 +211,7 @@ public sealed partial class SetupService(Workspace workspace)
                 {
                     // gh adds origin on its own protocol; EnsureOriginAsync puts it right. An earlier run may have
                     // created the repository and stopped before the remote was added.
-                    if (await GitHub.RepositoryDetailsAsync(Name, ct).ConfigureAwait(false) is null)
+                    if (await ThisRepositoryAsync(ct).ConfigureAwait(false) is null)
                         await GitHub.CreateFromFolderAsync(Name, _a.IsPrivate, _a.Description, Folder, ct).ConfigureAwait(false);
                     else
                         await Git.AddRemoteAsync(Folder, CloneUrl, ct).ConfigureAwait(false);
@@ -209,7 +220,7 @@ public sealed partial class SetupService(Workspace workspace)
                 {
                     throw new InvalidOperationException(string.Format(Strings.Setup_OriginElsewhere, origin, Name));
                 }
-                else if (await GitHub.RepositoryDetailsAsync(Name, ct).ConfigureAwait(false) is null)
+                else if (await ThisRepositoryAsync(ct).ConfigureAwait(false) is null)
                 {
                     throw new InvalidOperationException(string.Format(Strings.Setup_RepositoryMissing, Name));
                 }
