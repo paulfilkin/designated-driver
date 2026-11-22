@@ -22,6 +22,8 @@
         <SolidColorBrush x:Key="QuaternaryStrongBrush" Color="#ECB800"/>
         <SolidColorBrush x:Key="QuaternarySofterBrush" Color="#FFF3C9"/>
         <SolidColorBrush x:Key="QuaternarySoftestBrush" Color="#FFFBEB"/>
+        <!-- The flat gold of the DD logo (Tools\New-Icon.ps1). -->
+        <SolidColorBrush x:Key="GoldBrush" Color="#EDB83F"/>
         <SolidColorBrush x:Key="NeutralBrush" Color="#171513"/>
         <SolidColorBrush x:Key="NeutralMutedBrush" Color="#464443"/>
         <SolidColorBrush x:Key="NeutralSubtleBrush" Color="#747372"/>

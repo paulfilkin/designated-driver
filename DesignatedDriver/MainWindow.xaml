@@ -58,8 +58,8 @@
             </Grid>
         </Border>
 
-        <!-- Busy strip -->
-        <Border x:Name="BusyStrip" Grid.Row="1" Background="{StaticResource PrimarySofterBrush}" Padding="18,6" Visibility="Collapsed">
+        <!-- Busy strip, edged top and bottom in the logo's gold -->
+        <Border x:Name="BusyStrip" Grid.Row="1" Background="{StaticResource PrimarySofterBrush}" BorderBrush="{StaticResource GoldBrush}" BorderThickness="0,1,0,1" Padding="18,6" Visibility="Collapsed">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
