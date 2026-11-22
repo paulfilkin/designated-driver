@@ -646,8 +646,29 @@ public static partial class SelfTestRunner
         check(merge is not null && merge.Detail.Split('\n').Length == 5, "Scan: five merge settings would change on a repository with GitHub's defaults");
         check(report.Has(ScanCode.Features) && report.Findings.First(f => f.Code == ScanCode.Features).Detail.Split('\n').Length == 2, "Scan: projects on and wiki off are the feature changes");
         var create = report.Findings.First(f => f.Code == ScanCode.CreateLabels);
-        check(create.Detail.Split(", ").SequenceEqual(["feature", "docs", "chore", "blocked"]) && !report.Has(ScanCode.RecolourLabels), "Scan: the four missing labels are named; the matching defaults need no change");
-        check(report.Has(ScanCode.OtherLabels) && report.Findings.First(f => f.Code == ScanCode.OtherLabels).Text.StartsWith('5'), "Scan: five other labels are left alone");
+        check(create.Detail.Split(", ").SequenceEqual(["chore", "blocked"]) && !report.Has(ScanCode.RecolourLabels), "Scan: the two labels GitHub has no default for are named to create; the matching defaults need no change");
+        check(report.Findings.FirstOrDefault(f => f.Code == ScanCode.RenameLabels)?.Detail == "enhancement to feature, documentation to docs" && !report.Has(ScanCode.LabelsBothPresent), "Scan: GitHub's enhancement and documentation would be renamed feature and docs");
+
+        // Both names present, a form applying a renamed label, and the planner on its own.
+        var both = Clone(fresh);
+        both.Labels = [.. GhJson.ParseList<GhLabel>(Sample("label-list.json")), new GhLabel { Name = "feature", Color = "a2eeef", Description = "New feature or request" }];
+        var bothReport = ScanRules.Assess(both);
+        check(bothReport.Findings.FirstOrDefault(f => f.Code == ScanCode.RenameLabels)?.Detail == "documentation to docs" && bothReport.Findings.Count(f => f.Code == ScanCode.LabelsBothPresent) == 1
+            && bothReport.Findings.First(f => f.Code == ScanCode.LabelsBothPresent).Text.Contains("enhancement", StringComparison.Ordinal) && !bothReport.Findings.First(f => f.Code == ScanCode.CreateLabels).Detail.Contains("feature", StringComparison.Ordinal),
+            "Scan: when enhancement and feature both exist, both are left alone and the scan says so");
+        var formed = Clone(fresh);
+        formed.IssueFormLabels[".github/ISSUE_TEMPLATE/feature_request.yml"] = ["enhancement"];
+        formed.IssueFormLabels[".github/ISSUE_TEMPLATE/bug_report.yml"] = ["bug"];
+        var formedReport = ScanRules.Assess(formed);
+        check(formedReport.Findings.Count(f => f.Code == ScanCode.FormAppliesRenamedLabel) == 1 && formedReport.Findings.First(f => f.Code == ScanCode.FormAppliesRenamedLabel).Text.Contains("feature_request.yml", StringComparison.Ordinal),
+            "Scan: an issue form that applies a label to be renamed is named, and one applying a kept label is not");
+        var plainPlan = ConventionLabels.Plan([new GhLabel { Name = "bug", Color = "d73a4a", Description = "Something isn't working" }]);
+        check(plainPlan.Count(p => p.Change == LabelChange.Create) == 7 && !plainPlan.Any(p => p.Change == LabelChange.Rename), "Labels: with no defaults to rename, every missing label is created");
+        check(ConventionLabels.Plan(ConventionLabels.All.Select(l => new GhLabel { Name = l.Name, Color = l.Color, Description = l.Description }).ToList()).Count == 0, "Labels: a repository with every convention label has nothing to do");
+        check(IssueForms.Labels("name: Bug\nlabels: [\"bug\", triage] # applied\nbody: []\n").SequenceEqual(["bug", "triage"]) && IssueForms.Labels("name: X\nlabels:\n  - enhancement\n  - 'needs triage'\nbody:\n").SequenceEqual(["enhancement", "needs triage"])
+            && IssueForms.Labels("name: X\nbody:\n  - type: textarea\n    attributes:\n      labels: inner\n").Count == 0, "Issue forms: the top-level labels key is read in flow and block form, and nested keys are not");
+        check(IssueForms.IsForm(".github/ISSUE_TEMPLATE/bug_report.yaml") && !IssueForms.IsForm(".github/ISSUE_TEMPLATE/config.yml") && !IssueForms.IsForm(".github/ISSUE_TEMPLATE/old/bug.yml") && !IssueForms.IsForm(".github/ISSUE_TEMPLATE/bug.md"), "Issue forms: a .yml or .yaml in the folder is a form; config.yml, subfolders and Markdown templates are not");
+        check(report.Has(ScanCode.OtherLabels) && report.Findings.First(f => f.Code == ScanCode.OtherLabels).Text.StartsWith('3'), "Scan: three other labels are left alone; the two to be renamed are not counted");
         check(report.Has(ScanCode.BoardUsable) && !report.Has(ScanCode.CreateBoard) && !report.Has(ScanCode.ExistingBoardOtherColumns), "Scan: a linked board with GitHub's default columns is usable as it is");
         check(report.Has(ScanCode.CreateRuleset) && report.Has(ScanCode.SecretScanning) && report.Has(ScanCode.DependabotAlerts) && report.Has(ScanCode.DependabotUpdates), "Scan: public repository gets a ruleset, secret scanning and Dependabot changes");
         check(report.Count(ScanSeverity.NotAvailable) == 0, "Scan: nothing is unavailable on a public repository");

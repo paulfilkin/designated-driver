@@ -93,7 +93,12 @@ public static partial class DriftRules
         foreach (var wanted in ConventionLabels.All)
         {
             var have = f.Labels.FirstOrDefault(l => l.Name.Equals(wanted.Name, StringComparison.OrdinalIgnoreCase));
-            if (have is null) Add("label:" + wanted.Name, SetupStep.Labels, DriftKind.Missing, string.Format(Strings.Drift_LabelMissing, wanted.Name));
+            if (have is null)
+            {
+                // Applying it renames GitHub's default label when there is one, rather than adding a second label.
+                var from = ConventionLabels.Renames.Where(r => r.To.Equals(wanted.Name, StringComparison.OrdinalIgnoreCase)).Select(r => r.From).FirstOrDefault(n => f.Labels.Any(l => l.Name.Equals(n, StringComparison.OrdinalIgnoreCase)));
+                Add("label:" + wanted.Name, SetupStep.Labels, DriftKind.Missing, string.Format(Strings.Drift_LabelMissing, wanted.Name), from is null ? "" : string.Format(Strings.Drift_LabelRenamedFrom, from));
+            }
             else if (!ConventionLabels.SameColour(have.Color, wanted.Color) || !ConventionLabels.SameDescription(have.Description, wanted.Description))
                 Add("label:" + wanted.Name, SetupStep.Labels, DriftKind.Different, string.Format(Strings.Drift_LabelDiffers, wanted.Name), $"{have.Color} \"{have.Description}\" -> {wanted.Color} \"{wanted.Description}\"");
         }

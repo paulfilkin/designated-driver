@@ -20,11 +20,92 @@ public static class ConventionLabels
         new("wontfix", "ffffff", "This will not be worked on"),
     ];
 
+    /// <summary>
+    /// GitHub's default labels that mean the same as a convention label. A repository that has the default and not
+    /// the convention's label gets the default renamed, so the issues it labels keep it, rather than a second label.
+    /// </summary>
+    public static readonly IReadOnlyList<(string From, string To)> Renames = [("enhancement", "feature"), ("documentation", "docs")];
+
     public static bool SameColour(string a, string b)
         => string.Equals(a.TrimStart('#'), b.TrimStart('#'), StringComparison.OrdinalIgnoreCase);
 
     public static bool SameDescription(string a, string b)
         => string.Equals(a.Trim(), b.Trim(), StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>What the labels step does, label by label, given the repository's labels; empty when they are in step.</summary>
+    public static List<LabelAction> Plan(IReadOnlyList<Models.GhLabel> have)
+    {
+        Models.GhLabel? Find(string name) => have.FirstOrDefault(l => l.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        var plan = new List<LabelAction>();
+        foreach (var wanted in All)
+        {
+            var existing = Find(wanted.Name);
+            if (existing is not null)
+            {
+                if (!SameColour(existing.Color, wanted.Color) || !SameDescription(existing.Description, wanted.Description))
+                    plan.Add(new LabelAction(LabelChange.Recolour, wanted));
+                continue;
+            }
+            var from = Renames.Where(r => r.To.Equals(wanted.Name, StringComparison.OrdinalIgnoreCase)).Select(r => Find(r.From)).FirstOrDefault(l => l is not null);
+            plan.Add(from is null ? new LabelAction(LabelChange.Create, wanted) : new LabelAction(LabelChange.Rename, wanted, from.Name));
+        }
+        return plan;
+    }
+
+    /// <summary>Default and convention labels that both exist: both are left alone, and the scan says so.</summary>
+    public static List<(string From, string To)> BothPresent(IReadOnlyList<Models.GhLabel> have)
+        => Renames.Where(r => have.Any(l => l.Name.Equals(r.From, StringComparison.OrdinalIgnoreCase)) && have.Any(l => l.Name.Equals(r.To, StringComparison.OrdinalIgnoreCase))).ToList();
+}
+
+public enum LabelChange { Create, Recolour, Rename }
+
+/// <summary>One change to the labels: create or recolour a convention label, or rename a default label (From) to it.</summary>
+public sealed record LabelAction(LabelChange Change, ConventionLabel Label, string From = "");
+
+/// <summary>Reads the labels an issue form applies, from its top-level labels key, in flow or block form.</summary>
+public static class IssueForms
+{
+    public static List<string> Labels(string yaml)
+    {
+        var lines = yaml.Replace("\r\n", "\n").Split('\n');
+        for (int i = 0; i < lines.Length; i++)
+        {
+            var m = Regex.Match(lines[i], @"^labels\s*:\s*(.*)$");
+            if (!m.Success) continue;
+            var rest = StripComment(m.Groups[1].Value).Trim();
+            if (rest.StartsWith('['))
+                return [.. rest.Trim('[', ']').Split(',').Select(Unquote).Where(s => s.Length > 0)];
+            if (rest.Length > 0) return [.. rest.Split(',').Select(Unquote).Where(s => s.Length > 0)];
+            var list = new List<string>();
+            for (int j = i + 1; j < lines.Length; j++)
+            {
+                var item = Regex.Match(lines[j], @"^\s*-\s*(.+)$");
+                if (item.Success) { list.Add(Unquote(StripComment(item.Groups[1].Value))); continue; }
+                if (lines[j].Trim().Length == 0) continue;
+                break;
+            }
+            return [.. list.Where(s => s.Length > 0)];
+        }
+        return [];
+    }
+
+    private static string StripComment(string s)
+    {
+        int hash = s.IndexOf(" #", StringComparison.Ordinal);
+        return hash >= 0 ? s[..hash] : s;
+    }
+
+    private static string Unquote(string s) => s.Trim().Trim('"', '\'').Trim();
+
+    /// <summary>True for a path that is an issue form: a .yml or .yaml file in .github/ISSUE_TEMPLATE other than config.yml.</summary>
+    public static bool IsForm(string path)
+    {
+        var p = path.Replace('\\', '/');
+        if (!p.StartsWith(".github/ISSUE_TEMPLATE/", StringComparison.OrdinalIgnoreCase) || p.Count(c => c == '/') != 2) return false;
+        var name = p[(p.LastIndexOf('/') + 1)..];
+        return (name.EndsWith(".yml", StringComparison.OrdinalIgnoreCase) || name.EndsWith(".yaml", StringComparison.OrdinalIgnoreCase))
+            && !name.Equals("config.yml", StringComparison.OrdinalIgnoreCase) && !name.Equals("config.yaml", StringComparison.OrdinalIgnoreCase);
+    }
 }
 
 /// <summary>

@@ -78,6 +78,10 @@ public sealed partial class GitHubService
     public Task CreateLabelAsync(string ownerAndName, ConventionLabel label, CancellationToken ct)
         => MustInFolderAsync(null, ct, "label", "create", label.Name, "--color", label.Color, "--description", label.Description, "--force", "-R", ownerAndName);
 
+    /// <summary>Renames a label to the convention's, with its colour and description; issues keep it under the new name.</summary>
+    public Task RenameLabelAsync(string ownerAndName, string from, ConventionLabel label, CancellationToken ct)
+        => MustInFolderAsync(null, ct, "label", "edit", from, "--name", label.Name, "--color", label.Color, "--description", label.Description, "-R", ownerAndName);
+
     // Board
 
     /// <summary>Creates a user-owned project and returns it, owner login included.</summary>
