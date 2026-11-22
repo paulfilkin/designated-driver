@@ -27,5 +27,10 @@ public static partial class SelfTestRunner
         var report = new ScanReport(ScanVerdict.NotConvertible, [new ScanFinding(ScanSeverity.Blocker, ScanCode.Archived, SetupStep.None, "The repository is archived.")]);
         var lines = ScanReportText.Render(facts, report, new DateTime(2026, 11, 21, 12, 0, 0)).Split('\n').Select(l => l.TrimEnd('\r')).ToList();
         check(lines.Count > 2 && lines[2] == ScanReportText.NextStepText(ScanVerdict.NotConvertible), "Scan next step: the text report carries it on the line after the verdict");
+
+        // The targets say what each reads, so a clone is scanned by its folder rather than by name.
+        check(Strings.Scan_TargetFolder.Contains("clone", StringComparison.Ordinal) && Strings.Scan_FolderHelp.Contains("GitHub", StringComparison.Ordinal)
+            && Strings.Scan_TargetName.Contains("no clone", StringComparison.Ordinal) && Strings.Scan_NameHelp.Contains("GitHub only", StringComparison.Ordinal),
+            "Scan targets: the folder option says it reads the clone and GitHub, the name option that it reads GitHub only, for a repository with no clone");
     }
 }
