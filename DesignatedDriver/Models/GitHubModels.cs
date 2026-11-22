@@ -3,13 +3,18 @@ using System.Text.Json.Serialization;
 
 namespace DesignatedDriver.Models;
 
-/// <summary>Reads the --json output of gh. Property names are matched without regard to case.</summary>
+/// <summary>
+/// Reads the --json output of gh. Property names are matched without regard to case. GitHub sends null for a
+/// text field it has no value for (a repository's description, for example), and every string in these
+/// models is read as empty instead, so no caller meets a null.
+/// </summary>
 public static class GhJson
 {
     public static readonly JsonSerializerOptions Options = new()
     {
         PropertyNameCaseInsensitive = true,
         NumberHandling = JsonNumberHandling.AllowReadingFromString,
+        Converters = { new NullAsEmptyString() },
     };
 
     /// <summary>For the REST API through gh api, whose names are snake_case.</summary>
@@ -18,7 +23,19 @@ public static class GhJson
         PropertyNameCaseInsensitive = true,
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
         NumberHandling = JsonNumberHandling.AllowReadingFromString,
+        Converters = { new NullAsEmptyString() },
     };
+
+    /// <summary>A JSON null read into a string property gives an empty string.</summary>
+    private sealed class NullAsEmptyString : JsonConverter<string>
+    {
+        public override bool HandleNull => true;
+
+        public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            => reader.TokenType == JsonTokenType.Null ? "" : reader.GetString() ?? "";
+
+        public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options) => writer.WriteStringValue(value);
+    }
 
     public static T Parse<T>(string json) where T : class
         => JsonSerializer.Deserialize<T>(json, Options) ?? throw new JsonException("Empty JSON");
