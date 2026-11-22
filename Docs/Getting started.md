@@ -95,5 +95,5 @@ The answers file for `--setup` is a `SetupAnswers` object in camelCase; the boar
 ## 7. Where things live
 
 - Settings: `%AppData%\DesignatedDriver\settings.json`, the repositories the tool knows and the clone protocol.  No token is ever stored there.  On first start, settings from `%AppData%\RepoStarter`, where the tool kept them before it was renamed, are copied across; the old folder is left as it is.
-- The convention manifest: `.github\repo-starter.json` in each repository, so a second machine needs no settings beyond the folder.
-- The hooks: `.githooks\` in each repository, pointed to by `core.hooksPath` on every clone the tool sets up.
+- The convention manifest: `.github\designated-driver.json` in each repository, so a second machine needs no settings beyond the folder.  A repository set up before the rename has `.github\repo-starter.json`; it is read until Check renames it.
+- The hooks: `.githooks\` in each repository, pointed to by `core.hooksPath` on every clone the tool sets up.  To push to `main` once on purpose, set `DESIGNATED_DRIVER_ALLOW_MAIN=1` for that one command (`REPO_STARTER_ALLOW_MAIN` still works).

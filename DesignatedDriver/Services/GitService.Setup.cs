@@ -101,7 +101,7 @@ public sealed partial class GitService
         return r.Succeeded;
     }
 
-    /// <summary>Remote-tracking branches whose short name matches a glob, for example chore/*-repo-starter-v1.</summary>
+    /// <summary>Remote-tracking branches whose short name matches a glob, for example chore/*-designated-driver-v1.</summary>
     public async Task<List<string>> RemoteBranchesMatchingAsync(string folder, string pattern, CancellationToken ct)
     {
         var r = await RunInAsync(folder, ct, "for-each-ref", "--format=%(refname:short)", $"refs/remotes/origin/{pattern}").ConfigureAwait(false);

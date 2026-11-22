@@ -89,7 +89,9 @@ public static class ConventionResources
 /// </summary>
 public static partial class ConventionContent
 {
-    public const string ConventionBranchSuffix = "repo-starter-v1";
+    public const string ConventionBranchSuffix = "designated-driver-v1";
+    /// <summary>The set-up branch's suffix before the app was renamed; a resumed set-up also finds a branch with it.</summary>
+    public const string OldConventionBranchSuffix = "repo-starter-v1";
     public const string SetupIssueTitle = "Set up the repository to convention v1";
     public const string UpdateBranchSuffix = "convention-update";
     public const string UpdateIssueTitle = "Update the repository to the convention";

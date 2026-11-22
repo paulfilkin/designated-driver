@@ -2,14 +2,14 @@
 
 How we work on this repository.  Read it before your first change.  Questions go to @{{owner}}.
 
-New to Git or to this repository?  `Docs\Working with Git.md` gives the commands for each step, from installing the tools to getting a pull request merged.  Repo Starter, the desktop tool that set this repository up, walks the same steps with buttons.
+New to Git or to this repository?  `Docs\Working with Git.md` gives the commands for each step, from installing the tools to getting a pull request merged.  Designated Driver, the desktop tool that set this repository up, walks the same steps with buttons.
 
 ## 1. Getting set up
 
 1. Install Git, the GitHub CLI and the {{languageName}} tools.
 2. Sign in with `gh auth login` (github.com, HTTPS, browser), then run `gh auth setup-git`.
 3. Clone the repository: `gh repo clone {{ownerAndName}}`.
-4. Point Git at the repository's hooks: `git config core.hooksPath .githooks`.  Repo Starter does this for you when it adds the clone.
+4. Point Git at the repository's hooks: `git config core.hooksPath .githooks`.  Designated Driver does this for you when it adds the clone.
 5. Run the checks: `{{checkCommand}}`.  They should pass before you change anything.
 
 ## 2. {{workflowSection}}
@@ -54,7 +54,7 @@ This applies to text in the application, comments, docs and commit messages.
 
 - First line: a short summary of the change, in the imperative ("Add feedback export", not "Added" or "Adds"), starting with a capital letter, no longer than 70 characters, no full stop at the end.
 - Then a blank line and, where needed, what changed and why, wrapped at about 72 characters.
-- The `commit-msg` hook refuses a message that breaks these rules; Repo Starter's Save and share shows the same checks as you type.
+- The `commit-msg` hook refuses a message that breaks these rules; Designated Driver's Save and share shows the same checks as you type.
 - The pull request description says what changed, why, and how you tested it.
 
 ## 7. Documentation

@@ -525,7 +525,7 @@ public static partial class SelfTestRunner
 
     private static void ManifestChecks(Action<bool, string> check)
     {
-        var m = Manifest.Parse(Sample("repo-starter.json"));
+        var m = Manifest.Parse(Sample("manifest.json"));
         check(m is not null && m.ConventionVersion == 1 && m.SetUp == "2026-11-20" && m.Language == "dotnet", "Manifest: version, date and language are read");
         check(m?.Board == new BoardReference("paulfilkin", 4), "Manifest: the board owner and number are read");
         check(m is { Options.ReleaseWorkflow: true, Options.CodeQl: false } && m.NotAvailable.SequenceEqual(["Ruleset"]), "Manifest: options and the not-available steps are read");
@@ -533,6 +533,22 @@ public static partial class SelfTestRunner
         check(Manifest.Parse("not json") is null && Manifest.Load(Path.Combine(Path.GetTempPath(), "no-such-folder-" + Guid.NewGuid().ToString("N"))) is null, "Manifest: damaged or missing gives null rather than throwing");
         var again = Manifest.Parse(m!.ToJson());
         check(again is not null && again.Board == m.Board && again.ConventionVersion == m.ConventionVersion, "Manifest: round trip through JSON");
+
+        // The name before the app was renamed: read when the new file is absent, and flagged so Check can rename it.
+        var manifestRoot = Path.Combine(Path.GetTempPath(), "designated-driver-manifest-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            Directory.CreateDirectory(Path.Combine(manifestRoot, ".github"));
+            File.WriteAllText(Manifest.OldPathIn(manifestRoot), Sample("manifest.json"));
+            check(Manifest.Load(manifestRoot)?.Board == new BoardReference("paulfilkin", 4) && Manifest.OnlyAtOldPath(manifestRoot), "Manifest: a repository with only .github/repo-starter.json has its manifest read, and is flagged for the rename");
+            File.WriteAllText(Manifest.PathIn(manifestRoot), Sample("manifest.json").Replace("\"number\": 4", "\"number\": 9"));
+            check(Manifest.Load(manifestRoot)?.Board?.Number == 9 && !Manifest.OnlyAtOldPath(manifestRoot), "Manifest: when both names exist, .github/designated-driver.json is the one read");
+            check(Manifest.RelativePath == @".github\designated-driver.json" && ConventionContent.ManifestPath == ".github/designated-driver.json", "Manifest: new set-ups write .github/designated-driver.json");
+        }
+        finally
+        {
+            if (Directory.Exists(manifestRoot)) Directory.Delete(manifestRoot, recursive: true);
+        }
     }
 
     // 12. What the plan allows, for each visibility and plan
@@ -714,7 +730,7 @@ public static partial class SelfTestRunner
             LinkedBoards = [new ScanBoard(4, "tidy", "https://github.com/users/paulfilkin/projects/4", ["Backlog", "Ready", "In progress", "Done"])],
             BranchRulesStatus = ApiStatus.NotAvailable, VulnerabilityAlerts = true,
             Workflows = [new GhWorkflow { Name = "Build and test", Path = ".github/workflows/ci.yml" }, new GhWorkflow { Name = "Guard", Path = ".github/workflows/guard.yml" }, new GhWorkflow { Name = "Board", Path = ".github/workflows/board.yml" }],
-            Manifest = Manifest.Parse(Sample("repo-starter.json")),
+            Manifest = Manifest.Parse(Sample("manifest.json")),
         };
         var tidyReport = ScanRules.Assess(tidy);
         check(tidyReport.Verdict == ScanVerdict.AlreadySetUp && tidyReport.Count(ScanSeverity.Change) == 0 && tidyReport.Count(ScanSeverity.Blocker) == 0, "Scan: a private repository already set up reports already set up, with no changes");
@@ -727,7 +743,7 @@ public static partial class SelfTestRunner
         var drifted = Clone(tidy);
         drifted.Labels = AllConventionLabels();
         drifted.Labels.First(l => l.Name == "bug").Color = "ff0000";
-        drifted.Manifest = Manifest.Parse(Sample("repo-starter.json"));
+        drifted.Manifest = Manifest.Parse(Sample("manifest.json"));
         drifted.Manifest!.ConventionVersion = 0;
         var driftedReport = ScanRules.Assess(drifted);
         check(driftedReport.Verdict == ScanVerdict.Convertible && driftedReport.Has(ScanCode.RecolourLabels) && driftedReport.Findings.First(f => f.Code == ScanCode.RecolourLabels).Detail == "bug", "Scan: a recoloured label is a change and names the label");

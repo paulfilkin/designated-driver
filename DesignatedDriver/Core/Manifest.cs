@@ -29,13 +29,16 @@ public sealed class ManifestAnswers
 }
 
 /// <summary>
-/// .github/repo-starter.json: what a repository was set up to. Written by the set-up (phase 2) and read by the
+/// .github/designated-driver.json: what a repository was set up to. Written by the set-up (phase 2) and read by the
 /// Check screen and the workflow screens, so a second machine needs no settings beyond the folder. Phase 1 only
-/// reads it.
+/// reads it. A repository set up before the app was renamed has .github/repo-starter.json instead; that is read
+/// when the new file is absent, and Check offers to rename it.
 /// </summary>
 public sealed class Manifest
 {
-    public const string RelativePath = @".github\repo-starter.json";
+    public const string RelativePath = @".github\designated-driver.json";
+    /// <summary>The manifest's name before the app was renamed from Repo Starter.</summary>
+    public const string OldRelativePath = @".github\repo-starter.json";
     public const int CurrentConventionVersion = 1;
 
     public int ConventionVersion { get; set; }
@@ -57,12 +60,18 @@ public sealed class Manifest
 
     public static string PathIn(string repositoryFolder) => Path.Combine(repositoryFolder, RelativePath);
 
-    /// <summary>The manifest in a clone, or null when there is none or it cannot be read.</summary>
+    public static string OldPathIn(string repositoryFolder) => Path.Combine(repositoryFolder, OldRelativePath);
+
+    /// <summary>True when a clone has the manifest only under its old name, so it still needs renaming.</summary>
+    public static bool OnlyAtOldPath(string repositoryFolder)
+        => !File.Exists(PathIn(repositoryFolder)) && File.Exists(OldPathIn(repositoryFolder));
+
+    /// <summary>The manifest in a clone, under its name or its old name, or null when there is none or it cannot be read.</summary>
     public static Manifest? Load(string repositoryFolder)
     {
         try
         {
-            var path = PathIn(repositoryFolder);
+            var path = OnlyAtOldPath(repositoryFolder) ? OldPathIn(repositoryFolder) : PathIn(repositoryFolder);
             return File.Exists(path) ? Parse(File.ReadAllText(path)) : null;
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)

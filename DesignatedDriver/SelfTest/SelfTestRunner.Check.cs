@@ -93,6 +93,15 @@ public static partial class SelfTestRunner
             && !r3.Actionable.Any(i => i.Key == WorkflowSection.DriftKey) && !clean.Items.Any(i => i.Key == WorkflowSection.DriftKey)
             && PlanOutline.ForUpdate([WorkflowSection.DriftKey], false).SequenceEqual([SetupStep.Files]),
             "Drift: a CONTRIBUTING.md without the section is an unticked item that applies through the files step; one with it isn't reported");
+
+        // A manifest still under its name from before the rename: one ticked item that renames it through the files step
+        var oldManifest = Clone(facts);
+        oldManifest.ManifestAtOldPath = true;
+        var rManifest = Drift(oldManifest, expected, actual);
+        check(rManifest.Count == 1 && rManifest.Actionable.Single() is { Key: DriftRules.ManifestRenameKey, TickedByDefault: true, Step: SetupStep.Files } item
+            && item.Text.Contains(".github/repo-starter.json", StringComparison.Ordinal) && item.Text.Contains(".github/designated-driver.json", StringComparison.Ordinal)
+            && PlanOutline.ForUpdate([DriftRules.ManifestRenameKey], false).SequenceEqual([SetupStep.Files]) && !clean.Items.Any(i => i.Key == DriftRules.ManifestRenameKey),
+            "Drift: a repository with only .github/repo-starter.json is set up, with one ticked item to rename the manifest");
         // Issue forms are the project's to choose: an edited or missing one is reported, unticked
         var forms = new Dictionary<string, string>(actual, StringComparer.OrdinalIgnoreCase);
         forms[".github/ISSUE_TEMPLATE/bug.yml"] = actual[".github/ISSUE_TEMPLATE/bug.yml"] + "\n# Our own question\n";
@@ -218,7 +227,7 @@ public static partial class SelfTestRunner
             check(lines.Any(l => l.StartsWith("gh label create blocked", StringComparison.Ordinal)) && !lines.Any(l => l.StartsWith("git config core.hooksPath", StringComparison.Ordinal)), "Check apply: the label is created and the hooks path is left alone");
             check(lines.Any(l => l == "git switch -c chore/12-convention-update") && lines.Any(l => l.StartsWith("gh issue create -R paulfilkin/example --title \"Update the repository to the convention\"", StringComparison.Ordinal)), "Check apply: files go through an update issue and branch");
             var added = host.Runner.Calls.First(c => c.Is("add", "--"));
-            check(added.Arguments.Contains(".githooks/pre-push") && added.Arguments.Contains(".github/repo-starter.json") && added.Arguments.Count == 4, "Check apply: only the ticked file and the manifest are staged");
+            check(added.Arguments.Contains(".githooks/pre-push") && added.Arguments.Contains(".github/designated-driver.json") && added.Arguments.Count == 4, "Check apply: only the ticked file and the manifest are staged");
             check(File.ReadAllText(Path.Combine(folder, ".githooks", "pre-push")).Contains("refusing to push", StringComparison.Ordinal), "Check apply: the ticked hook is overwritten with the convention's text");
             var manifest = Manifest.Load(folder)!;
             check(manifest.SetUp == "2026-11-20" && manifest.HasAnswers && manifest.Board!.Number == 7, "Check apply: the manifest keeps its date and board");

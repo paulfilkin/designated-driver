@@ -159,6 +159,8 @@ public static partial class SelfTestRunner
         public bool Created, Edited, LabelsDone, ProjectCreated, Linked, Committed, Pushed, MainOnRemote, HooksSet, AlertsOn, FixesOn, IssueCreated, PrCreated, SecretSet, FailLinkOnce;
         /// <summary>When set, GitHub answers for the name with this repository instead, as it does after a rename.</summary>
         public string MovedTo = "";
+        /// <summary>When set, the pushed set-up branch has the suffix from before the rename.</summary>
+        public bool OldSuffixBranch;
 
         private const string Name = "paulfilkin/example";
 
@@ -189,11 +191,20 @@ public static partial class SelfTestRunner
                     return a[2] == "origin/main" && HasHistory ? Fail("", 1) : null;
                 }
                 if (a[0] == "commit") { Committed = true; return null; }
+                if (a[0] == "rm")
+                {
+                    // As git rm does, the files go from the working tree too.
+                    foreach (var path in a.SkipWhile(x => x != "--").Skip(1)) File.Delete(Path.Combine(Folder, path.Replace('/', '\\')));
+                    return null;
+                }
                 if (a[0] == "push") { Pushed = true; if (a[^1] == "main") MainOnRemote = true; return null; }
                 if (a[0] == "for-each-ref")
                 {
                     if (!Pushed || !HasHistory) return Ok("");
-                    return Ok(a[^1].Contains("convention-update", StringComparison.Ordinal) ? "origin/chore/12-convention-update\n" : "origin/chore/12-repo-starter-v1\n");
+                    if (a[^1].Contains("convention-update", StringComparison.Ordinal)) return Ok("origin/chore/12-convention-update\n");
+                    // The set-up branch is under the new suffix, or under the old one for a set-up started before the rename.
+                    bool asksOld = a[^1].Contains(ConventionContent.OldConventionBranchSuffix, StringComparison.Ordinal);
+                    return Ok(asksOld != OldSuffixBranch ? "" : asksOld ? "origin/chore/12-repo-starter-v1\n" : "origin/chore/12-designated-driver-v1\n");
                 }
                 return null;
             }
@@ -224,7 +235,7 @@ public static partial class SelfTestRunner
             if (a[0] == "secret" && a[1] == "set") { SecretSet = true; return null; }
             if (a[0] == "issue" && a[1] == "list") return Ok(IssueCreated ? "[{\"number\":12,\"title\":\"Set up the repository to convention v1\",\"url\":\"https://github.com/paulfilkin/example/issues/12\"}]" : "[]");
             if (a[0] == "issue" && a[1] == "create") { IssueCreated = true; return Ok("https://github.com/paulfilkin/example/issues/12\n"); }
-            if (a[0] == "pr" && a[1] == "view") return PrCreated ? Ok("{\"number\":13,\"title\":\"Set up\",\"url\":\"https://github.com/paulfilkin/example/pull/13\",\"state\":\"OPEN\",\"headRefName\":\"chore/12-repo-starter-v1\"}") : Fail("no pull requests found for branch");
+            if (a[0] == "pr" && a[1] == "view") return PrCreated ? Ok("{\"number\":13,\"title\":\"Set up\",\"url\":\"https://github.com/paulfilkin/example/pull/13\",\"state\":\"OPEN\",\"headRefName\":\"chore/12-designated-driver-v1\"}") : Fail("no pull requests found for branch");
             if (a[0] == "pr" && a[1] == "create") { PrCreated = true; return Ok("https://github.com/paulfilkin/example/pull/13\n"); }
             return null;
         }
@@ -266,7 +277,7 @@ public static partial class SelfTestRunner
             check(manifest is { ConventionVersion: 1, Board: { Owner: "paulfilkin", Number: 7 } } && manifest.NotAvailable.Contains("Ruleset"), "Set-up: the manifest names the new board and what a private Free repository lacks");
             check(setup.Written.Count == 18 && setup.Kept.Count == 0, $"Set-up: {setup.Written.Count} files written, none kept, on an empty repository");
             var added = host.Runner.Calls.First(c => c.Is("add", "--"));
-            check(added.Arguments.Count == 2 + 18 && added.Arguments.Contains(".github/repo-starter.json"), "Set-up: exactly the written files are staged, the manifest among them");
+            check(added.Arguments.Count == 2 + 18 && added.Arguments.Contains(".github/designated-driver.json"), "Set-up: exactly the written files are staged, the manifest among them");
             check(host.Runner.Calls.First(c => c.Is("commit")).FileContent?.StartsWith("Set up the repository to convention v1", StringComparison.Ordinal) == true, "Set-up: the commit message is the convention's");
             var saved = Settings.Parse(File.ReadAllText(settings.SavePath!));
             check(saved.Current == "paulfilkin/example" && saved.CurrentRepository is { BoardNumber: 7, BoardOwner: "paulfilkin" } r && r.Folder == folder && r.SelfTestCommand == answers.SelfTestCommand, "Set-up: the repository is in the tool's settings with its board and self-test command, and is current");
@@ -306,13 +317,39 @@ public static partial class SelfTestRunner
             var lines3 = host3.Runner.Calls.Select(c => c.Line).ToList();
             check(ok3 && plan3.Succeeded, ok3 ? "Set-up on a repository with history: all steps done" : $"Set-up on history failed at {plan3.FailedStep?.Title}: {plan3.FailedStep?.Message}");
             check(!lines3.Any(l => l.StartsWith("gh repo create", StringComparison.Ordinal)) && lines3.Any(l => l.StartsWith("gh issue create -R paulfilkin/example --title \"Set up the repository to convention v1\" --label chore", StringComparison.Ordinal)), "History: no repository is created; the set-up issue is, labelled chore");
-            check(lines3.Any(l => l == "git switch -c chore/12-repo-starter-v1") && lines3.Any(l => l == "git push -u origin chore/12-repo-starter-v1") && lines3.Any(l => l.StartsWith("gh pr create -R paulfilkin/example --base main --head chore/12-repo-starter-v1", StringComparison.Ordinal)), "History: a chore branch named for the issue, pushed, with a pull request into main");
+            check(lines3.Any(l => l == "git switch -c chore/12-designated-driver-v1") && lines3.Any(l => l == "git push -u origin chore/12-designated-driver-v1") && lines3.Any(l => l.StartsWith("gh pr create -R paulfilkin/example --base main --head chore/12-designated-driver-v1", StringComparison.Ordinal)), "History: a chore branch named for the issue, pushed, with a pull request into main");
             check(lines3.Any(l => l.StartsWith("gh project item-add 7 --owner paulfilkin --url https://github.com/paulfilkin/example/issues/12", StringComparison.Ordinal)), "History: the issue is put on the new board; GitHub's automation gives it Todo");
             check(setup3.Kept.SequenceEqual(["README.md", ".gitignore"]) && !setup3.Written.Contains("README.md") && setup3.PullRequestUrl == "https://github.com/paulfilkin/example/pull/13", "History: README and .gitignore are kept, and the pull request URL is reported");
             var prBody = host3.Runner.Calls.First(c => c.Is("pr", "create")).FileContent ?? "";
             check(prBody.Contains("Closes #12", StringComparison.Ordinal) && prBody.Contains("`README.md`", StringComparison.Ordinal), "History: the pull request body closes the issue and lists the kept files");
             check(host3.Runner.Calls.First(c => c.Is("commit")).FileContent?.Contains("Closes #12", StringComparison.Ordinal) == true, "History: the commit message closes the issue too");
             check(plan3.Steps.First(s => s.Kind == SetupStep.Files).Message.Contains("/pull/13", StringComparison.Ordinal), "History: the files step reports the pull request");
+            check(!File.Exists(Path.Combine(folder3, ".github", "repo-starter.json")) && File.Exists(Path.Combine(folder3, ".github", "designated-driver.json")) && !setup3.RenamedManifest
+                && !lines3.Any(l => l.StartsWith("git rm", StringComparison.Ordinal)), "History: a new set-up writes only .github/designated-driver.json and removes nothing");
+
+            // A set-up started before the rename: its pushed branch has the old suffix, and a rerun finds it rather than starting again.
+            host3.OldSuffixBranch = true;
+            int before3 = host3.Runner.Calls.Count;
+            var again3 = setup3.Build(answers3, facts);
+            bool okAgain3 = setup3.RunAsync(again3, CancellationToken.None).GetAwaiter().GetResult();
+            var rerun3 = host3.Runner.Calls.Skip(before3).Select(c => c.Line).ToList();
+            check(okAgain3 && again3.Steps.First(s => s.Kind == SetupStep.Files).State == StepState.AlreadyDone && !rerun3.Any(l => l.StartsWith("git commit", StringComparison.Ordinal) || l.StartsWith("gh issue create", StringComparison.Ordinal)),
+                "Set-up rerun: a set-up branch with the old suffix, chore/12-repo-starter-v1, is found and nothing is made twice");
+            host3.OldSuffixBranch = false;
+
+            // A repository set up before the rename: the new manifest is written and the old one removed in the same commit.
+            var folder8 = Path.Combine(root, "old-manifest");
+            Directory.CreateDirectory(Path.Combine(folder8, ".github"));
+            File.WriteAllText(Path.Combine(folder8, ".github", "repo-starter.json"), Sample("manifest.json"));
+            var host8 = new FakeHost(folder8, hasHistory: true);
+            var setup8 = new SetupService(new Workspace(new Settings { SavePath = Path.Combine(root, "settings8.json") }, host8.Runner));
+            var answers8 = DotNetAnswers();
+            answers8.Source = SetupSource.ExistingFolder; answers8.ExistingFolder = folder8; answers8.ProjectFile = "Example.csproj"; answers8.TestProject = "";
+            var plan8 = setup8.Build(answers8, new ScanFacts { Folder = folder8, OwnerAndName = "paulfilkin/example", IsGitRepository = true, HasCommits = true, OriginUrl = "https://github.com/paulfilkin/example.git", ManifestAtOldPath = true });
+            bool ok8 = setup8.RunAsync(plan8, CancellationToken.None).GetAwaiter().GetResult();
+            check(ok8 && setup8.RenamedManifest && setup8.Written.Contains(".github/designated-driver.json") && host8.Runner.Calls.Any(c => c.Arguments.SequenceEqual(["rm", "-q", "--", ".github/repo-starter.json"])),
+                ok8 ? "Set-up: a repository with the old manifest gets .github/designated-driver.json and the old file removed with git rm, in the set-up commit" : $"Set-up with the old manifest failed at {plan8.FailedStep?.Title}: {plan8.FailedStep?.Message}");
+
             var written3 = File.ReadAllText(Path.Combine(folder3, "CONTRIBUTING.md"));
             check(!setup3.AppendedSection && System.Text.RegularExpressions.Regex.Matches(written3, "How a change gets into").Count == 1 && written3.Contains("## 2. How a change gets into main", StringComparison.Ordinal),
                 "History: with no CONTRIBUTING.md, the convention's is written with its section once, and nothing is appended");
@@ -424,7 +461,10 @@ public static partial class SelfTestRunner
             var pushMain = RunSh(sh, prePush, ["origin", "https://github.com/paulfilkin/example.git"], "refs/heads/main 1111111 refs/heads/main 2222222\n", null);
             check(pushMain.ExitCode != 0 && pushMain.Error.Contains("refusing to push to main", StringComparison.Ordinal), "pre-push hook: a push to main is refused with a reason");
             check(RunSh(sh, prePush, ["origin", "x"], "refs/heads/feature/1-x 1111111 refs/heads/feature/1-x 2222222\n", null).ExitCode == 0, "pre-push hook: a push to a feature branch passes");
-            check(RunSh(sh, prePush, ["origin", "x"], "refs/heads/main 1111111 refs/heads/main 2222222\n", "1").ExitCode == 0, "pre-push hook: REPO_STARTER_ALLOW_MAIN lets a push to main through");
+            check(RunSh(sh, prePush, ["origin", "x"], "refs/heads/main 1111111 refs/heads/main 2222222\n", "1").ExitCode == 0, "pre-push hook: DESIGNATED_DRIVER_ALLOW_MAIN lets a push to main through");
+            check(RunSh(sh, prePush, ["origin", "x"], "refs/heads/main 1111111 refs/heads/main 2222222\n", "1", "REPO_STARTER_ALLOW_MAIN").ExitCode == 0
+                && pushMain.Error.Contains("DESIGNATED_DRIVER_ALLOW_MAIN", StringComparison.Ordinal),
+                "pre-push hook: REPO_STARTER_ALLOW_MAIN, the name before the rename, still lets a push through; the refusal names the new one");
         }
         finally
         {
@@ -439,13 +479,14 @@ public static partial class SelfTestRunner
         return null;
     }
 
-    private static (int ExitCode, string Error) RunSh(string sh, string script, string[] args, string standardInput, string? allowMain)
+    private static (int ExitCode, string Error) RunSh(string sh, string script, string[] args, string standardInput, string? allowMain, string variable = "DESIGNATED_DRIVER_ALLOW_MAIN")
     {
         var start = new ProcessStartInfo { FileName = sh, UseShellExecute = false, CreateNoWindow = true, RedirectStandardInput = true, RedirectStandardOutput = true, RedirectStandardError = true };
         start.ArgumentList.Add(script.Replace('\\', '/'));
         foreach (var a in args) start.ArgumentList.Add(a);
+        start.Environment.Remove("DESIGNATED_DRIVER_ALLOW_MAIN");
         start.Environment.Remove("REPO_STARTER_ALLOW_MAIN");
-        if (allowMain is not null) start.Environment["REPO_STARTER_ALLOW_MAIN"] = allowMain;
+        if (allowMain is not null) start.Environment[variable] = allowMain;
         using var process = Process.Start(start)!;
         process.StandardInput.Write(standardInput);
         process.StandardInput.Close();

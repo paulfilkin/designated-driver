@@ -64,6 +64,9 @@ public static partial class DriftRules
 
     public static bool IsTailored(string path) => TailoredFiles.Contains(path, StringComparer.OrdinalIgnoreCase);
 
+    /// <summary>The Check item that renames a manifest from before the rename. A manifest: key, so applying it runs the files step.</summary>
+    public const string ManifestRenameKey = "manifest:rename";
+
     public static DriftReport Assess(DriftInput input)
     {
         var f = input.Facts;
@@ -137,6 +140,11 @@ public static partial class DriftRules
         }
 
         // Files (section 3.1): missing, or different from the convention's text
+        if (f.ManifestAtOldPath)
+        {
+            // Set up before the app was renamed: applying writes the manifest under its new name and removes the old file.
+            Add(ManifestRenameKey, SetupStep.Files, DriftKind.Different, string.Format(Strings.Drift_ManifestRename, Manifest.OldRelativePath.Replace('\\', '/'), ConventionContent.ManifestPath), path: ConventionContent.ManifestPath);
+        }
         if (!m.HasAnswers)
         {
             // Only the set-up knows the answers (the wizard or --setup), so this is a note, not an item to apply.

@@ -40,6 +40,8 @@ public sealed partial class SetupService(Workspace workspace)
     public IReadOnlyList<string> Removed { get; private set; } = [];
     /// <summary>True when the convention's section on how a change gets in was added to a kept CONTRIBUTING.md.</summary>
     public bool AppendedSection { get; private set; }
+    /// <summary>True when the manifest was moved from its name before the rename to its new one.</summary>
+    public bool RenamedManifest { get; private set; }
 
     public SetupPlan Build(SetupAnswers answers, ScanFacts? facts)
     {
@@ -335,6 +337,8 @@ public sealed partial class SetupService(Workspace workspace)
     {
         var manifest = Manifest.Load(Folder);
         if (manifest is null || manifest.ConventionVersion < Manifest.CurrentConventionVersion) return false;
+        // A manifest still under its name from before the rename is renamed by this step.
+        if (File.Exists(Manifest.OldPathIn(Folder))) return false;
         if (_board is not null && (manifest.Board is null || manifest.Board != _board)) return false;
         // A manifest from before the answers were recorded, or one whose answers or options no longer match what
         // was given, is brought up to date by running the set-up again.
@@ -363,12 +367,16 @@ public sealed partial class SetupService(Workspace workspace)
 
         // Done once the working tree's versions are on the remote: on the default branch, or on a branch with its pull request.
         if (await Git.PathsMatchRefAsync(Folder, $"origin/{_a.DefaultBranch}", paths, ct).ConfigureAwait(false)) return true;
-        foreach (var branch in await Git.RemoteBranchesMatchingAsync(Folder, $"chore/*-{BranchSuffix}", ct).ConfigureAwait(false))
+        // A set-up started before the rename may have its branch under the old suffix.
+        foreach (var suffix in _update ? [BranchSuffix] : new[] { BranchSuffix, ConventionContent.OldConventionBranchSuffix })
         {
-            if (!await Git.PathsMatchRefAsync(Folder, $"origin/{branch}", paths, ct).ConfigureAwait(false)) continue;
-            var pr = await GitHub.PullRequestForBranchAsync(Name, branch, ct).ConfigureAwait(false);
-            if (pr is not null) { PullRequestUrl = pr.Url; _note = string.Format(Strings.Setup_PullRequestOpen, pr.Url); }
-            return true;
+            foreach (var branch in await Git.RemoteBranchesMatchingAsync(Folder, $"chore/*-{suffix}", ct).ConfigureAwait(false))
+            {
+                if (!await Git.PathsMatchRefAsync(Folder, $"origin/{branch}", paths, ct).ConfigureAwait(false)) continue;
+                var pr = await GitHub.PullRequestForBranchAsync(Name, branch, ct).ConfigureAwait(false);
+                if (pr is not null) { PullRequestUrl = pr.Url; _note = string.Format(Strings.Setup_PullRequestOpen, pr.Url); }
+                return true;
+            }
         }
         return false;
     }
@@ -451,6 +459,14 @@ public sealed partial class SetupService(Workspace workspace)
         }
         Written = written;
         Kept = kept;
+
+        // The manifest under its name from before the rename goes in the same commit as the new one, so it is renamed.
+        RenamedManifest = false;
+        if (written.Contains(ConventionContent.ManifestPath) && File.Exists(Manifest.OldPathIn(Folder)))
+        {
+            await Git.RemovePathsInAsync(Folder, [Manifest.OldRelativePath.Replace('\\', '/')], ct).ConfigureAwait(false);
+            RenamedManifest = true;
+        }
 
         // A kept CONTRIBUTING.md without the convention's section on how a change gets in gets it added at the end, in
         // the same commit; the rest of the file is left as it was. In an update this happens only when it was ticked.
