@@ -1345,6 +1345,9 @@ public static class Strings
     /// <summary>{0} label(s) would get the convention&apos;s colour and description.</summary>
     public static string Scan_RecolourLabels => Get("Scan_RecolourLabels");
 
+    /// <summary>{0} now leads to {1}: that repository was renamed or transferred on GitHub. Use {1}, or...</summary>
+    public static string Scan_RepositoryMoved => Get("Scan_RepositoryMoved");
+
     /// <summary>{0} was not found on GitHub, or the signed-in account cannot see it.</summary>
     public static string Scan_RepositoryNotFound => Get("Scan_RepositoryNotFound");
 

@@ -12,7 +12,7 @@ public enum ScanSeverity { Blocker, Warning, Change, NotAvailable, Ok }
 public enum ScanCode
 {
     // Blockers
-    NotGitHubOrigin, RepositoryNotFound, Archived, NotAdmin,
+    NotGitHubOrigin, RepositoryNotFound, RepositoryMoved, Archived, NotAdmin,
     // Warnings
     Fork, Organisation, DirtyTree, MergeInProgress, DefaultBranchNotMain, ExistingFilesKept, ExistingBoardOtherColumns,
     HooksPathElsewhere, RulesAlreadyApply, NoLanguage,
@@ -78,7 +78,9 @@ public sealed class ScanFacts
 
     // Derived
     public bool OriginIsGitHub => IsGitHubUrl(OriginUrl);
-    public bool RemoteFound => Details is not null;
+    /// <summary>The full name GitHub answered with when it differs from the one asked for: the repository was renamed or transferred.</summary>
+    public string MovedTo => Details is not null && OwnerAndName.Length > 0 && !Details.IsNamed(OwnerAndName) ? Details.FullName : "";
+    public bool RemoteFound => Details is not null && MovedTo.Length == 0;
     public bool IsPublic => Details?.IsPublic ?? false;
     public string DefaultBranch => string.IsNullOrEmpty(Details?.DefaultBranch) ? RepositorySettings.DefaultDefaultBranch : Details!.DefaultBranch;
     public bool IsEmptyRepository => HasClone && IsGitRepository ? !HasCommits : View?.IsEmpty ?? false;
@@ -164,6 +166,10 @@ public static class ScanRules
             if (f.Details is null)
             {
                 Add(ScanSeverity.Blocker, ScanCode.RepositoryNotFound, SetupStep.None, string.Format(Strings.Scan_RepositoryNotFound, f.OwnerAndName));
+            }
+            else if (f.MovedTo.Length > 0)
+            {
+                Add(ScanSeverity.Blocker, ScanCode.RepositoryMoved, SetupStep.None, string.Format(Strings.Scan_RepositoryMoved, f.OwnerAndName, f.MovedTo));
             }
             else
             {
