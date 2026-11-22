@@ -25,7 +25,7 @@ gh auth login
 
 The tool needs the `repo`, `workflow` and `project` scopes.  The Status screen lists them and shows the command for any that is missing.  Two more are optional:
 
-- `user`, for the account's Actions minutes on Status.  Without it the tool shows this repository's minutes for the month instead.
+- `user`, for the account's Actions minutes on Status.  Without it the tool shows this repository's minutes for the month instead, or, on a public repository, where Actions minutes are free, says so and counts nothing.
 - `delete_repo`, only if you want to delete throwaway repositories from the command line.
 
 ```powershell

@@ -20,10 +20,10 @@ public sealed partial class GitHubService
         return r.Ok ? GhJson.ParseRest<GhActionsBilling>(r.Output) : null;
     }
 
-    /// <summary>The repository's workflow runs created since a date, newest first, at most one page.</summary>
+    /// <summary>The repository's workflow runs created since a date, newest first, at most one page, with only their ids read.</summary>
     public async Task<List<GhWorkflowRun>> RunsSinceAsync(string ownerAndName, DateTime since, CancellationToken ct)
     {
-        var r = await ApiAsync(ct, $"repos/{ownerAndName}/actions/runs?created={ActionsUsage.CreatedSince(since)}&per_page=100").ConfigureAwait(false);
+        var r = await ApiAsync(ct, $"repos/{ownerAndName}/actions/runs?created={ActionsUsage.CreatedSince(since)}&per_page=100", "--jq", ActionsUsage.RunIdsOnly).ConfigureAwait(false);
         return r.Ok ? GhJson.ParseRest<GhWorkflowRunList>(r.Output).WorkflowRuns : [];
     }
 

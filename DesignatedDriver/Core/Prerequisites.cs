@@ -15,6 +15,12 @@ public sealed class AuthStatus
     public IEnumerable<string> MissingScopes => RequiredScopes.Where(s => !Scopes.Contains(s, StringComparer.OrdinalIgnoreCase));
     public bool HasRequiredScopes => !MissingScopes.Any();
 
+    /// <summary>
+    /// True when gh listed the token's scopes and this one isn't among them, so a read that needs it can only fail.
+    /// False when it is there, or when gh listed no scopes at all and the answer isn't known.
+    /// </summary>
+    public bool Lacks(string scope) => Scopes.Count > 0 && !Scopes.Contains(scope, StringComparer.OrdinalIgnoreCase);
+
     public static string FixCommandForScope(string scope) => $"gh auth refresh -h github.com -s {scope}";
     public const string SignInCommand = "gh auth login";
     public const string InstallGitCommand = "winget install Git.Git";
