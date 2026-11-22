@@ -85,6 +85,21 @@ public static class Strings
     /// <summary>No board is known for this repository.</summary>
     public static string Board_None => Get("Board_None");
 
+    /// <summary>The board&apos;s Auto-add workflow adds new issues and pull requests.</summary>
+    public static string BoardFeed_AutoAdd => Get("BoardFeed_AutoAdd");
+
+    /// <summary>Nothing adds new issues and pull requests to the board, only what this app creates. Tur...</summary>
+    public static string BoardFeed_None => Get("BoardFeed_None");
+
+    /// <summary>The board workflow adds new issues and pull requests with PROJECT_TOKEN, Dependabot&apos;s i...</summary>
+    public static string BoardFeed_Token => Get("BoardFeed_Token");
+
+    /// <summary>The board workflow adds new issues and pull requests, but not Dependabot&apos;s: PROJECT_TOK...</summary>
+    public static string BoardFeed_TokenNotForDependabot => Get("BoardFeed_TokenNotForDependabot");
+
+    /// <summary>Couldn&apos;t read what adds new issues and pull requests to the board.</summary>
+    public static string BoardFeed_Unknown => Get("BoardFeed_Unknown");
+
     /// <summary>Cancel the command that is running</summary>
     public static string Busy_CancelHelp => Get("Busy_CancelHelp");
 
@@ -1780,7 +1795,7 @@ public static class Strings
     /// <summary>Create a project board named after the repository and link it. GitHub&apos;s columns Todo, I...</summary>
     public static string Setup_Detail_Board => Get("Setup_Detail_Board");
 
-    /// <summary>Store the board token as the repository secret PROJECT_TOKEN. The token is passed on st...</summary>
+    /// <summary>Store the board token as the PROJECT_TOKEN secret for Actions and for Dependabot. The t...</summary>
     public static string Setup_Detail_BoardToken => Get("Setup_Detail_BoardToken");
 
     /// <summary>Clone {0} into {1} over {2}.</summary>
@@ -1833,6 +1848,9 @@ public static class Strings
 
     /// <summary>The repository is set up and is now the current repository.</summary>
     public static string Setup_Done => Get("Setup_Done");
+
+    /// <summary>Nothing adds new issues and pull requests to the board yet. Turn on the board&apos;s Auto-ad...</summary>
+    public static string Setup_DoneBoardNotFed => Get("Setup_DoneBoardNotFed");
 
     /// <summary>The repository is set up and is now the current repository. The convention files are wa...</summary>
     public static string Setup_DonePullRequest => Get("Setup_DonePullRequest");
@@ -2212,11 +2230,14 @@ public static class Strings
     /// <summary>Dependabot and Actions</summary>
     public static string Status_Automation => Get("Status_Automation");
 
-    /// <summary>Issues created through the tool go on the board at once; the board workflow adds the re...</summary>
+    /// <summary>Issues and pull requests created through the tool go on the board at once; the rest nee...</summary>
     public static string Status_AutomationHelp => Get("Status_AutomationHelp");
 
     /// <summary>Board</summary>
     public static string Status_Board => Get("Status_Board");
+
+    /// <summary>Adding to the board</summary>
+    public static string Status_BoardFeed => Get("Status_BoardFeed");
 
     /// <summary>{0}&apos;s project {1}</summary>
     public static string Status_BoardLine => Get("Status_BoardLine");
@@ -2320,6 +2341,12 @@ public static class Strings
     /// <summary>Open on GitHub</summary>
     public static string Status_OpenAlerts => Get("Status_OpenAlerts");
 
+    /// <summary>Turn on Auto-add</summary>
+    public static string Status_OpenBoardWorkflows => Get("Status_OpenBoardWorkflows");
+
+    /// <summary>Open the board&apos;s Workflows page on GitHub, where Auto-add to project is turned on. GitH...</summary>
+    public static string Status_OpenBoardWorkflowsHelp => Get("Status_OpenBoardWorkflowsHelp");
+
     /// <summary>Open issue {0} on GitHub</summary>
     public static string Status_OpenIssue => Get("Status_OpenIssue");
 
@@ -2344,7 +2371,7 @@ public static class Strings
     /// <summary>Set board token</summary>
     public static string Status_SetToken => Get("Status_SetToken");
 
-    /// <summary>Store a classic token with the repo and project scopes as the PROJECT_TOKEN secret, so ...</summary>
+    /// <summary>Store a classic token with the repo and project scopes as the PROJECT_TOKEN secret for ...</summary>
     public static string Status_SetTokenHelp => Get("Status_SetTokenHelp");
 
     /// <summary>Signed in as</summary>
@@ -2356,7 +2383,7 @@ public static class Strings
     /// <summary>Status</summary>
     public static string Status_Title => Get("Status_Title");
 
-    /// <summary>The token is stored as the repository secret PROJECT_TOKEN. It was not written anywhere...</summary>
+    /// <summary>The token is stored as the PROJECT_TOKEN secret for Actions and for Dependabot. It was ...</summary>
     public static string Status_TokenStored => Get("Status_TokenStored");
 
     /// <summary>Uncommitted changes</summary>

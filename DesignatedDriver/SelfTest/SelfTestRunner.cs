@@ -66,6 +66,7 @@ public static partial class SelfTestRunner
             ProfileChecks(Check);
             OwnConventionsChecks(Check);
             ScanBoardLineChecks(Check);
+            BoardFeedChecks(Check);
             NearbyCloneChecks(Check);
             StatusReadChecks(Check);
         }

@@ -872,7 +872,7 @@ The clone and the repository on GitHub are not touched.</value></data>
   <data name="Setup_Checklist" xml:space="preserve"><value>Pull request checklist</value></data>
   <data name="Setup_ChecklistHelp" xml:space="preserve"><value>Written into the pull request template. Untick what does not apply to this project.</value></data>
   <data name="Setup_BoardToken" xml:space="preserve"><value>Board token</value></data>
-  <data name="Setup_BoardTokenHelp" xml:space="preserve"><value>The board workflow adds new issues and pull requests to the board; GitHub&apos;s own automations then move them. It needs a classic personal access token with the repo and project scopes, stored as the repository secret PROJECT_TOKEN. Optional: without it the workflow is written but skips itself, and the tool adds issues to the board as it creates them.</value></data>
+  <data name="Setup_BoardTokenHelp" xml:space="preserve"><value>The board workflow adds new issues and pull requests to the board; GitHub&apos;s own automations then move them. It needs a classic personal access token with the repo and project scopes, stored as the PROJECT_TOKEN secret for Actions and for Dependabot. Optional: without it the workflow is written but adds nothing, and the tool adds issues to the board as it creates them. The board&apos;s own Auto-add workflow does the same job with no token.</value></data>
   <data name="Setup_EnterToken" xml:space="preserve"><value>Enter a token</value></data>
   <data name="Setup_TokenNone" xml:space="preserve"><value>No token. The secret step is left out.</value></data>
   <data name="Setup_TokenHeld" xml:space="preserve"><value>A token is held in memory until the secret is stored.</value></data>
@@ -911,7 +911,7 @@ Fix the cause and press Retry. Steps already done are not repeated.</value></dat
   <data name="Setup_Detail_Settings" xml:space="preserve"><value>Squash merges only, with the pull request title as the commit message; delete branch on merge; allow update branch; issues and projects on, wiki off.</value></data>
   <data name="Setup_Detail_Labels" xml:space="preserve"><value>Create the {0} convention labels, or bring their colours and descriptions into line. Other labels are left alone.</value></data>
   <data name="Setup_Detail_Board" xml:space="preserve"><value>Create a project board named after the repository and link it. GitHub&apos;s columns Todo, In Progress and Done are kept as they are, so its built-in automations move the cards.</value></data>
-  <data name="Setup_Detail_BoardToken" xml:space="preserve"><value>Store the board token as the repository secret PROJECT_TOKEN. The token is passed on standard input and never shown.</value></data>
+  <data name="Setup_Detail_BoardToken" xml:space="preserve"><value>Store the board token as the PROJECT_TOKEN secret for Actions and for Dependabot. The token is passed on standard input and never shown.</value></data>
   <data name="Setup_Detail_FilesDirect" xml:space="preserve"><value>Write {0} convention files and the manifest, and commit them straight to {1}: the repository has no history yet.</value></data>
   <data name="Setup_Detail_FilesPullRequest" xml:space="preserve"><value>Write {0} convention files and the manifest, on a chore branch with an issue and a pull request: the convention's own rule, applied to itself. Files that already exist are kept.</value></data>
   <data name="Setup_Detail_Hooks" xml:space="preserve"><value>Point core.hooksPath at .githooks in the clone, so commit-msg and pre-push run.</value></data>
@@ -928,7 +928,7 @@ Fix the cause and press Retry. Steps already done are not repeated.</value></dat
 
   <!-- Token window -->
   <data name="Token_Title" xml:space="preserve"><value>Board token</value></data>
-  <data name="Token_Intro" xml:space="preserve"><value>A classic personal access token with the repo and project scopes, for the board workflow. It is stored as the repository secret PROJECT_TOKEN and nowhere else.</value></data>
+  <data name="Token_Intro" xml:space="preserve"><value>A classic personal access token with the repo and project scopes, for the board workflow. It is stored as the PROJECT_TOKEN secret for Actions and for Dependabot, and nowhere else.</value></data>
   <data name="Token_How" xml:space="preserve"><value>Open GitHub's new token page (the scopes are pre-selected), give the token an expiry, generate it, and paste it here. When it expires, run the wizard again on the repository with a new token; every other step is found done.</value></data>
   <data name="Token_OpenGitHub" xml:space="preserve"><value>Open the new token page on GitHub</value></data>
   <data name="Token_OpenGitHubHelp" xml:space="preserve"><value>Open github.com/settings/tokens/new with the repo and project scopes selected</value></data>
@@ -1015,6 +1015,15 @@ Fix the cause and press Retry. Steps already done are not repeated.</value></dat
   <data name="Status_AddMissingNone" xml:space="preserve"><value>Every open issue and pull request is already on the board.</value></data>
   <data name="Status_AddMissingDone" xml:space="preserve"><value>{0} issue(s) and {1} pull request(s) added to the board.</value></data>
   <data name="Status_SetToken" xml:space="preserve"><value>Set board token</value></data>
-  <data name="Status_SetTokenHelp" xml:space="preserve"><value>Store a classic token with the repo and project scopes as the PROJECT_TOKEN secret, so the board workflow can add issues and pull requests.</value></data>
-  <data name="Status_TokenStored" xml:space="preserve"><value>The token is stored as the repository secret PROJECT_TOKEN. It was not written anywhere else.</value></data>
-  <data name="Status_AutomationHelp" xml:space="preserve"><value>Issues created through the tool go on the board at once; the board workflow adds the rest when it has a token. Minutes are rounded up per job, as GitHub bills them.</value></data></root>
+  <data name="Status_SetTokenHelp" xml:space="preserve"><value>Store a classic token with the repo and project scopes as the PROJECT_TOKEN secret for Actions and for Dependabot, so the board workflow can add issues and pull requests, Dependabot&apos;s included.</value></data>
+  <data name="Status_TokenStored" xml:space="preserve"><value>The token is stored as the PROJECT_TOKEN secret for Actions and for Dependabot. It was not written anywhere else.</value></data>
+  <data name="Status_AutomationHelp" xml:space="preserve"><value>Issues and pull requests created through the tool go on the board at once; the rest need the board&apos;s Auto-add workflow or a board token. Minutes are rounded up per job, as GitHub bills them.</value></data>
+  <data name="Status_BoardFeed" xml:space="preserve"><value>Adding to the board</value></data>
+  <data name="Status_OpenBoardWorkflows" xml:space="preserve"><value>Turn on Auto-add</value></data>
+  <data name="Status_OpenBoardWorkflowsHelp" xml:space="preserve"><value>Open the board&apos;s Workflows page on GitHub, where Auto-add to project is turned on. GitHub&apos;s API can&apos;t turn it on.</value></data>
+  <data name="BoardFeed_AutoAdd" xml:space="preserve"><value>The board&apos;s Auto-add workflow adds new issues and pull requests.</value></data>
+  <data name="BoardFeed_Token" xml:space="preserve"><value>The board workflow adds new issues and pull requests with PROJECT_TOKEN, Dependabot&apos;s included.</value></data>
+  <data name="BoardFeed_TokenNotForDependabot" xml:space="preserve"><value>The board workflow adds new issues and pull requests, but not Dependabot&apos;s: PROJECT_TOKEN isn&apos;t stored for Dependabot. Turn on the board&apos;s Auto-add workflow with the filter {0}, or set the board token again.</value></data>
+  <data name="BoardFeed_None" xml:space="preserve"><value>Nothing adds new issues and pull requests to the board, only what this app creates. Turn on the board&apos;s Auto-add workflow with the filter {0}, or set a board token.</value></data>
+  <data name="BoardFeed_Unknown" xml:space="preserve"><value>Couldn&apos;t read what adds new issues and pull requests to the board.</value></data>
+  <data name="Setup_DoneBoardNotFed" xml:space="preserve"><value>Nothing adds new issues and pull requests to the board yet. Turn on the board&apos;s Auto-add workflow with the filter {0}; GitHub only lets you do that on the board&apos;s Workflows page.</value></data></root>

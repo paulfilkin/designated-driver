@@ -1,8 +1,9 @@
 # Adds new issues and pull requests to the project board. GitHub's own project automations do the rest: a new
 # item lands in Todo, and a closed issue or merged pull request moves to Done.
 # It needs the PROJECT_TOKEN secret, a classic token with the repo and project scopes, because the
-# workflow's own GITHUB_TOKEN cannot reach a user-owned project. Without the secret the step is skipped and
-# the workflow passes; Designated Driver adds the secret when it is given the token.
+# workflow's own GITHUB_TOKEN cannot reach a user-owned project. A run started by Dependabot reads Dependabot's
+# secrets, not the repository's, so the token is stored for both. Without it the run warns that nothing was
+# added and still passes; the board's own Auto-add workflow does the same job with no token at all.
 name: Board
 
 on:
@@ -26,3 +27,6 @@ jobs:
         with:
           project-url: https://github.com/users/{{boardOwner}}/projects/{{boardNumber}}
           github-token: ${{ env.PROJECT_TOKEN }}
+      - name: Say that nothing was added
+        if: env.PROJECT_TOKEN == ''
+        run: echo "::warning title=Not added to the board::PROJECT_TOKEN isn't set for this run, so nothing was added to the board. Turn on the board's Auto-add workflow, or store the token for Actions and for Dependabot."

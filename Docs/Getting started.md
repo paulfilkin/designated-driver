@@ -80,7 +80,12 @@ Each repository gets its own project board, linked to it, with GitHub's own colu
 
 A repository that keeps its own board, with columns such as Ready, In progress and In review, works through its profile (section 3): Start work lists the issues in its ready column and moves a card to its in-progress column, and Submit moves the card to its in-review column when the pull request opens.  Column names are matched without regard to case.
 
-Adding issues to the board from a workflow needs a token, because the workflow's own token cannot reach a user-owned project.  The wizard and the Status screen take a classic personal access token with the `repo` and `project` scopes and store it as the repository secret `PROJECT_TOKEN`; it is never written anywhere else.  Without it, the tool adds the issues it creates itself, and **Add missing issues to the board** on Status does the rest.
+Something has to put new issues and pull requests on the board, or the board only shows what the tool creates.  Status's Automation card says what does, under **Adding to the board**.  There are two ways:
+
+- **Auto-add** (recommended).  The board's own Auto-add to project workflow needs no token.  Choose **Turn on Auto-add** on Status, or open the board's Workflows page on GitHub, select Auto-add to project, set the filter to `is:issue,pr is:open`, and turn it on.  GitHub doesn't let the tool turn it on for you.
+- **A board token**.  The `board.yml` workflow adds new issues and pull requests with a classic personal access token with the `repo` and `project` scopes, because the workflow's own token cannot reach a user-owned project.  The wizard and Status's **Set board token** store it as the `PROJECT_TOKEN` secret for Actions and for Dependabot, since a run Dependabot starts reads only Dependabot's secrets; it is never written anywhere else.  Without it the workflow adds nothing and warns on the run.
+
+Scan and Check say when neither is in place.  Either way, the tool adds the issues and pull requests it creates itself, and **Add missing issues and pull requests** on Status adds any that were missed.
 
 ## 6. From a terminal
 

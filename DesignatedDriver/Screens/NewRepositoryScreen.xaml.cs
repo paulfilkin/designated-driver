@@ -534,11 +534,25 @@ public partial class NewRepositoryScreen : ScreenBase
             bool ok;
             try { ok = await _setup.RunAsync(_plan, ct); }
             finally { _running = false; }
-            ShowResult(ok);
+            string workflowsUrl = ok ? await UnfedBoardWorkflowsUrlAsync(ct) : "";
+            ShowResult(ok, workflowsUrl);
         });
     }
 
-    private void ShowResult(bool ok)
+    /// <summary>
+    /// The board's Workflows page when nothing puts new issues and pull requests on the board, so the last page can say
+    /// so and link to Auto-add (issue 67); empty when the board is fed, there is none, or it couldn't be read.
+    /// </summary>
+    private async Task<string> UnfedBoardWorkflowsUrlAsync(CancellationToken ct)
+    {
+        if (_setup.Board is not { } board) return "";
+        var kind = BoardFeed.Assess(await Workspace.GitHub.BoardFeedAsync(_setup.OwnerAndName, board, ct));
+        if (kind is not (BoardFeedKind.None or BoardFeedKind.TokenNotForDependabot)) return "";
+        bool organisation = string.Equals(await Workspace.GitHub.OwnerTypeAsync(board.Owner, ct), "Organization", StringComparison.OrdinalIgnoreCase);
+        return BoardFeed.WorkflowsUrl(board, organisation);
+    }
+
+    private void ShowResult(bool ok, string workflowsUrl = "")
     {
         ShowPage(2);
         ResultLinks.Children.Clear();
@@ -550,6 +564,11 @@ public partial class NewRepositoryScreen : ScreenBase
             ResultLinks.Children.Add(Link(Strings.Setup_OpenStatus, () => Shell.Navigate(Screen.Status)));
             ResultLinks.Children.Add(Link(Strings.Setup_OpenOnGitHub, () => Shell.OpenUrl(_setup.RepositoryUrl)));
             if (_setup.PullRequestUrl.Length > 0) ResultLinks.Children.Add(Link(Strings.Setup_OpenPullRequest, () => Shell.OpenUrl(_setup.PullRequestUrl)));
+            if (workflowsUrl.Length > 0)
+            {
+                ResultText.Text += "\n\n" + string.Format(Strings.Setup_DoneBoardNotFed, BoardFeed.AutoAddFilter);
+                ResultLinks.Children.Add(Link(Strings.Status_OpenBoardWorkflows, () => Shell.OpenUrl(workflowsUrl)));
+            }
             StartButton.Visibility = Visibility.Collapsed;
             Shell.Announce(Strings.Setup_DoneTitle);
         }

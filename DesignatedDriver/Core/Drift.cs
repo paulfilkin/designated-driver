@@ -109,6 +109,11 @@ public static partial class DriftRules
         // Board (section 3.3)
         if (f.RemoteFound && !f.LinkedBoards.Any(b => ConventionBoard.HasRequiredColumns(b.StatusOptions)))
             Add("board", SetupStep.Board, DriftKind.Missing, Strings.Drift_Board);
+        // Nothing puts new issues and pull requests on the board (issue 67). A note, not an item to apply: Auto-add is
+        // turned on on the board's Workflows page, which GitHub's API can't do.
+        if (f.RemoteFound && f.BoardFeed is BoardFeedKind.None or BoardFeedKind.TokenNotForDependabot
+            && f.LinkedBoards.FirstOrDefault(b => ConventionBoard.HasRequiredColumns(b.StatusOptions)) is { } fedBoard)
+            Add("board:feed", SetupStep.BoardToken, DriftKind.NotAvailable, BoardFeed.Text(f.BoardFeed), fedBoard.Url.TrimEnd('/') + "/workflows", ticked: false);
 
         // Hooks (section 7)
         if (f.HasClone && f.IsGitRepository && !ScanRules.IsConventionHooksPath(f.HooksPath))
