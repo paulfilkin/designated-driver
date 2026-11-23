@@ -114,6 +114,11 @@
                 <CheckBox x:Name="TypeNameBox" Content="{x:Static res:Strings.Settings_TypeNameToMerge}" Margin="0,12,0,0"
                           AutomationProperties.Name="{x:Static res:Strings.Settings_TypeNameToMerge}" AutomationProperties.HelpText="{x:Static res:Strings.Settings_TypeNameToMergeHelp}"/>
                 <TextBlock Text="{x:Static res:Strings.Settings_TypeNameToMergeHelp}" Style="{StaticResource HelperText}" Margin="24,2,0,0"/>
+
+                <!-- Whether Review offers merge with bypass here; off by default for a repository that keeps its own conventions (issue 74). -->
+                <CheckBox x:Name="OfferBypassBox" Content="{x:Static res:Strings.Settings_OfferBypass}" Margin="0,12,0,0"
+                          AutomationProperties.Name="{x:Static res:Strings.Settings_OfferBypass}" AutomationProperties.HelpText="{x:Static res:Strings.Settings_OfferBypassHelp}"/>
+                <TextBlock Text="{x:Static res:Strings.Settings_OfferBypassHelp}" Style="{StaticResource HelperText}" Margin="24,2,0,0"/>
             </StackPanel>
         </Border>
 

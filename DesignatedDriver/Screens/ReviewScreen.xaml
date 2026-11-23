@@ -73,6 +73,8 @@
                 </StackPanel>
 
                 <!-- Bypass: only when the rules block the merge or the pull request is the user's own -->
+                <!-- In place of the bypass card when the repository's settings turn the bypass off (issue 74). -->
+                <TextBlock x:Name="BypassOffText" Text="{x:Static res:Strings.Review_BypassOff}" Style="{StaticResource HelperText}" TextWrapping="Wrap" Margin="0,16,0,0" Visibility="Collapsed"/>
                 <Border x:Name="BypassPanel" Style="{StaticResource DangerNoticeStyle}" Margin="0,16,0,0" Visibility="Collapsed">
                     <StackPanel>
                         <TextBlock Text="{x:Static res:Strings.Review_BypassCard}" FontWeight="SemiBold"/>

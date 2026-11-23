@@ -48,6 +48,18 @@ public sealed class RepositorySettings
     /// </summary>
     public bool TypeNameToMerge { get; set; } = true;
 
+    /// <summary>
+    /// Whether Review offers merge with bypass here, as chosen by hand in Settings; null until then, when it follows
+    /// KeepsOwnConventions (issue 74). A choice made by hand is kept whatever later happens to that marker.
+    /// </summary>
+    public bool? OfferBypass { get; set; }
+
+    /// <summary>
+    /// Whether Review may offer merge with bypass: the choice made by hand, or else off for a repository that keeps
+    /// its own conventions and on for the rest, so an entry marked before the setting existed starts off.
+    /// </summary>
+    [JsonIgnore] public bool OffersBypass => OfferBypass ?? !KeepsOwnConventions;
+
     [JsonIgnore] public string OwnerAndName => string.IsNullOrEmpty(Owner) ? "" : $"{Owner}/{Name}";
     [JsonIgnore] public bool HasFolder => !string.IsNullOrWhiteSpace(Folder) && Directory.Exists(Folder);
     [JsonIgnore] public bool HasBoardOverride => BoardOwner.Length > 0 && BoardNumber > 0;

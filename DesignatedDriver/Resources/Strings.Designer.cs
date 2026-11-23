@@ -901,6 +901,9 @@ public static class Strings
     /// <summary>Merges past the rules with --admin. Say why: the reason is posted as a comment on the p...</summary>
     public static string Review_BypassIntro => Get("Review_BypassIntro");
 
+    /// <summary>Merge with bypass is turned off for this repository. Change it in its Settings.</summary>
+    public static string Review_BypassOff => Get("Review_BypassOff");
+
     /// <summary>This is your own pull request, which you can&apos;t approve, so this is the way to merge it.</summary>
     public static string Review_BypassOwn => Get("Review_BypassOwn");
 
@@ -1659,6 +1662,12 @@ public static class Strings
 
     /// <summary>That folder isn&apos;t inside a Git repository.</summary>
     public static string Settings_NotARepository => Get("Settings_NotARepository");
+
+    /// <summary>Offer merge with bypass on Review</summary>
+    public static string Settings_OfferBypass => Get("Settings_OfferBypass");
+
+    /// <summary>Review offers to merge past this repository&apos;s rules with your admin rights. Off by defa...</summary>
+    public static string Settings_OfferBypassHelp => Get("Settings_OfferBypassHelp");
 
     /// <summary>GitHub repository</summary>
     public static string Settings_OwnerAndRepository => Get("Settings_OwnerAndRepository");

@@ -18,6 +18,10 @@ public partial class SettingsWindow : Window
     private readonly bool _adding;
     private CancellationTokenSource? _probe;
     private CancellationTokenSource? _read;
+    /// <summary>True once the bypass box was clicked in this window, so its value is stored as a choice made by hand.</summary>
+    private bool _bypassChosen;
+    /// <summary>True while the bypass box is being set to follow Keeps its own conventions, which isn't a choice.</summary>
+    private bool _bypassFollowing;
 
     /// <param name="readFromGitHub">Read what the repository already uses from GitHub as the window opens, for a repository just added.</param>
     public SettingsWindow(IShell shell, RepositorySettings? repository, bool readFromGitHub = false)
@@ -47,6 +51,13 @@ public partial class SettingsWindow : Window
         InReviewColumnBox.Text = s.InReviewColumn;
         KeepsOwnBox.IsChecked = s.KeepsOwnConventions;
         TypeNameBox.IsChecked = s.TypeNameToMerge;
+        OfferBypassBox.IsChecked = s.OffersBypass;
+        // Attached after the starting values are set, and on Checked and Unchecked rather than Click, so a change made
+        // with the keyboard or an accessibility tool counts too.
+        KeepsOwnBox.Checked += KeepsOwnBox_Changed;
+        KeepsOwnBox.Unchecked += KeepsOwnBox_Changed;
+        OfferBypassBox.Checked += OfferBypassBox_Changed;
+        OfferBypassBox.Unchecked += OfferBypassBox_Changed;
         StoredAtText.Text = string.Format(Strings.Settings_StoredAt, Settings.FilePath);
 
         // While the manifest names a board, the override boxes don't apply, unless the repository keeps its own conventions.
@@ -260,8 +271,25 @@ public partial class SettingsWindow : Window
         s.InReviewColumn = InReviewColumnBox.Text.Trim();
         s.KeepsOwnConventions = KeepsOwnBox.IsChecked == true;
         s.TypeNameToMerge = TypeNameBox.IsChecked == true;
+        // Stored only once the box itself was clicked; until then the setting follows Keeps its own conventions.
+        if (_bypassChosen) s.OfferBypass = OfferBypassBox.IsChecked == true;
 
         _shell.Workspace.SaveRepository(s);
         DialogResult = true;
+    }
+
+    /// <summary>Until a choice is made by hand, the bypass box follows Keeps its own conventions: off when it is ticked.</summary>
+    private void KeepsOwnBox_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_bypassChosen || _repository.OfferBypass is not null) return;
+        _bypassFollowing = true;
+        try { OfferBypassBox.IsChecked = KeepsOwnBox.IsChecked != true; }
+        finally { _bypassFollowing = false; }
+    }
+
+    /// <summary>A change to the bypass box is a choice made by hand, unless it is the box following the marker.</summary>
+    private void OfferBypassBox_Changed(object sender, RoutedEventArgs e)
+    {
+        if (!_bypassFollowing) _bypassChosen = true;
     }
 }

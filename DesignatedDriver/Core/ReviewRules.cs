@@ -68,6 +68,15 @@ public static class ReviewRules
     }
 
     /// <summary>
+    /// The bypass as Review offers it: when GitHub's rules would allow it and the repository's settings offer it
+    /// (issue 74). Off by default for a repository that keeps its own conventions.
+    /// </summary>
+    public static bool OffersBypass(GhPullRequest pr, string login, bool repositoryOffers) => repositoryOffers && OffersBypass(pr, login);
+
+    /// <summary>True when the rules would allow a bypass but the repository's settings turn it off, so Review says where to change it.</summary>
+    public static bool BypassTurnedOff(GhPullRequest pr, string login, bool repositoryOffers) => !repositoryOffers && OffersBypass(pr, login);
+
+    /// <summary>
     /// Whether a merge may run on the pull request as just re-read from GitHub: the ordinary merge needs no
     /// blocker at all, and the bypass needs the state to be known and free of conflicts. The screen's buttons
     /// came from an earlier read, and main may have moved since.
