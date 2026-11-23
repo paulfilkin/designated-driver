@@ -132,8 +132,12 @@ public partial class ScanScreen : ScreenBase
         _asItIs = ScanRules.AsItIs(facts, report.Verdict, known);
         _keepsOwn = ScanRules.KeepsOwnAsItIs(report.Verdict);
         bool convertible = report.Verdict == ScanVerdict.Convertible;
+        bool canKeep = convertible && _asItIs != AsItIsRoute.None;
+        // A repository that already runs its own way has Keep it as it is recommended, with the reason (issue 75).
+        string keepReason = canKeep ? ScanReportText.KeepReason(report) : "";
         NextStepText.Text = ScanReportText.NextStepForName(
-            ScanReportText.NextStep(report.Verdict, current, canKeepAsIs: convertible && _asItIs != AsItIsRoute.None), facts, _asItIs);
+            ScanReportText.NextStep(report.Verdict, current, canKeepAsIs: canKeep, keepReason: keepReason), facts, _asItIs);
+        RecommendKeep(keepReason.Length > 0);
         // A scan by name that found a clone beside the known ones offers scanning that folder first.
         bool nearby = !facts.HasClone && facts.NearbyClone.Length > 0;
         ScanCloneChoice.Visibility = nearby ? Visibility.Visible : Visibility.Collapsed;
@@ -154,6 +158,19 @@ public partial class ScanScreen : ScreenBase
             FindingsPanel.Children.Add(heading);
             foreach (var finding in group) FindingsPanel.Children.Add(FindingRow(finding));
         }
+    }
+
+    /// <summary>
+    /// When Keep it as it is is recommended, its choice comes before Apply the convention and is the main button, with
+    /// Apply the convention as the secondary one; otherwise the order and styles are as the XAML has them.
+    /// </summary>
+    private void RecommendKeep(bool recommend)
+    {
+        ActionRow.Children.Remove(AsItIsChoice);
+        int at = ActionRow.Children.IndexOf(recommend ? SetUpChoice : OpenCheckChoice);
+        ActionRow.Children.Insert(recommend ? at : at + 1, AsItIsChoice);
+        AsItIsButton.Style = (Style)FindResource(recommend ? "ModernButton" : "SecondaryButton");
+        SetUpButton.Style = (Style)FindResource(recommend ? "SecondaryButton" : "ModernButton");
     }
 
     /// <summary>The "as it is" button for the route the last scan found, with its label and line, or hidden when there is none.</summary>

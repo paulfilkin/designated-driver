@@ -190,6 +190,16 @@ public static class ScanRules
     /// <summary>True when taking a repository on as it is also marks it as keeping its own conventions: the alternative to converting it.</summary>
     public static bool KeepsOwnAsItIs(ScanVerdict verdict) => verdict == ScanVerdict.Convertible;
 
+    /// <summary>
+    /// Why a convertible repository already runs its own way (issue 75): an organisation owns it, or the rules on its
+    /// default branch already cover the convention's ruleset. Both false for any other verdict.
+    /// </summary>
+    public static (bool Organisation, bool OwnRules) KeepReasons(ScanReport report)
+        => report.Verdict == ScanVerdict.Convertible ? (report.Has(ScanCode.Organisation), report.Has(ScanCode.RulesCover)) : (false, false);
+
+    /// <summary>True when Scan recommends Keep it as it is over the convention, for one of KeepReasons.</summary>
+    public static bool RecommendsKeep(ScanReport report) => KeepReasons(report) is (true, _) or (_, true);
+
     public static ScanReport Assess(ScanFacts f)
     {
         var findings = new List<ScanFinding>();
