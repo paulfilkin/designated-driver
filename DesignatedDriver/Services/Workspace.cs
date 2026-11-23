@@ -51,6 +51,8 @@ public sealed class Workspace
     public string PlanName { get; set; } = "";
     public bool PlanProbed { get; set; }
     public bool IsAdmin => string.Equals(Permission, "ADMIN", StringComparison.OrdinalIgnoreCase);
+    /// <summary>The role on the current repository; Unknown until read, or when the read failed (issue 81).</summary>
+    public Role Role => Roles.Parse(Permission);
     public bool IdentityKnown => Login.Length > 0;
 
     /// <summary>The last scan of each repository this session, by owner and name, for the Repositories screen.</summary>

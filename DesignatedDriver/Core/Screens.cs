@@ -4,28 +4,31 @@ namespace DesignatedDriver.Core;
 
 public enum Screen { Repositories, Scan, NewRepository, Status, Check, StartWork, SaveAndShare, Submit, Review, TidyUp, FixProblem }
 
-/// <summary>Actions that only repository admins get.</summary>
-public enum AdminAction { Approve, RequestChanges, Merge, BypassMerge }
+/// <summary>The actions Review offers on a pull request.</summary>
+public enum ReviewOffer { Approve, RequestChanges, Merge, BypassMerge }
 
 /// <summary>
-/// Which screens and actions a user sees. Review, approve, merge and bypass appear only for users GitHub
-/// reports as repository admins, which on a personal repository is the owner.
+/// Which screens and actions a user sees. Review, with approve, request changes and merge, appears for write access
+/// and above; merge with bypass only for an admin (Roles, issue 81). A role that couldn't be read hides nothing.
 /// </summary>
 public static class ScreenCatalogue
 {
     private static readonly Screen[] Everyone = [Screen.Repositories, Screen.Scan, Screen.NewRepository, Screen.Status, Screen.Check, Screen.StartWork, Screen.SaveAndShare, Screen.Submit, Screen.TidyUp, Screen.FixProblem];
 
-    public static IReadOnlyList<Screen> ScreensFor(bool isAdmin)
+    public static IReadOnlyList<Screen> ScreensFor(Role role)
     {
         var list = new List<Screen>(Everyone);
-        if (isAdmin) list.Insert(list.IndexOf(Screen.TidyUp), Screen.Review);
+        if (Roles.CanReview(role)) list.Insert(list.IndexOf(Screen.TidyUp), Screen.Review);
         return list;
     }
 
-    public static IReadOnlyList<AdminAction> ActionsFor(bool isAdmin)
-        => isAdmin ? [AdminAction.Approve, AdminAction.RequestChanges, AdminAction.Merge, AdminAction.BypassMerge] : [];
+    public static IReadOnlyList<ReviewOffer> ActionsFor(Role role)
+        => !Roles.CanReview(role) ? []
+         : Roles.CanBypass(role) ? [ReviewOffer.Approve, ReviewOffer.RequestChanges, ReviewOffer.Merge, ReviewOffer.BypassMerge]
+         : [ReviewOffer.Approve, ReviewOffer.RequestChanges, ReviewOffer.Merge];
 
-    public static bool IsAdminOnly(Screen screen) => screen == Screen.Review;
+    /// <summary>Review needs write access; the other screens are open to anyone with the repository.</summary>
+    public static bool NeedsWriteAccess(Screen screen) => screen == Screen.Review;
 
     /// <summary>Repositories, Scan and New repository work before any repository is chosen; the workflow screens need one.</summary>
     public static bool NeedsRepository(Screen screen) => screen is not (Screen.Repositories or Screen.Scan or Screen.NewRepository);

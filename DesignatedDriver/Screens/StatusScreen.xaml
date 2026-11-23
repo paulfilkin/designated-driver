@@ -103,6 +103,8 @@
                     <Button x:Name="TokenButton" Content="{x:Static res:Strings.Status_SetToken}" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0" Click="Token_Click"
                             AutomationProperties.Name="{x:Static res:Strings.Status_SetToken}" AutomationProperties.HelpText="{x:Static res:Strings.Status_SetTokenHelp}"/>
                 </StackPanel>
+                <!-- Why Set board token is greyed out: storing a secret needs admin (issue 81). -->
+                <TextBlock x:Name="TokenNote" Style="{StaticResource HelperText}" TextWrapping="Wrap" Visibility="Collapsed"/>
                 <TextBlock Text="{x:Static res:Strings.Status_AutomationHelp}" Style="{StaticResource HelperText}"/>
             </StackPanel>
         </Border>

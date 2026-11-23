@@ -9,7 +9,7 @@ using DesignatedDriver.Resources;
 namespace DesignatedDriver.Screens;
 
 /// <summary>
-/// Screen 5 (admins): open pull requests with their checks and merge state; for the chosen one its files,
+/// Screen 5 (write access and above; the bypass for admins only): open pull requests with their checks and merge state; for the chosen one its files,
 /// approve, request changes, squash and merge, and the bypass merge that posts its reason first.
 /// </summary>
 public partial class ReviewScreen : ScreenBase
@@ -35,8 +35,9 @@ public partial class ReviewScreen : ScreenBase
     {
         int keep = _selectOnLoad ?? _selected?.Number ?? 0;
         _selectOnLoad = null;
-        NotAdminNotice.Visibility = Workspace.IdentityKnown && !Workspace.IsAdmin ? Visibility.Visible : Visibility.Collapsed;
-        NotAdminText.Text = string.Format(Strings.Review_NotAdmin, Workspace.Permission);
+        // What the role allows here: nothing for an admin, no bypass for write and maintain, or that it couldn't be read (issue 81).
+        NotAdminText.Text = Roles.ReviewNotice(Workspace.Role);
+        NotAdminNotice.Visibility = Workspace.IdentityKnown && NotAdminText.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
 
         // Read again while GitHub is still working a merge state out, as it is for a few seconds after a merge.
         _pullRequests = await Workspace.GitHub.OpenPullRequestsSettledAsync(Services.GitHubService.SettleDelay, ct);
@@ -197,8 +198,13 @@ public partial class ReviewScreen : ScreenBase
         UpdateCommentButtons();
         MergeButton.IsEnabled = ReviewRules.CanMerge(pr);
         UpdateBranchButton.Visibility = ReviewRules.OffersUpdateBranch(pr) ? Visibility.Visible : Visibility.Collapsed;
-        BypassPanel.Visibility = ReviewRules.OffersBypass(pr, Workspace.Login, Repo.OffersBypass) ? Visibility.Visible : Visibility.Collapsed;
-        BypassOffText.Visibility = ReviewRules.BypassTurnedOff(pr, Workspace.Login, Repo.OffersBypass) ? Visibility.Visible : Visibility.Collapsed;
+        // The bypass needs admin rights as well as the repository's setting (issues 74 and 81); where either rules it
+        // out, a line says which.
+        bool roleAllows = Roles.CanBypass(Workspace.Role);
+        bool offered = Repo.OffersBypass && roleAllows;
+        BypassPanel.Visibility = ReviewRules.OffersBypass(pr, Workspace.Login, offered) ? Visibility.Visible : Visibility.Collapsed;
+        BypassOffText.Visibility = ReviewRules.BypassTurnedOff(pr, Workspace.Login, offered) ? Visibility.Visible : Visibility.Collapsed;
+        BypassOffText.Text = roleAllows ? Strings.Review_BypassOff : Roles.NeedsAdmin(Workspace.Role, Repo.OwnerAndName, Strings.Review_BypassNeedsAdmin);
         BypassOwnText.Visibility = own ? Visibility.Visible : Visibility.Collapsed;
         UpdateBypassButton();
     }
@@ -285,6 +291,7 @@ public partial class ReviewScreen : ScreenBase
         if (_selected is not { } pr) return;
         // The repository's settings may have turned the bypass off since the card was shown (issue 74).
         if (!Repo.OffersBypass) { Shell.ShowError(Strings.Review_BypassOff); return; }
+        if (!Roles.CanBypass(Workspace.Role)) { Shell.ShowError(Roles.NeedsAdmin(Workspace.Role, Repo.OwnerAndName, Strings.Review_BypassNeedsAdmin)); return; }
         var reason = ReasonBox.Text.Trim();
         if (reason.Length == 0) { Shell.ShowError(Strings.Review_ReasonNeeded); return; }
         if (!ConfirmAction(ReviewAction.Bypass, string.Format(Strings.Review_ConfirmBypass, pr.Number, reason, pr.HeadRefName))) return;
