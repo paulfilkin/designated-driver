@@ -159,9 +159,11 @@ public partial class RepositoriesScreen : ScreenBase
                 tag.Margin = new Thickness(8, 0, 0, 0);
                 titleLine.Children.Add(tag);
             }
-            var convention = manifest is not null
-                ? UiHelpers.Tag(string.Format(Strings.Repos_Convention, manifest.ConventionVersion), "SuccessSoftBrush", "SuccessBrush")
-                : UiHelpers.Tag(Strings.Repos_NotSetUp);
+            // Own conventions, the convention's version, or Not set up (OwnConventions.Tag, issue 80).
+            var tagText = OwnConventions.Tag(manifest, repo);
+            var convention = repo.KeepsOwnConventions ? UiHelpers.Tag(tagText, "QuaternarySofterBrush", "NeutralMutedBrush")
+                : manifest is not null ? UiHelpers.Tag(tagText, "SuccessSoftBrush", "SuccessBrush")
+                : UiHelpers.Tag(tagText);
             convention.Margin = new Thickness(8, 0, 0, 0);
             titleLine.Children.Add(convention);
             if (starred is not null && RepositoryFilter.IsStarred(repo, starred))

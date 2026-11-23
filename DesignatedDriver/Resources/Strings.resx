@@ -639,6 +639,7 @@ Delete all three marker lines and keep the lines you want.</value></data>
 The clone and the repository on GitHub are not touched.</value></data>
   <data name="Repos_Convention" xml:space="preserve"><value>Convention v{0}</value></data>
   <data name="Repos_NotSetUp" xml:space="preserve"><value>Not set up</value></data>
+  <data name="Repos_OwnConventions" xml:space="preserve"><value>Own conventions</value></data>
   <data name="Repos_FolderMissing" xml:space="preserve"><value>Folder missing</value></data>
   <data name="Repos_OpenPullRequests" xml:space="preserve"><value>{0} open pull request(s)</value></data>
   <data name="Repos_PullRequestsUnknown" xml:space="preserve"><value>Pull requests not read</value></data>
@@ -672,6 +673,7 @@ The clone and the repository on GitHub are not touched.</value></data>
   <data name="Scan_Group_Blocker" xml:space="preserve"><value>Blockers</value></data>
   <data name="Scan_Group_Warning" xml:space="preserve"><value>Worth knowing</value></data>
   <data name="Scan_Group_Change" xml:space="preserve"><value>What set-up would change</value></data>
+  <data name="Scan_Group_ChangeKeepsOwn" xml:space="preserve"><value>What the convention would change</value></data>
   <data name="Scan_Group_NotAvailable" xml:space="preserve"><value>Not available on this plan</value></data>
   <data name="Scan_Group_Ok" xml:space="preserve"><value>Already in place</value></data>
   <data name="Scan_Step" xml:space="preserve"><value>Step: {0}</value></data>

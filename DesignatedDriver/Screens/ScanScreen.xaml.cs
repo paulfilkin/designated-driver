@@ -154,9 +154,9 @@ public partial class ScanScreen : ScreenBase
         {
             var group = report.Of(severity).ToList();
             if (group.Count == 0) continue;
-            var heading = new TextBlock { Text = ScanReportText.GroupTitle(severity), FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 14, 0, 4), Foreground = UiHelpers.Brush(GroupBrush(severity)) };
+            var heading = new TextBlock { Text = ScanReportText.GroupTitle(severity, report.Verdict), FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 14, 0, 4), Foreground = UiHelpers.Brush(GroupBrush(severity)) };
             FindingsPanel.Children.Add(heading);
-            foreach (var finding in group) FindingsPanel.Children.Add(FindingRow(finding));
+            foreach (var finding in group) FindingsPanel.Children.Add(FindingRow(finding, report.Verdict));
         }
     }
 
@@ -184,7 +184,7 @@ public partial class ScanScreen : ScreenBase
         AutomationProperties.SetHelpText(AsItIsButton, help);
     }
 
-    private FrameworkElement FindingRow(ScanFinding finding)
+    private FrameworkElement FindingRow(ScanFinding finding, ScanVerdict verdict)
     {
         var row = new Grid { Margin = new Thickness(0, 3, 0, 3) };
         row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
@@ -210,7 +210,7 @@ public partial class ScanScreen : ScreenBase
         Grid.SetColumn(text, 1);
         row.Children.Add(mark);
         row.Children.Add(text);
-        AutomationProperties.SetName(row, $"{ScanReportText.GroupTitle(finding.Severity)}: {finding.Text}");
+        AutomationProperties.SetName(row, $"{ScanReportText.GroupTitle(finding.Severity, verdict)}: {finding.Text}");
         return row;
     }
 

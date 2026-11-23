@@ -23,6 +23,16 @@ public static class OwnConventions
         return manifest?.Board is { Number: > 0 } fromManifest ? fromManifest : own;
     }
 
+    /// <summary>
+    /// The tag Repositories shows beside an entry (issue 80): Own conventions when it is marked as keeping its own,
+    /// which wins over a manifest as it does for the board; the convention's version when there is a manifest; else
+    /// Not set up.
+    /// </summary>
+    public static string Tag(Manifest? manifest, RepositorySettings repository)
+        => repository.KeepsOwnConventions ? Strings.Repos_OwnConventions
+         : manifest is not null ? string.Format(Strings.Repos_Convention, manifest.ConventionVersion)
+         : Strings.Repos_NotSetUp;
+
     /// <summary>What Check says instead of a drift report, or null when it checks as usual.</summary>
     public static string? CheckNotice(RepositorySettings? repository)
         => repository is { KeepsOwnConventions: true } ? string.Format(Strings.Check_KeepsOwn, repository.OwnerAndName) : null;

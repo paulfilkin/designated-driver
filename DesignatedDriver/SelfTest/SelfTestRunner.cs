@@ -68,6 +68,7 @@ public static partial class SelfTestRunner
             CloneAsIsChecks(Check);
             ProfileChecks(Check);
             OwnConventionsChecks(Check);
+            OwnConventionsTagChecks(Check);
             ScanBoardLineChecks(Check);
             BoardFeedChecks(Check);
             NearbyCloneChecks(Check);
