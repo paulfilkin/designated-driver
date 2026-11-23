@@ -58,7 +58,7 @@ A manifest in `.github` records what was set up, so Check knows what to compare,
 ## The screens
 
 <p align="center">
-  <img src="Docs/images/status-screen.png" alt="Designated Driver's Status screen: the prerequisites, all ticked, and the repository's folder, convention and board, with the activity panel showing the commands it ran">
+  <img src="Docs/images/status-screen.png" alt="Designated Driver's Status screen as it loads: the busy strip naming the command running, with a Cancel link; the prerequisites, all ticked; the repository's folder, name and your role; and the activity panel showing the commands it ran">
 </p>
 
 | Screen | What it does |

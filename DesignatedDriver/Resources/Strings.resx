@@ -61,7 +61,7 @@
 
   <!-- Application -->
   <data name="App_Name" xml:space="preserve"><value>Designated Driver</value></data>
-  <data name="App_Tagline" xml:space="preserve"><value>One convention for every repository, and the workflow that keeps it</value></data>
+  <data name="App_Tagline" xml:space="preserve"><value>Vibe code all you like: every change still gets home safely.</value></data>
   <data name="App_Description" xml:space="preserve"><value>Designated Driver sets up GitHub repositories for a personal account to one convention (labels, board, templates, settings and automation), shows what has drifted, and walks the day-to-day workflow: issue, branch, commit, pull request, merge, tidy up. It runs the git and gh commands for you and shows every one in the activity panel.</value></data>
 
   <!-- Menu and header -->
