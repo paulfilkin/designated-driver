@@ -6,11 +6,15 @@ namespace DesignatedDriver.Core;
 /// <summary>The words for a scan report: group titles, step names, and the whole report as plain text.</summary>
 public static class ScanReportText
 {
-    public static string GroupTitle(ScanSeverity severity) => severity switch
+    /// <summary>
+    /// A group's heading. For a repository that keeps its own conventions set-up refuses to run, so its changes are
+    /// what the convention would change, not what set-up would (issue 80).
+    /// </summary>
+    public static string GroupTitle(ScanSeverity severity, ScanVerdict verdict = ScanVerdict.Convertible) => severity switch
     {
         ScanSeverity.Blocker => Strings.Scan_Group_Blocker,
         ScanSeverity.Warning => Strings.Scan_Group_Warning,
-        ScanSeverity.Change => Strings.Scan_Group_Change,
+        ScanSeverity.Change => verdict == ScanVerdict.KeepsOwnConventions ? Strings.Scan_Group_ChangeKeepsOwn : Strings.Scan_Group_Change,
         ScanSeverity.NotAvailable => Strings.Scan_Group_NotAvailable,
         _ => Strings.Scan_Group_Ok,
     };
@@ -105,7 +109,7 @@ public static class ScanReportText
             var group = report.Of(severity).ToList();
             if (group.Count == 0) continue;
             sb.AppendLine();
-            sb.AppendLine(GroupTitle(severity));
+            sb.AppendLine(GroupTitle(severity, report.Verdict));
             foreach (var f in group)
             {
                 sb.AppendLine("- " + f.Text + (f.Step != SetupStep.None ? $"  [{StepTitle(f.Step)}]" : ""));

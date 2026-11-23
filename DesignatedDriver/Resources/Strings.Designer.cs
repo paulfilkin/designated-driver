@@ -832,6 +832,9 @@ public static class Strings
     /// <summary>{0} open pull request(s)</summary>
     public static string Repos_OpenPullRequests => Get("Repos_OpenPullRequests");
 
+    /// <summary>Own conventions</summary>
+    public static string Repos_OwnConventions => Get("Repos_OwnConventions");
+
     /// <summary>Pull requests not read</summary>
     public static string Repos_PullRequestsUnknown => Get("Repos_PullRequestsUnknown");
 
@@ -1338,6 +1341,9 @@ public static class Strings
 
     /// <summary>What set-up would change</summary>
     public static string Scan_Group_Change => Get("Scan_Group_Change");
+
+    /// <summary>What the convention would change</summary>
+    public static string Scan_Group_ChangeKeepsOwn => Get("Scan_Group_ChangeKeepsOwn");
 
     /// <summary>Not available on this plan</summary>
     public static string Scan_Group_NotAvailable => Get("Scan_Group_NotAvailable");
