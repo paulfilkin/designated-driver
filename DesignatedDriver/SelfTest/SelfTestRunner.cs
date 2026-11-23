@@ -35,6 +35,7 @@ public static partial class SelfTestRunner
             CommandLineChecks(Check);
             ReviewRuleChecks(Check);
             ReviewConfirmChecks(Check);
+            BypassSettingChecks(Check);
             MergeRereadChecks(Check);
             FixProblemChecks(Check);
             SettingsChecks(Check);

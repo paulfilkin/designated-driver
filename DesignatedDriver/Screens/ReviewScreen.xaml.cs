@@ -197,7 +197,8 @@ public partial class ReviewScreen : ScreenBase
         UpdateCommentButtons();
         MergeButton.IsEnabled = ReviewRules.CanMerge(pr);
         UpdateBranchButton.Visibility = ReviewRules.OffersUpdateBranch(pr) ? Visibility.Visible : Visibility.Collapsed;
-        BypassPanel.Visibility = ReviewRules.OffersBypass(pr, Workspace.Login) ? Visibility.Visible : Visibility.Collapsed;
+        BypassPanel.Visibility = ReviewRules.OffersBypass(pr, Workspace.Login, Repo.OffersBypass) ? Visibility.Visible : Visibility.Collapsed;
+        BypassOffText.Visibility = ReviewRules.BypassTurnedOff(pr, Workspace.Login, Repo.OffersBypass) ? Visibility.Visible : Visibility.Collapsed;
         BypassOwnText.Visibility = own ? Visibility.Visible : Visibility.Collapsed;
         UpdateBypassButton();
     }
@@ -282,6 +283,8 @@ public partial class ReviewScreen : ScreenBase
     private void Bypass_Click(object sender, RoutedEventArgs e)
     {
         if (_selected is not { } pr) return;
+        // The repository's settings may have turned the bypass off since the card was shown (issue 74).
+        if (!Repo.OffersBypass) { Shell.ShowError(Strings.Review_BypassOff); return; }
         var reason = ReasonBox.Text.Trim();
         if (reason.Length == 0) { Shell.ShowError(Strings.Review_ReasonNeeded); return; }
         if (!ConfirmAction(ReviewAction.Bypass, string.Format(Strings.Review_ConfirmBypass, pr.Number, reason, pr.HeadRefName))) return;

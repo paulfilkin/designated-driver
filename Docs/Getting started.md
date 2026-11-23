@@ -44,7 +44,9 @@ To work on a repository that is already on GitHub without changing it, press **C
 
 A repository without a manifest keeps its own settings in its entry in the tool's settings, its profile.  When you clone one, add one with **Add a clone**, or add a scanned clone from Scan, Settings reads what it already uses from GitHub and fills the boxes: the default branch, the required check from its ruleset or branch protection, its linked board and that board's columns for ready to pick up, in progress and in review, and the self-test command from its CI workflow.  Check them and press Save; nothing is kept until you do, and nothing is written to the repository or to GitHub.  **Read from GitHub** reads again later: an empty box is filled, and a value of yours that differs from GitHub's is replaced only if you say so.
 
-A repository with rules of its own, such as an organisation's repository with its own ruleset, labels and board automations, can be left as it is: tick **Keeps its own conventions** in its Settings, or press **Keep it as it is** after scanning it, which ticks it for you.  Scan then says so instead of offering to apply the convention, Set up a repository and `--setup` refuse it, and Check and `--check` say so instead of listing drift.  The workflow screens use its own settings, its board included.  Clear the box to convert it later, on purpose.
+A repository with rules of its own, such as an organisation's repository with its own ruleset, labels and board automations, can be left as it is: tick **Keeps its own conventions** in its Settings, or press **Keep it as it is** after scanning it, which ticks it for you.  Scan then says so instead of offering to apply the convention, Set up a repository and `--setup` refuse it, and Check and `--check` say so instead of listing drift.  The workflow screens use its own settings, its board included, and Review doesn't offer merge with bypass there.  Clear the box to convert it later, on purpose.
+
+**Offer merge with bypass on Review**, in a repository's Settings, decides whether Review offers to merge past the repository's rules with your admin rights.  Until you change it, it is off for a repository that keeps its own conventions and on for the rest.  Once you tick or clear it, that choice stays, whatever happens to **Keeps its own conventions** later.
 
 The wizard has three pages:
 
@@ -68,7 +70,7 @@ What the repository already has is kept.  Its own issue forms stay, and the conv
 | Start work | Write a new issue from the issue forms' fields, or pick one from the board's Todo column (or the profile's ready column), assign it to yourself, move its card to In Progress, make the branch |
 | Save and share | Commit with the message checks, push |
 | Submit | Update the branch from main if it is behind, open the pull request from the template with its `Closes #n` line filled in, put it on the board, move the issue's card to the profile's In review column if it has one, watch the check |
-| Review | Approve, request changes, merge; admins only.  Each asks first in a window that names the repository in large type; a merge also needs the repository's name typed, unless its Settings turn that off.  A merge re-reads the pull request first and stops if main has moved under it.  Picking another pull request while one loads shows the newest |
+| Review | Approve, request changes, merge; admins only.  Each asks first in a window that names the repository in large type; a merge also needs the repository's name typed, unless its Settings turn that off.  Merge with bypass is offered only where the repository's Settings allow it.  A merge re-reads the pull request first and stops if main has moved under it.  Picking another pull request while one loads shows the newest |
 | Tidy up | Back to main, pull, delete merged branches |
 | Fix a problem | The common situations, each with its commands |
 

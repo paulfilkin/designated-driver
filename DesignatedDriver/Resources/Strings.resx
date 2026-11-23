@@ -193,6 +193,8 @@ Replace them with GitHub's values? No keeps yours.</value></data>
   <data name="Settings_KeepsOwnConventionsHelp" xml:space="preserve"><value>For a repository with rules of its own. Scan, Set up a repository and Check don't offer to convert it, and the workflow screens use the values above, the board included. Clear it to convert the repository later.</value></data>
   <data name="Settings_TypeNameToMerge" xml:space="preserve"><value>Type the repository's name to merge</value></data>
   <data name="Settings_TypeNameToMergeHelp" xml:space="preserve"><value>Merge and merge with bypass on Review ask for this repository's owner and name to be typed before they run. Clear it only for a repository you are sure of.</value></data>
+  <data name="Settings_OfferBypass" xml:space="preserve"><value>Offer merge with bypass on Review</value></data>
+  <data name="Settings_OfferBypassHelp" xml:space="preserve"><value>Review offers to merge past this repository&apos;s rules with your admin rights. Off by default when the repository keeps its own conventions; a choice made here is kept.</value></data>
   <data name="Settings_StoredAt" xml:space="preserve"><value>Stored in {0}</value></data>
 
   <!-- Status screen -->
@@ -491,6 +493,7 @@ Go ahead?</value></data>
   <data name="Review_ReasonNeeded" xml:space="preserve"><value>Type the reason first. It is posted on the pull request.</value></data>
   <data name="Review_Bypass" xml:space="preserve"><value>Merge with bypass</value></data>
   <data name="Review_BypassHelp" xml:space="preserve"><value>Posts the reason as a comment, then runs gh pr merge --squash --admin --delete-branch</value></data>
+  <data name="Review_BypassOff" xml:space="preserve"><value>Merge with bypass is turned off for this repository. Change it in its Settings.</value></data>
   <data name="Review_ConfirmBypass" xml:space="preserve"><value>Merge #{0} with bypass?
 
 This comment is posted first:
