@@ -1375,6 +1375,15 @@ public static class Strings
     /// <summary>Marks its entry in Repositories as keeping its own conventions and opens its Settings. ...</summary>
     public static string Scan_KeepAsIsMarkHelp => Get("Scan_KeepAsIsMarkHelp");
 
+    /// <summary>it belongs to an organisation, whose own way of working others may rely on, and its own...</summary>
+    public static string Scan_KeepReason_Both => Get("Scan_KeepReason_Both");
+
+    /// <summary>it belongs to an organisation, whose own way of working others may rely on</summary>
+    public static string Scan_KeepReason_Organisation => Get("Scan_KeepReason_Organisation");
+
+    /// <summary>its own rules already cover the convention&apos;s ruleset</summary>
+    public static string Scan_KeepReason_OwnRules => Get("Scan_KeepReason_OwnRules");
+
     /// <summary>{0} to {1}</summary>
     public static string Scan_LabelRename => Get("Scan_LabelRename");
 
@@ -1449,6 +1458,12 @@ public static class Strings
 
     /// <summary>Next step: fix the blockers above, then scan again.</summary>
     public static string Scan_Next_NotConvertible => Get("Scan_Next_NotConvertible");
+
+    /// <summary>Next step: Keep it as it is, recommended because {0}. It can still take the convention:...</summary>
+    public static string Scan_Next_RecommendKeep => Get("Scan_Next_RecommendKeep");
+
+    /// <summary>Next step: Keep it as it is, recommended because {0}. Press Keep it as it is on Scan, w...</summary>
+    public static string Scan_Next_RecommendKeep_Text => Get("Scan_Next_RecommendKeep_Text");
 
     /// <summary>Next step: scan the clone at {0}. It reads the clone as well as GitHub, and offers addi...</summary>
     public static string Scan_Next_ScanNearbyClone => Get("Scan_Next_ScanNearbyClone");

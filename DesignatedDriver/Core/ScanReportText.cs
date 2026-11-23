@@ -45,12 +45,22 @@ public static class ScanReportText
     /// depends on whether the scanned repository is the one the tool is working on; a convertible repository that can
     /// also be kept as it is asks for a choice between the two.
     /// </summary>
-    public static string NextStep(ScanVerdict verdict, bool isCurrentRepository, bool canKeepAsIs = false) => verdict switch
+    public static string NextStep(ScanVerdict verdict, bool isCurrentRepository, bool canKeepAsIs = false, string keepReason = "") => verdict switch
     {
         ScanVerdict.NotConvertible => Strings.Scan_Next_NotConvertible,
         ScanVerdict.AlreadySetUp => isCurrentRepository ? Strings.Scan_Next_AlreadySetUp_Current : Strings.Scan_Next_AlreadySetUp_Other,
         ScanVerdict.KeepsOwnConventions => Strings.Scan_Next_KeepsOwn,
-        _ => canKeepAsIs ? Strings.Scan_Next_ConvertibleOrKeep : Strings.Scan_Next_Convertible,
+        _ => canKeepAsIs && keepReason.Length > 0 ? string.Format(Strings.Scan_Next_RecommendKeep, keepReason)
+            : canKeepAsIs ? Strings.Scan_Next_ConvertibleOrKeep : Strings.Scan_Next_Convertible,
+    };
+
+    /// <summary>Why Keep it as it is is recommended, as a clause after "because"; empty when it isn't (issue 75).</summary>
+    public static string KeepReason(ScanReport report) => ScanRules.KeepReasons(report) switch
+    {
+        (true, true) => Strings.Scan_KeepReason_Both,
+        (true, false) => Strings.Scan_KeepReason_Organisation,
+        (false, true) => Strings.Scan_KeepReason_OwnRules,
+        _ => "",
     };
 
     /// <summary>
@@ -75,12 +85,12 @@ public static class ScanReportText
     };
 
     /// <summary>The next step as the text report says it, naming the command-line switches rather than the screens.</summary>
-    public static string NextStepText(ScanVerdict verdict) => verdict switch
+    public static string NextStepText(ScanVerdict verdict, string keepReason = "") => verdict switch
     {
         ScanVerdict.NotConvertible => Strings.Scan_Next_NotConvertible,
         ScanVerdict.AlreadySetUp => Strings.Scan_Next_AlreadySetUp_Text,
         ScanVerdict.KeepsOwnConventions => Strings.Scan_Next_KeepsOwn,
-        _ => Strings.Scan_Next_Convertible_Text,
+        _ => keepReason.Length > 0 ? string.Format(Strings.Scan_Next_RecommendKeep_Text, keepReason) : Strings.Scan_Next_Convertible_Text,
     };
 
     /// <summary>The report as plain text, for pasting into an issue or a note.</summary>
@@ -89,7 +99,7 @@ public static class ScanReportText
         var sb = new StringBuilder();
         sb.AppendLine(string.Format(Strings.Scan_ScannedAt, facts.OwnerAndName.Length > 0 ? facts.OwnerAndName : facts.Folder, when.ToString("g")));
         sb.AppendLine(VerdictTitle(report.Verdict) + ". " + report.Summary);
-        sb.AppendLine(NextStepText(report.Verdict));
+        sb.AppendLine(NextStepText(report.Verdict, KeepReason(report)));
         foreach (var severity in Enum.GetValues<ScanSeverity>())
         {
             var group = report.Of(severity).ToList();

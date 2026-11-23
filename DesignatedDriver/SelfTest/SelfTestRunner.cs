@@ -64,6 +64,7 @@ public static partial class SelfTestRunner
             WindowPlacementChecks(Check);
             DialogFitChecks(Check);
             ScanNextStepChecks(Check);
+            RecommendKeepChecks(Check);
             CloneAsIsChecks(Check);
             ProfileChecks(Check);
             OwnConventionsChecks(Check);
