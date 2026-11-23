@@ -904,6 +904,9 @@ public static class Strings
     /// <summary>Merges past the rules with --admin. Say why: the reason is posted as a comment on the p...</summary>
     public static string Review_BypassIntro => Get("Review_BypassIntro");
 
+    /// <summary>Merge with bypass needs admin rights on {0}. GitHub reports your role as {1}.</summary>
+    public static string Review_BypassNeedsAdmin => Get("Review_BypassNeedsAdmin");
+
     /// <summary>Merge with bypass is turned off for this repository. Change it in its Settings.</summary>
     public static string Review_BypassOff => Get("Review_BypassOff");
 
@@ -988,9 +991,6 @@ public static class Strings
     /// <summary>no review</summary>
     public static string Review_NoReview => Get("Review_NoReview");
 
-    /// <summary>Only repository admins can approve and merge. GitHub reports your role as {0}.</summary>
-    public static string Review_NotAdmin => Get("Review_NotAdmin");
-
     /// <summary>yours</summary>
     public static string Review_Own => Get("Review_Own");
 
@@ -1017,6 +1017,12 @@ public static class Strings
 
     /// <summary>Review</summary>
     public static string Review_ReviewSection => Get("Review_ReviewSection");
+
+    /// <summary>GitHub reports your role here as {0}: you can approve, request changes and merge when t...</summary>
+    public static string Review_RoleNoBypass => Get("Review_RoleNoBypass");
+
+    /// <summary>Your role on this repository couldn&apos;t be read, so nothing is greyed out. GitHub refuses...</summary>
+    public static string Review_RoleUnknown => Get("Review_RoleUnknown");
 
     /// <summary>Pick a pull request above.</summary>
     public static string Review_SelectPrompt => Get("Review_SelectPrompt");
@@ -1648,6 +1654,9 @@ public static class Strings
     /// <summary>Choose the repository folder</summary>
     public static string Settings_BrowseTitle => Get("Settings_BrowseTitle");
 
+    /// <summary>Needs admin rights on {0}. GitHub reports your role as {1}, so Review won&apos;t offer it wh...</summary>
+    public static string Settings_BypassNeedsAdmin => Get("Settings_BypassNeedsAdmin");
+
     /// <summary>The board&apos;s columns, by name. Start work lists the ready column and moves a card to In ...</summary>
     public static string Settings_ColumnsHelp => Get("Settings_ColumnsHelp");
 
@@ -1755,6 +1764,9 @@ public static class Strings
 
     /// <summary>The name of the GitHub check a pull request must pass before it can be merged.</summary>
     public static string Settings_RequiredCheckHelp => Get("Settings_RequiredCheckHelp");
+
+    /// <summary>Your role on {0} couldn&apos;t be read, so this isn&apos;t greyed out. GitHub refuses a bypass yo...</summary>
+    public static string Settings_RoleUnknown => Get("Settings_RoleUnknown");
 
     /// <summary>Self-test command</summary>
     public static string Settings_SelfTestCommand => Get("Settings_SelfTestCommand");
@@ -2445,6 +2457,9 @@ public static class Strings
 
     /// <summary>Status</summary>
     public static string Status_Title => Get("Status_Title");
+
+    /// <summary>Set board token needs admin rights on {0}, since it stores a secret. GitHub reports you...</summary>
+    public static string Status_TokenNeedsAdmin => Get("Status_TokenNeedsAdmin");
 
     /// <summary>The token is stored as the PROJECT_TOKEN secret for Actions and for Dependabot. It was ...</summary>
     public static string Status_TokenStored => Get("Status_TokenStored");

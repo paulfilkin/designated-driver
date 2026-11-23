@@ -157,7 +157,7 @@ public partial class MainWindow : Window, IShell
     {
         NavPanel.Children.Clear();
         _navButtons.Clear();
-        foreach (var screen in ScreenCatalogue.ScreensFor(Workspace.IsAdmin).Where(ScreenCatalogue.IsBuilt))
+        foreach (var screen in ScreenCatalogue.ScreensFor(Workspace.Role).Where(ScreenCatalogue.IsBuilt))
         {
             var button = new RadioButton
             {
@@ -330,7 +330,7 @@ public partial class MainWindow : Window, IShell
             UserChip.Visibility = Visibility.Collapsed;
         }
         var shown = _navButtons.Keys.ToHashSet();
-        var wanted = ScreenCatalogue.ScreensFor(Workspace.IsAdmin).Where(ScreenCatalogue.IsBuilt).ToHashSet();
+        var wanted = ScreenCatalogue.ScreensFor(Workspace.Role).Where(ScreenCatalogue.IsBuilt).ToHashSet();
         if (!shown.SetEquals(wanted)) BuildNavigation();
     }
 

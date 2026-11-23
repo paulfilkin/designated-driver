@@ -71,7 +71,7 @@ public partial class StatusScreen : ScreenBase
         else
         {
             DependabotText.Text = ActionsText.Text = BoardFeedText.Text = Strings.Status_SignInFirst;
-            ActionsNote.Visibility = AutoAddLink.Visibility = Visibility.Collapsed;
+            ActionsNote.Visibility = AutoAddLink.Visibility = TokenNote.Visibility = Visibility.Collapsed;
             AddMissingButton.IsEnabled = TokenButton.IsEnabled = false;
         }
 
@@ -229,8 +229,8 @@ public partial class StatusScreen : ScreenBase
             Grid.SetColumn(titlePanel, 1); Grid.SetColumn(tags, 2); Grid.SetColumn(open, 3);
             row.Children.Add(number); row.Children.Add(titlePanel); row.Children.Add(tags); row.Children.Add(open);
 
-            // Admins go straight to the Review screen with this pull request selected.
-            if (Workspace.IsAdmin)
+            // Anyone who may review goes straight to the Review screen with this pull request selected (issue 81).
+            if (Roles.CanReview(Workspace.Role))
             {
                 var captured = pr.Number;
                 var review = UiHelpers.LinkButton(Strings.Status_ReviewPullRequest, () => Shell.Navigate(Screen.Review, captured), string.Format(Strings.Status_ReviewPullRequestFor, pr.Number));
@@ -277,7 +277,10 @@ public partial class StatusScreen : ScreenBase
     private async Task ShowAutomationAsync(CancellationToken ct)
     {
         AddMissingButton.IsEnabled = Workspace.Board is not null;
-        TokenButton.IsEnabled = true;
+        // Storing the board token is storing a secret, which needs admin (issue 81).
+        TokenButton.IsEnabled = Roles.CanStoreSecrets(Workspace.Role);
+        TokenNote.Text = Roles.NeedsAdmin(Workspace.Role, Repo.OwnerAndName, Strings.Status_TokenNeedsAdmin);
+        TokenNote.Visibility = TokenNote.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
 
         var alerts = await Workspace.GitHub.DependabotOpenAlertsAsync(Repo.OwnerAndName, ct);
         if (alerts is null)

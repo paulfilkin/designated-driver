@@ -29,6 +29,7 @@ public static partial class SelfTestRunner
             CommitMessageCheckChecks(Check);
             SampleOutputChecks(Check);
             ScreenChecks(Check);
+            RoleChecks(Check);
             BypassFlowChecks(Check);
             BoardMoveChecks(Check);
             BoardMissingChecks(Check);
@@ -254,19 +255,26 @@ public static partial class SelfTestRunner
         check(ChecksSummary.Overall(["pass", "pending"]) == "pending" && ChecksSummary.Overall(["pass", "fail"]) == "fail" && ChecksSummary.Overall([]) == "none" && ChecksSummary.Overall(["pass"]) == "pass", "Checks summary over several checks");
     }
 
-    // 4. Which screens and actions an admin and a non-admin see
+    // 4. Which screens and actions each role sees (issue 81)
 
     private static void ScreenChecks(Action<bool, string> check)
     {
-        var admin = ScreenCatalogue.ScreensFor(true);
-        var contributor = ScreenCatalogue.ScreensFor(false);
-        check(admin.Contains(Screen.Review), "Admin sees the Review screen");
-        check(!contributor.Contains(Screen.Review), "Non-admin doesn't see the Review screen");
-        check(contributor.SequenceEqual([Screen.Repositories, Screen.Scan, Screen.NewRepository, Screen.Status, Screen.Check, Screen.StartWork, Screen.SaveAndShare, Screen.Submit, Screen.TidyUp, Screen.FixProblem]), "Non-admin sees Repositories, Scan, Set up a repository, Status, Check, Start work, Save and share, Submit, Tidy up and Fix a problem");
+        var admin = ScreenCatalogue.ScreensFor(Role.Admin);
+        var reader = ScreenCatalogue.ScreensFor(Role.Read);
+        check(admin.Contains(Screen.Review) && ScreenCatalogue.ScreensFor(Role.Write).Contains(Screen.Review) && ScreenCatalogue.ScreensFor(Role.Maintain).Contains(Screen.Review),
+            "Admin, maintain and write see the Review screen");
+        check(!reader.Contains(Screen.Review) && !ScreenCatalogue.ScreensFor(Role.Triage).Contains(Screen.Review), "Read and triage don't see the Review screen");
+        check(ScreenCatalogue.ScreensFor(Role.Unknown).Contains(Screen.Review), "A role that couldn't be read hides nothing, Review included");
+        check(reader.SequenceEqual([Screen.Repositories, Screen.Scan, Screen.NewRepository, Screen.Status, Screen.Check, Screen.StartWork, Screen.SaveAndShare, Screen.Submit, Screen.TidyUp, Screen.FixProblem]), "Read sees Repositories, Scan, Set up a repository, Status, Check, Start work, Save and share, Submit, Tidy up and Fix a problem");
         check(admin.SequenceEqual([Screen.Repositories, Screen.Scan, Screen.NewRepository, Screen.Status, Screen.Check, Screen.StartWork, Screen.SaveAndShare, Screen.Submit, Screen.Review, Screen.TidyUp, Screen.FixProblem]), "Admin sees Review between Submit and Tidy up");
-        check(ScreenCatalogue.ActionsFor(false).Count == 0, "Non-admin has no approve, request changes, merge or bypass actions");
-        check(ScreenCatalogue.ActionsFor(true).SequenceEqual([AdminAction.Approve, AdminAction.RequestChanges, AdminAction.Merge, AdminAction.BypassMerge]), "Admin has approve, request changes, merge and bypass actions");
-        check(ScreenCatalogue.IsAdminOnly(Screen.Review) && !ScreenCatalogue.IsAdminOnly(Screen.Submit), "Only Review is admin-only");
+        check(ScreenCatalogue.ActionsFor(Role.Read).Count == 0 && ScreenCatalogue.ActionsFor(Role.Triage).Count == 0, "Read and triage have no approve, request changes, merge or bypass actions");
+        check(ScreenCatalogue.ActionsFor(Role.Write).SequenceEqual([ReviewOffer.Approve, ReviewOffer.RequestChanges, ReviewOffer.Merge])
+            && ScreenCatalogue.ActionsFor(Role.Maintain).SequenceEqual([ReviewOffer.Approve, ReviewOffer.RequestChanges, ReviewOffer.Merge]),
+            "Write and maintain approve, request changes and merge, but don't bypass");
+        check(ScreenCatalogue.ActionsFor(Role.Admin).SequenceEqual([ReviewOffer.Approve, ReviewOffer.RequestChanges, ReviewOffer.Merge, ReviewOffer.BypassMerge])
+            && ScreenCatalogue.ActionsFor(Role.Unknown).SequenceEqual([ReviewOffer.Approve, ReviewOffer.RequestChanges, ReviewOffer.Merge, ReviewOffer.BypassMerge]),
+            "Admin, and a role that couldn't be read, have approve, request changes, merge and bypass");
+        check(ScreenCatalogue.NeedsWriteAccess(Screen.Review) && !ScreenCatalogue.NeedsWriteAccess(Screen.Submit), "Only Review needs write access");
         check(!ScreenCatalogue.NeedsRepository(Screen.Repositories) && !ScreenCatalogue.NeedsRepository(Screen.Scan) && ScreenCatalogue.NeedsRepository(Screen.Status), "Repositories and Scan work without a current repository; Status needs one");
         check(Enum.GetValues<Screen>().All(ScreenCatalogue.IsBuilt), "Every screen is built");
         check(ScreenCatalogue.Title(Screen.Scan).Length > 0 && ScreenCatalogue.Title(Screen.Repositories).Length > 0, "Screens have titles from the resource strings");

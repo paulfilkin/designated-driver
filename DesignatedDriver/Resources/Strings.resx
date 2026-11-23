@@ -432,7 +432,12 @@ Go ahead?</value></data>
   <!-- Review (admins) -->
   <data name="Review_Title" xml:space="preserve"><value>Review</value></data>
   <data name="Review_Intro" xml:space="preserve"><value>Open pull requests on the repository. Pick one to see its files, approve it, ask for changes or merge it.</value></data>
-  <data name="Review_NotAdmin" xml:space="preserve"><value>Only repository admins can approve and merge. GitHub reports your role as {0}.</value></data>
+  <data name="Review_RoleNoBypass" xml:space="preserve"><value>GitHub reports your role here as {0}: you can approve, request changes and merge when the rules allow, but merge with bypass needs admin rights.</value></data>
+  <data name="Review_RoleUnknown" xml:space="preserve"><value>Your role on this repository couldn&apos;t be read, so nothing is greyed out. GitHub refuses anything your role doesn&apos;t allow.</value></data>
+  <data name="Review_BypassNeedsAdmin" xml:space="preserve"><value>Merge with bypass needs admin rights on {0}. GitHub reports your role as {1}.</value></data>
+  <data name="Status_TokenNeedsAdmin" xml:space="preserve"><value>Set board token needs admin rights on {0}, since it stores a secret. GitHub reports your role as {1}.</value></data>
+  <data name="Settings_BypassNeedsAdmin" xml:space="preserve"><value>Needs admin rights on {0}. GitHub reports your role as {1}, so Review won&apos;t offer it whatever this box says.</value></data>
+  <data name="Settings_RoleUnknown" xml:space="preserve"><value>Your role on {0} couldn&apos;t be read, so this isn&apos;t greyed out. GitHub refuses a bypass your role doesn&apos;t allow.</value></data>
   <data name="Review_ListCard" xml:space="preserve"><value>Open pull requests</value></data>
   <data name="Review_NoPullRequests" xml:space="preserve"><value>There are no open pull requests.</value></data>
   <data name="Review_SelectPrompt" xml:space="preserve"><value>Pick a pull request above.</value></data>

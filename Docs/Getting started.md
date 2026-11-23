@@ -46,7 +46,9 @@ A repository without a manifest keeps its own settings in its entry in the tool'
 
 A repository with rules of its own, such as an organisation's repository with its own ruleset, labels and board automations, can be left as it is: tick **Keeps its own conventions** in its Settings, or press **Keep it as it is** after scanning it, which ticks it for you.  Scan recommends Keep it as it is for such a repository.  Once it is ticked, Repositories tags it **Own conventions**, Scan says so instead of offering to apply the convention and heads its list of changes "What the convention would change", Set up a repository and `--setup` refuse it, and Check and `--check` say so instead of listing drift.  The workflow screens use its own settings, its board included, and Review doesn't offer merge with bypass there.  Clear the box to convert it later, on purpose.
 
-**Offer merge with bypass on Review**, in a repository's Settings, decides whether Review offers to merge past the repository's rules with your admin rights.  Until you change it, it is off for a repository that keeps its own conventions and on for the rest.  Once you tick or clear it, that choice stays, whatever happens to **Keeps its own conventions** later.
+**Offer merge with bypass on Review**, in a repository's Settings, decides whether Review offers to merge past the repository's rules with your admin rights.  Until you change it, it is off for a repository that keeps its own conventions and on for the rest.  Once you tick or clear it, that choice stays, whatever happens to **Keeps its own conventions** later.  It is greyed out, with the reason, when GitHub reports your role on the repository as anything below admin.
+
+What you can do follows your role on the repository, as GitHub reports it.  Review, with approve, request changes and merge, needs write access; merge with bypass and **Set board token** on Status need admin.  Anything your role can't do is hidden or greyed out, with a line saying why.  When your role can't be read, nothing is greyed out, the screen says so, and GitHub refuses what your role doesn't allow.  A fork you own is your own repository, so you have everything there.
 
 The wizard has three pages:
 
@@ -70,7 +72,7 @@ What the repository already has is kept.  Its own issue forms stay, and the conv
 | Start work | Write a new issue from the issue forms' fields, or pick one from the board's Todo column (or the profile's ready column), assign it to yourself, move its card to In Progress, make the branch |
 | Save and share | Commit with the message checks, push |
 | Submit | Update the branch from main if it is behind, open the pull request from the template with its `Closes #n` line filled in, put it on the board, move the issue's card to the profile's In review column if it has one, watch the check |
-| Review | Approve, request changes, merge; admins only.  Each asks first in a window that names the repository in large type; a merge also needs the repository's name typed, unless its Settings turn that off.  Merge with bypass is offered only where the repository's Settings allow it.  A merge re-reads the pull request first and stops if main has moved under it.  Picking another pull request while one loads shows the newest |
+| Review | Approve, request changes, merge; needs write access, and merge with bypass needs admin.  Each asks first in a window that names the repository in large type; a merge also needs the repository's name typed, unless its Settings turn that off.  Merge with bypass is offered only where the repository's Settings allow it.  A merge re-reads the pull request first and stops if main has moved under it.  Picking another pull request while one loads shows the newest |
 | Tidy up | Back to main, pull, delete merged branches |
 | Fix a problem | The common situations, each with its commands |
 

@@ -22,6 +22,9 @@ public partial class SettingsWindow : Window
     private bool _bypassChosen;
     /// <summary>True while the bypass box is being set to follow Keeps its own conventions, which isn't a choice.</summary>
     private bool _bypassFollowing;
+    /// <summary>The repository whose role was last read, so the same one isn't read twice (issue 81).</summary>
+    private string _roleFor = "";
+    private CancellationTokenSource? _roleRead;
 
     /// <param name="readFromGitHub">Read what the repository already uses from GitHub as the window opens, for a repository just added.</param>
     public SettingsWindow(IShell shell, RepositorySettings? repository, bool readFromGitHub = false)
@@ -68,7 +71,30 @@ public partial class SettingsWindow : Window
         }
         UpdateReadPanel();
         if (readFromGitHub && CanRead) Loaded += (_, _) => _ = ReadAsync(firstRead: true);
-        Closed += (_, _) => { _probe?.Cancel(); _read?.Cancel(); };
+        // The role on this repository decides whether the bypass can be offered; a folder's probe reads it again.
+        Loaded += (_, _) => _ = ReadRoleAsync(OwnerRepoBox.Text.Trim());
+        Closed += (_, _) => { _probe?.Cancel(); _read?.Cancel(); _roleRead?.Cancel(); };
+    }
+
+    /// <summary>
+    /// Reads the signed-in user's role on the repository and greys out Offer merge with bypass below admin, saying why;
+    /// when the role can't be read nothing is greyed out and the window says so (issue 81). The stored value is kept.
+    /// </summary>
+    private async Task ReadRoleAsync(string ownerAndName)
+    {
+        if (!ownerAndName.Contains('/') || ownerAndName.Equals(_roleFor, StringComparison.OrdinalIgnoreCase)) return;
+        _roleFor = ownerAndName;
+        _roleRead?.Cancel();
+        var cts = _roleRead = new CancellationTokenSource();
+        Role role;
+        try { role = Roles.Parse((await _shell.Workspace.GitHub.RepositoryAsync(ownerAndName, "viewerPermission", cts.Token)).ViewerPermission); }
+        catch (CommandFailedException) { role = Role.Unknown; }
+        catch (OperationCanceledException) { return; }
+        if (cts.IsCancellationRequested) return;
+        var note = role == Role.Unknown ? string.Format(Strings.Settings_RoleUnknown, ownerAndName) : Roles.NeedsAdmin(role, ownerAndName, Strings.Settings_BypassNeedsAdmin);
+        OfferBypassBox.IsEnabled = Roles.CanBypass(role);
+        BypassRoleNote.Text = note;
+        BypassRoleNote.Visibility = note.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 
     /// <summary>A repository with a manifest takes its values from there, so only one without can be read from GitHub.</summary>
@@ -129,6 +155,7 @@ public partial class SettingsWindow : Window
             FolderNote.Text = string.Format(Strings.Settings_FolderOk, root);
             FolderNote.Foreground = UiHelpers.Brush("SuccessBrush");
             UpdateReadPanel();
+            _ = ReadRoleAsync(OwnerRepoBox.Text);
 
             var known = _shell.Workspace.Settings.Find(OwnerRepoBox.Text);
             if (_adding && known is not null)
