@@ -79,7 +79,7 @@ public static class Strings
     /// <summary>Designated Driver</summary>
     public static string App_Name => Get("App_Name");
 
-    /// <summary>One convention for every repository, and the workflow that keeps it</summary>
+    /// <summary>Vibe code all you like: every change still gets home safely.</summary>
     public static string App_Tagline => Get("App_Tagline");
 
     /// <summary>No board is known for this repository.</summary>
