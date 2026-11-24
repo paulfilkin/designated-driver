@@ -263,6 +263,12 @@ Replace them with GitHub's values? No keeps yours.</value></data>
   <data name="StartWork_NotReadyTip" xml:space="preserve"><value>This issue is labelled blocked.</value></data>
   <data name="StartWork_BranchCard" xml:space="preserve"><value>Branch</value></data>
   <data name="StartWork_NoneSelected" xml:space="preserve"><value>Select an issue above.</value></data>
+  <data name="StartWork_OpenedBy" xml:space="preserve"><value>Opened by {0} on {1}</value></data>
+  <data name="StartWork_OpenedOn" xml:space="preserve"><value>Opened on {0}</value></data>
+  <data name="StartWork_NoDescription" xml:space="preserve"><value>No description.</value></data>
+  <data name="StartWork_IssueBody" xml:space="preserve"><value>The issue's description</value></data>
+  <data name="StartWork_Ticked" xml:space="preserve"><value>Ticked: {0}</value></data>
+  <data name="StartWork_NotTicked" xml:space="preserve"><value>Not ticked: {0}</value></data>
   <data name="StartWork_BranchName" xml:space="preserve"><value>Branch name</value></data>
   <data name="StartWork_BranchNameHelp" xml:space="preserve"><value>Built from the issue's labels, number and title. You can change it before the branch is created.</value></data>
   <data name="StartWork_BranchEmpty" xml:space="preserve"><value>Give the branch a name.</value></data>

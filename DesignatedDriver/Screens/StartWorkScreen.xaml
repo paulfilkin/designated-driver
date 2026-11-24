@@ -71,6 +71,29 @@
             </StackPanel>
         </Border>
 
+        <!-- The picked issue, so what it asks for is read before a branch is made for it, as Review shows a picked pull
+             request. Hidden until an issue is picked; a long body scrolls inside the card. -->
+        <Border x:Name="IssueCard" Style="{StaticResource CardStyle}" Visibility="Collapsed">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="IssueCardTitle" Style="{StaticResource CardTitle}" TextWrapping="Wrap"/>
+                    <Button Grid.Column="1" Content="{x:Static res:Strings.Common_OpenOnGitHub}" Style="{StaticResource LinkButton}" VerticalAlignment="Top" Margin="12,0,0,0" Click="OpenIssue_Click"
+                            AutomationProperties.Name="{x:Static res:Strings.Common_OpenOnGitHub}"/>
+                </Grid>
+                <WrapPanel x:Name="IssueCardTags" Margin="0,0,0,4"/>
+                <TextBlock x:Name="IssueCardOpened" Style="{StaticResource HelperText}" Margin="0,0,0,10"/>
+                <Border BorderBrush="{StaticResource BorderLightBrush}" BorderThickness="1" CornerRadius="8" Padding="14,10">
+                    <ScrollViewer x:Name="IssueBodyScroller" MaxHeight="360" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+                        <StackPanel x:Name="IssueBodyPanel" AutomationProperties.Name="{x:Static res:Strings.StartWork_IssueBody}"/>
+                    </ScrollViewer>
+                </Border>
+            </StackPanel>
+        </Border>
+
         <Border Style="{StaticResource CardStyle}">
             <StackPanel>
                 <TextBlock Text="{x:Static res:Strings.StartWork_BranchCard}" Style="{StaticResource CardTitle}"/>

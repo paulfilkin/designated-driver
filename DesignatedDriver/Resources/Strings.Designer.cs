@@ -2242,6 +2242,9 @@ public static class Strings
     /// <summary>Pick an issue from the board&apos;s Todo column. The tool gets the latest main, assigns the ...</summary>
     public static string StartWork_Intro => Get("StartWork_Intro");
 
+    /// <summary>The issue&apos;s description</summary>
+    public static string StartWork_IssueBody => Get("StartWork_IssueBody");
+
     /// <summary>Select the issue you will work on</summary>
     public static string StartWork_IssueListHelp => Get("StartWork_IssueListHelp");
 
@@ -2250,6 +2253,9 @@ public static class Strings
 
     /// <summary>No board is known for this repository, so all open issues are shown. Set-up creates one...</summary>
     public static string StartWork_NoBoard => Get("StartWork_NoBoard");
+
+    /// <summary>No description.</summary>
+    public static string StartWork_NoDescription => Get("StartWork_NoDescription");
 
     /// <summary>The board has no {0} column, so the card wasn&apos;t moved.</summary>
     public static string StartWork_NoInProgressColumn => Get("StartWork_NoInProgressColumn");
@@ -2269,6 +2275,15 @@ public static class Strings
     /// <summary>This issue is labelled blocked.</summary>
     public static string StartWork_NotReadyTip => Get("StartWork_NotReadyTip");
 
+    /// <summary>Not ticked: {0}</summary>
+    public static string StartWork_NotTicked => Get("StartWork_NotTicked");
+
+    /// <summary>Opened by {0} on {1}</summary>
+    public static string StartWork_OpenedBy => Get("StartWork_OpenedBy");
+
+    /// <summary>Opened on {0}</summary>
+    public static string StartWork_OpenedOn => Get("StartWork_OpenedOn");
+
     /// <summary>Issues ready to work on</summary>
     public static string StartWork_ReadyIssues => Get("StartWork_ReadyIssues");
 
@@ -2283,6 +2298,9 @@ public static class Strings
 
     /// <summary>There are uncommitted changes, so nothing was started. Refresh and try again.</summary>
     public static string StartWork_StillDirty => Get("StartWork_StillDirty");
+
+    /// <summary>Ticked: {0}</summary>
+    public static string StartWork_Ticked => Get("StartWork_Ticked");
 
     /// <summary>Start work</summary>
     public static string StartWork_Title => Get("StartWork_Title");

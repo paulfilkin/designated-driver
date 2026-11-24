@@ -194,7 +194,8 @@ public sealed partial class GitHubService(ICommandRunner runner, Func<Repository
 
     // Issues
 
-    private const string IssueFields = "number,title,labels,assignees,body,url,state";
+    // Author and creation date for Start work's issue card (issue 89).
+    private const string IssueFields = "number,title,labels,assignees,body,url,state,author,createdAt";
 
     public async Task<GhIssue> IssueAsync(int number, CancellationToken ct)
     {

@@ -330,6 +330,8 @@ All four phases were built on 20 November 2026 and released as v0.1.0, with two 
 
 **The busy strip keeps its space** (5).  The strip sat in an auto-height row and was collapsed when idle, so every start of work pushed the page down by its height and every end pulled it back.  On Review that moved the list under a held click: clicking a pull request started loading its files, the strip appeared, and the list selected the row that slid under the pointer, whose pick then stopped the first.  The strip is now hidden rather than collapsed when idle, so its row keeps its height and nothing below it moves.
 
+**Start work shows the picked issue** (5).  Start work's list showed only titles, so a branch could be started for an issue without reading what it asks for.  Picking an issue now shows a card under the list, as Review shows a picked pull request: its number and title, its labels, who opened it and when, and its body, with Open on GitHub.  The list already reads each issue's body, and now its author and creation date too, so the pick runs no command.  The body is laid out by `IssueBodyLayout`, a simple reading of GitHub Markdown, not all of it: headings (the `###` sections issue forms write), paragraphs with their line breaks, bullets and numbered items with their nesting, task lines with their boxes, fenced code, and `_No response_` greyed; HTML comments are left out, and inline only code, bold and links (shown as their text) are read.  A long body scrolls inside the card.
+
 ### 12.3 Releases
 
 | Version | Date | What it added |

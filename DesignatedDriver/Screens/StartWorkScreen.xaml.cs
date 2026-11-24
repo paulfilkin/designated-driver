@@ -137,7 +137,105 @@ public partial class StartWorkScreen : ScreenBase
             SelectedIssueText.Text = $"#{row.Issue.Number}  {row.Issue.Title}";
             BranchBox.Text = BranchNames.Build(row.Issue.LabelNames, row.Issue.Number, row.Issue.Title);
         }
+        ShowIssueCard(row?.Issue);
         UpdateStartButton();
+    }
+
+    // The picked issue's card (issue 89). The list already holds each issue's body, so nothing more is read.
+
+    private string _pickedUrl = "";
+
+    private void OpenIssue_Click(object sender, RoutedEventArgs e) { if (_pickedUrl.Length > 0) Shell.OpenUrl(_pickedUrl); }
+
+    private void ShowIssueCard(GhIssue? issue)
+    {
+        IssueCard.Visibility = issue is null ? Visibility.Collapsed : Visibility.Visible;
+        _pickedUrl = issue?.Url ?? "";
+        if (issue is null) return;
+
+        IssueCardTitle.Text = $"#{issue.Number}  {issue.Title}";
+        IssueCardTags.Children.Clear();
+        foreach (var label in issue.Labels)
+        {
+            var chip = UiHelpers.LabelChip(label);
+            chip.Margin = new Thickness(0, 0, 6, 4);
+            IssueCardTags.Children.Add(chip);
+        }
+        IssueCardTags.Visibility = issue.Labels.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+
+        var opened = issue.CreatedAt == default ? "" : issue.CreatedAt.ToLocalTime().ToString("d MMMM yyyy", System.Globalization.CultureInfo.GetCultureInfo("en-GB"));
+        IssueCardOpened.Text = opened.Length == 0 ? "" : issue.Author is { Login.Length: > 0 } author ? string.Format(Strings.StartWork_OpenedBy, author.Login, opened) : string.Format(Strings.StartWork_OpenedOn, opened);
+        IssueCardOpened.Visibility = IssueCardOpened.Text.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+
+        IssueBodyPanel.Children.Clear();
+        var blocks = IssueBodyLayout.Parse(issue.Body);
+        if (blocks.Count == 0) IssueBodyPanel.Children.Add(UiHelpers.Text(Strings.StartWork_NoDescription, "HelperText"));
+        foreach (var block in blocks) IssueBodyPanel.Children.Add(BlockElement(block));
+        IssueBodyScroller.ScrollToTop();
+    }
+
+    /// <summary>One block of the body as WPF: headings bolder, lists and task lines indented with their marks, code in a box, No response greyed.</summary>
+    private static FrameworkElement BlockElement(BodyBlock block)
+    {
+        switch (block.Kind)
+        {
+            case BodyBlockKind.Heading:
+                var heading = SpanText(block.Spans);
+                heading.FontWeight = FontWeights.SemiBold;
+                heading.FontSize = block.Level <= 2 ? 17 : 15;
+                heading.Margin = new Thickness(0, 10, 0, 4);
+                return heading;
+            case BodyBlockKind.NoResponse:
+                var none = SpanText(block.Spans);
+                none.FontStyle = FontStyles.Italic;
+                none.Foreground = UiHelpers.Brush("TextTertiaryBrush");
+                none.Margin = new Thickness(0, 0, 0, 6);
+                return none;
+            case BodyBlockKind.Code:
+                return new Border
+                {
+                    Background = UiHelpers.Brush("NeutralSoftestBrush"),
+                    CornerRadius = new CornerRadius(6),
+                    Padding = new Thickness(10, 6, 10, 6),
+                    Margin = new Thickness(0, 0, 0, 6),
+                    Child = new TextBlock { Text = block.Text, FontFamily = new System.Windows.Media.FontFamily("Cascadia Mono, Consolas"), FontSize = 13, TextWrapping = TextWrapping.Wrap },
+                };
+            case BodyBlockKind.Bullet:
+            case BodyBlockKind.Task:
+                var row = new Grid { Margin = new Thickness(block.Level * 18, 0, 0, 3) };
+                row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(24) });
+                row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                var mark = block.Kind == BodyBlockKind.Task ? (block.Ticked ? "☑" : "☐") : block.Marker.Length > 0 ? block.Marker : "•";
+                row.Children.Add(new TextBlock { Text = mark, FontFamily = new System.Windows.Media.FontFamily("Segoe UI Symbol, Segoe UI"), Foreground = UiHelpers.Brush("TextSecondaryBrush") });
+                var text = SpanText(block.Spans);
+                Grid.SetColumn(text, 1);
+                row.Children.Add(text);
+                AutomationProperties.SetName(row, block.Kind != BodyBlockKind.Task ? block.Text
+                    : string.Format(block.Ticked ? Strings.StartWork_Ticked : Strings.StartWork_NotTicked, block.Text));
+                return row;
+            default:
+                var paragraph = SpanText(block.Spans);
+                paragraph.Margin = new Thickness(0, 0, 0, 6);
+                return paragraph;
+        }
+    }
+
+    /// <summary>A wrapping text block of the spans, bold and code runs marked.</summary>
+    private static TextBlock SpanText(IReadOnlyList<BodySpan> spans)
+    {
+        var text = new TextBlock { TextWrapping = TextWrapping.Wrap, Foreground = UiHelpers.Brush("TextPrimaryBrush") };
+        foreach (var span in spans)
+        {
+            var run = new System.Windows.Documents.Run(span.Text);
+            if (span.Bold) run.FontWeight = FontWeights.SemiBold;
+            if (span.Code)
+            {
+                run.FontFamily = new System.Windows.Media.FontFamily("Cascadia Mono, Consolas");
+                run.Background = UiHelpers.Brush("NeutralSoftestBrush");
+            }
+            text.Inlines.Add(run);
+        }
+        return text;
     }
 
     private void BranchBox_TextChanged(object sender, TextChangedEventArgs e) => UpdateStartButton();
