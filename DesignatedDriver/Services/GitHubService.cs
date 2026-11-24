@@ -157,6 +157,26 @@ public sealed partial class GitHubService(ICommandRunner runner, Func<Repository
         return r.Ok ? r.Output : null;
     }
 
+    /// <summary>
+    /// The repository's issue forms on GitHub's default branch, where GitHub's own New issue page reads them, in
+    /// file name order, each read as a New issue choice (issue 88). Empty when there are none; null when the
+    /// folder or a form can't be read, so New issue falls back to its built-in choices and says why.
+    /// </summary>
+    public async Task<List<IssueChoice>?> IssueFormsAsync(string ownerAndName, CancellationToken ct)
+    {
+        var folder = await ApiAsync(ct, $"repos/{ownerAndName}/contents/.github/ISSUE_TEMPLATE").ConfigureAwait(false);
+        if (folder.Status == ApiStatus.NotFound) return [];
+        if (!folder.Ok || !folder.Output.TrimStart().StartsWith('[')) return null;
+        var forms = new List<IssueChoice>();
+        foreach (var entry in GhJson.ParseRestList<GhContentEntry>(folder.Output).Where(e => !e.IsDirectory && IssueForms.IsForm(e.Path)).OrderBy(e => e.Name, StringComparer.OrdinalIgnoreCase))
+        {
+            var text = await FileContentAsync(ownerAndName, entry.Path, ct).ConfigureAwait(false);
+            if (text is null) return null;
+            if (IssueForms.Read(text, entry.Name) is { } form) forms.Add(form);
+        }
+        return forms;
+    }
+
     /// <summary>User or Organization, for building the right project board URL.</summary>
     public async Task<string> OwnerTypeAsync(string owner, CancellationToken ct)
     {

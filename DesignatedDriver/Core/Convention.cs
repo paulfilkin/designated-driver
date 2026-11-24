@@ -62,8 +62,11 @@ public enum LabelChange { Create, Recolour, Rename }
 /// <summary>One change to the labels: create or recolour a convention label, or rename a default label (From) to it.</summary>
 public sealed record LabelAction(LabelChange Change, ConventionLabel Label, string From = "");
 
-/// <summary>Reads the labels an issue form applies, from its top-level labels key, in flow or block form.</summary>
-public static class IssueForms
+/// <summary>
+/// Reads the labels an issue form applies, from its top-level labels key, in flow or block form. Read, in
+/// IssueForms.Read.cs, reads a whole form for New issue.
+/// </summary>
+public static partial class IssueForms
 {
     public static List<string> Labels(string yaml)
     {

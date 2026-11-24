@@ -35,16 +35,10 @@
                 </Grid>
                 <TextBlock Text="{x:Static res:Strings.NewIssue_Intro}" Style="{StaticResource HelperText}" Margin="0,0,0,8"/>
                 <StackPanel x:Name="NewIssuePanel" Visibility="Collapsed">
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                        <RadioButton x:Name="BugOption" GroupName="IssueKind" Content="{x:Static res:Strings.NewIssue_Bug}" IsChecked="True" Margin="0,0,16,0" Checked="IssueKind_Changed"
-                                     AutomationProperties.Name="{x:Static res:Strings.NewIssue_Bug}"/>
-                        <RadioButton x:Name="FeatureOption" GroupName="IssueKind" Content="{x:Static res:Strings.NewIssue_Feature}" Margin="0,0,16,0" Checked="IssueKind_Changed"
-                                     AutomationProperties.Name="{x:Static res:Strings.NewIssue_Feature}"/>
-                        <RadioButton x:Name="ChoreOption" GroupName="IssueKind" Content="{x:Static res:Strings.NewIssue_Chore}" Margin="0,0,16,0" Checked="IssueKind_Changed"
-                                     AutomationProperties.Name="{x:Static res:Strings.NewIssue_Chore}"/>
-                        <RadioButton x:Name="DocsOption" GroupName="IssueKind" Content="{x:Static res:Strings.NewIssue_Docs}" Checked="IssueKind_Changed"
-                                     AutomationProperties.Name="{x:Static res:Strings.NewIssue_Docs}"/>
-                    </StackPanel>
+                    <!-- One radio button per choice: the repository's issue forms, or the built-in four (issue 88). -->
+                    <WrapPanel x:Name="ChoicePanel" Margin="0,0,0,2"/>
+                    <TextBlock x:Name="ChoiceSource" Style="{StaticResource HelperText}" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                    <TextBlock x:Name="ChoiceDescription" Style="{StaticResource HelperText}" TextWrapping="Wrap" Margin="0,0,0,8" Visibility="Collapsed"/>
                     <TextBlock Text="{x:Static res:Strings.NewIssue_TitleLabel}" Style="{StaticResource LabelText}"/>
                     <TextBox x:Name="IssueTitleBox" Style="{StaticResource ModernTextBox}" TextChanged="IssueField_TextChanged"
                              AutomationProperties.Name="{x:Static res:Strings.NewIssue_TitleLabel}" AutomationProperties.HelpText="{x:Static res:Strings.NewIssue_TitleHelp}"/>

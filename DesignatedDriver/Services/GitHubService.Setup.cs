@@ -184,13 +184,15 @@ public sealed partial class GitHubService
         return GhJson.ParseList<GhIssue>(r.StandardOutput).FirstOrDefault(i => i.Title.Equals(title, StringComparison.Ordinal));
     }
 
-    public async Task<(int Number, string Url)> CreateIssueAsync(string ownerAndName, string title, string body, string label, CancellationToken ct)
+    /// <summary>Creates an issue with gh, with a --label per label; every label must exist in the repository.</summary>
+    public async Task<(int Number, string Url)> CreateIssueAsync(string ownerAndName, string title, string body, IReadOnlyList<string> labels, CancellationToken ct)
     {
         var file = Path.Combine(Path.GetTempPath(), $"designated-driver-issue-{Guid.NewGuid():N}.md");
         try
         {
             await File.WriteAllTextAsync(file, body, new System.Text.UTF8Encoding(false), ct).ConfigureAwait(false);
-            var r = await MustInFolderAsync(null, ct, "issue", "create", "-R", ownerAndName, "--title", title, "--label", label, "--body-file", file).ConfigureAwait(false);
+            string[] args = ["issue", "create", "-R", ownerAndName, "--title", title, .. labels.SelectMany(l => new[] { "--label", l }), "--body-file", file];
+            var r = await MustInFolderAsync(null, ct, args).ConfigureAwait(false);
             var url = IssueUrl().Match(r.StandardOutput + "\n" + r.StandardError);
             return url.Success ? (int.Parse(url.Groups[1].Value), url.Value) : (0, r.StandardOutput.Trim());
         }

@@ -76,6 +76,13 @@ public static partial class SelfTestRunner
         check(dependabot.Contains("package-ecosystem: github-actions", StringComparison.Ordinal) && dependabot.Contains("package-ecosystem: nuget", StringComparison.Ordinal), "dependabot.yml: github-actions and nuget for .NET");
         check(rendered[".github/CODEOWNERS"].Contains("* @paulfilkin", StringComparison.Ordinal), "CODEOWNERS: the owner");
         check(rendered[".github/ISSUE_TEMPLATE/config.yml"].Contains("https://github.com/paulfilkin/example/blob/main/CONTRIBUTING.md", StringComparison.Ordinal) && rendered[".github/ISSUE_TEMPLATE/bug.yml"].Contains("labels: [\"bug\"]", StringComparison.Ordinal), "Issue forms: blank issues off with a link to CONTRIBUTING, and the bug form applies its label");
+        // Read back as New issue reads a repository's forms (issue 88), the convention's forms give the built-in Bug and Feature.
+        static string Shape(IssueChoice? c) => c is null ? "" : string.Join(";", c.Fields.Where(f => f.Type != IssueFieldType.Markdown).Select(f => $"{f.Id}|{f.Label}|{f.Required}|{f.Type}"));
+        var conventionBug = IssueForms.Read(rendered[".github/ISSUE_TEMPLATE/bug.yml"], "bug.yml");
+        var conventionFeature = IssueForms.Read(rendered[".github/ISSUE_TEMPLATE/feature.yml"], "feature.yml");
+        check(conventionBug is { Name: "Bug", Labels: ["bug"] } && Shape(conventionBug) == Shape(IssueTexts.Bug)
+            && conventionFeature is { Name: "Feature", Labels: ["feature"] } && Shape(conventionFeature) == Shape(IssueTexts.Feature),
+            "Issue forms: the convention's bug.yml and feature.yml read as the built-in Bug and Feature, field for field");
         var prTemplate = rendered[".github/pull_request_template.md"];
         check(prTemplate.Contains("- [ ] The pull request closes one issue, named above.", StringComparison.Ordinal) && prTemplate.Contains("## AI assistance", StringComparison.Ordinal), "Pull request template: the checklist and the AI assistance section");
         check(rendered[".githooks/pre-push"].Contains("branch=\"main\"", StringComparison.Ordinal) && rendered[".githooks/commit-msg"].StartsWith("#!/bin/sh\n", StringComparison.Ordinal), "Hooks: the default branch is in pre-push and both start with a sh shebang");

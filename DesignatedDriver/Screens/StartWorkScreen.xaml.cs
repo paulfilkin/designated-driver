@@ -14,14 +14,21 @@ public partial class StartWorkScreen : ScreenBase
     private sealed record IssueRow(GhIssue Issue, string? ProjectItemId, string BoardStatus);
 
     private List<IssueRow> _rows = [];
+    // New issue's choices and the controls of the chosen one's fields, by field id (issue 88).
+    private List<IssueChoice> _choices = [];
+    private IssueChoice? _choice;
     private readonly Dictionary<string, TextBox> _issueBoxes = [];
+    private readonly Dictionary<string, ComboBox> _issueCombos = [];
+    private readonly Dictionary<string, List<CheckBox>> _issueTicks = [];
     private bool _clean;
     private bool _hasBoard;
 
     public StartWorkScreen(IShell shell) : base(shell)
     {
         InitializeComponent();
-        BuildIssueFields();
+        // The built-in choices until the load has read the repository's issue forms.
+        ShowChoices([]);
+        ChoiceSource.Text = "";
     }
 
     private void Refresh_Click(object sender, RoutedEventArgs e) => _ = Shell.RunAsync(RefreshAsync);
@@ -67,6 +74,9 @@ public partial class StartWorkScreen : ScreenBase
                       .OrderBy(r => r.Issue.Number).ToList();
         ShowIssues();
         UpdateStartButton();
+
+        // 3. New issue's choices: the repository's own issue forms on GitHub, or the built-in four (issue 88).
+        ShowChoices(Repo.OwnerAndName.Length > 0 ? await Workspace.GitHub.IssueFormsAsync(Repo.OwnerAndName, ct) : []);
     }
 
     private void ShowIssues()
@@ -249,8 +259,6 @@ public partial class StartWorkScreen : ScreenBase
 
     // New issue
 
-    private IssueKind Kind => FeatureOption.IsChecked == true ? IssueKind.Feature : ChoreOption.IsChecked == true ? IssueKind.Chore : DocsOption.IsChecked == true ? IssueKind.Docs : IssueKind.Bug;
-
     private void NewIssueToggle_Click(object sender, RoutedEventArgs e)
     {
         bool open = NewIssuePanel.Visibility != Visibility.Visible;
@@ -260,66 +268,193 @@ public partial class StartWorkScreen : ScreenBase
         if (open) IssueTitleBox.Focus();
     }
 
-    private void IssueKind_Changed(object sender, RoutedEventArgs e)
+    /// <summary>
+    /// One radio button per choice: the repository's issue forms (null when they couldn't be read) with Chore and
+    /// Docs where no form carries their label, or the built-in four. The chosen one stays chosen if it is still offered.
+    /// </summary>
+    private void ShowChoices(List<IssueChoice>? forms)
     {
-        if (IssueFieldsPanel is null) return;
+        var previous = _choice?.Name;
+        _choices = IssueTexts.Choices(forms ?? []);
+        ChoiceSource.Text = forms is null ? Strings.NewIssue_FormsUnreadable : forms.Count > 0 ? Strings.NewIssue_FromForms : Strings.NewIssue_BuiltIn;
+        var pick = _choices.FirstOrDefault(c => c.Name == previous) ?? _choices[0];
+        _choice = null;
+        ChoicePanel.Children.Clear();
+        foreach (var choice in _choices)
+        {
+            var radio = new RadioButton { Content = choice.Name, GroupName = "IssueChoice", Margin = new Thickness(0, 0, 16, 6), Tag = choice, IsChecked = ReferenceEquals(choice, pick) };
+            AutomationProperties.SetName(radio, choice.Name);
+            radio.Checked += IssueChoice_Changed;
+            ChoicePanel.Children.Add(radio);
+        }
+        SelectChoice(pick);
+    }
+
+    private void IssueChoice_Changed(object sender, RoutedEventArgs e)
+    {
+        if (sender is RadioButton { Tag: IssueChoice choice } && !ReferenceEquals(choice, _choice)) SelectChoice(choice);
+    }
+
+    /// <summary>Shows the choice's description and fields, and puts its title prefix in the title box unless the user has written a title.</summary>
+    private void SelectChoice(IssueChoice choice)
+    {
+        var old = _choice;
+        _choice = choice;
+        ChoiceDescription.Text = choice.Description;
+        ChoiceDescription.Visibility = choice.Description.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+        var title = IssueTitleBox.Text.Trim();
+        if (title.Length == 0 || (old is not null && old.TitlePrefix.Trim().Length > 0 && title == old.TitlePrefix.Trim()))
+            IssueTitleBox.Text = choice.TitlePrefix;
         BuildIssueFields();
     }
 
     private void IssueField_TextChanged(object sender, TextChangedEventArgs e) => UpdateCreateButton();
+    private void IssueTick_Changed(object sender, RoutedEventArgs e) => UpdateCreateButton();
 
-    /// <summary>The fields of the chosen kind, one labelled box each, in the order the body will have them.</summary>
-    private void BuildIssueFields()
+    /// <summary>
+    /// The chosen form's fields in the order the body will have them, each with the control for its type: a box
+    /// for textarea and input, a list for a dropdown (tick boxes when it allows several), a tick box per checkbox
+    /// option, and help text for markdown. Answers to a field with the same id are kept across choices.
+    /// </summary>
+    private void BuildIssueFields(bool keep = true)
     {
-        var kept = IssueValues();
+        if (_choice is null) return;
+        var kept = keep ? IssueAnswersNow() : new IssueAnswers();
         IssueFieldsPanel.Children.Clear();
         _issueBoxes.Clear();
-        foreach (var field in IssueTexts.FieldsFor(Kind))
+        _issueCombos.Clear();
+        _issueTicks.Clear();
+        foreach (var field in _choice.Fields)
         {
-            var label = field.Required ? field.Label : string.Format(Strings.NewIssue_Optional, field.Label);
-            IssueFieldsPanel.Children.Add(UiHelpers.Text(label, "LabelText"));
-            var box = new TextBox
+            if (field.Type == IssueFieldType.Markdown)
             {
-                Style = (Style)FindResource(field.MultiLine ? "MultilineTextBox" : "ModernTextBox"),
-                AcceptsReturn = field.MultiLine,
-                MinHeight = field.MultiLine ? 64 : 0,
-                Text = kept.TryGetValue(field.Id, out var v) ? v : "",
-            };
-            AutomationProperties.SetName(box, label);
-            box.TextChanged += IssueField_TextChanged;
-            _issueBoxes[field.Id] = box;
-            IssueFieldsPanel.Children.Add(box);
+                var help = UiHelpers.Text(field.Value, "HelperText");
+                help.TextWrapping = TextWrapping.Wrap;
+                help.Margin = new Thickness(0, 8, 0, 0);
+                IssueFieldsPanel.Children.Add(help);
+                continue;
+            }
+            bool optional = field.Type != IssueFieldType.Checkboxes && !field.Required;
+            var label = optional ? string.Format(Strings.NewIssue_Optional, field.Label) : field.Label;
+            IssueFieldsPanel.Children.Add(UiHelpers.Text(label, "LabelText"));
+            if (field.Description.Trim().Length > 0)
+            {
+                var description = UiHelpers.Text(field.Description.Trim(), "HelperText");
+                description.TextWrapping = TextWrapping.Wrap;
+                description.Margin = new Thickness(0, 0, 0, 4);
+                IssueFieldsPanel.Children.Add(description);
+            }
+            if (field.Type == IssueFieldType.Dropdown && !field.Multiple) AddIssueCombo(field, label, kept);
+            else if (field.Type is IssueFieldType.Dropdown or IssueFieldType.Checkboxes) AddIssueTicks(field, kept);
+            else AddIssueBox(field, label, kept);
         }
         UpdateCreateButton();
     }
 
-    private Dictionary<string, string> IssueValues() => _issueBoxes.ToDictionary(p => p.Key, p => p.Value.Text);
+    private void AddIssueBox(IssueField field, string label, IssueAnswers kept)
+    {
+        bool multi = field.Type == IssueFieldType.Textarea;
+        var box = new TextBox
+        {
+            Style = (Style)FindResource(!multi ? "ModernTextBox" : field.Render.Length > 0 ? "MonoTextBox" : "MultilineTextBox"),
+            AcceptsReturn = multi,
+            MinHeight = multi ? 64 : 0,
+            Text = kept.TextOf(field.Id) is { Length: > 0 } v ? v : field.Value.TrimEnd('\n'),
+        };
+        AutomationProperties.SetName(box, label);
+        if (field.Description.Trim().Length > 0) AutomationProperties.SetHelpText(box, field.Description.Trim());
+        box.TextChanged += IssueField_TextChanged;
+        _issueBoxes[field.Id] = box;
+        IssueFieldsPanel.Children.Add(box);
+    }
+
+    /// <summary>A single-choice dropdown; an optional one starts with None, and the form's default is chosen first.</summary>
+    private void AddIssueCombo(IssueField field, string label, IssueAnswers kept)
+    {
+        var combo = new ComboBox { HorizontalAlignment = HorizontalAlignment.Left, MinWidth = 260, Padding = new Thickness(8, 5, 8, 5) };
+        if (!field.Required) combo.Items.Add(new ComboBoxItem { Content = Strings.NewIssue_NoChoice, Tag = "" });
+        foreach (var option in field.Options) combo.Items.Add(new ComboBoxItem { Content = option.Label, Tag = option.Label });
+        string? start = kept.Picks.ContainsKey(field.Id) ? kept.PicksOf(field.Id).FirstOrDefault()
+            : field.Default is int d && d >= 0 && d < field.Options.Count ? field.Options[d].Label : null;
+        combo.SelectedItem = combo.Items.OfType<ComboBoxItem>().FirstOrDefault(i => start is not null && (string)i.Tag == start) ?? (field.Required ? null : combo.Items[0]);
+        AutomationProperties.SetName(combo, label);
+        if (field.Description.Trim().Length > 0) AutomationProperties.SetHelpText(combo, field.Description.Trim());
+        combo.SelectionChanged += (_, _) => UpdateCreateButton();
+        _issueCombos[field.Id] = combo;
+        IssueFieldsPanel.Children.Add(combo);
+    }
+
+    /// <summary>A tick box per option, for checkboxes and for a dropdown that allows several choices; a required option says so.</summary>
+    private void AddIssueTicks(IssueField field, IssueAnswers kept)
+    {
+        var panel = new StackPanel();
+        var ticks = new List<CheckBox>();
+        IReadOnlyList<string> picked = kept.Picks.ContainsKey(field.Id) ? kept.PicksOf(field.Id)
+            : field.Type == IssueFieldType.Dropdown && field.Default is int d && d >= 0 && d < field.Options.Count ? [field.Options[d].Label] : [];
+        foreach (var option in field.Options)
+        {
+            var text = option.Required ? string.Format(Strings.NewIssue_RequiredTick, option.Label) : option.Label;
+            var tick = new CheckBox { Content = new TextBlock { Text = text, TextWrapping = TextWrapping.Wrap }, Tag = option.Label, IsChecked = picked.Contains(option.Label) };
+            AutomationProperties.SetName(tick, text);
+            tick.Checked += IssueTick_Changed;
+            tick.Unchecked += IssueTick_Changed;
+            ticks.Add(tick);
+            panel.Children.Add(tick);
+        }
+        _issueTicks[field.Id] = ticks;
+        IssueFieldsPanel.Children.Add(panel);
+    }
+
+    /// <summary>What has been entered: each box's text, and the options chosen or ticked, by field id.</summary>
+    private IssueAnswers IssueAnswersNow()
+    {
+        var answers = new IssueAnswers();
+        foreach (var (id, box) in _issueBoxes) answers.Text[id] = box.Text;
+        foreach (var (id, combo) in _issueCombos) answers.Picks[id] = combo.SelectedItem is ComboBoxItem { Tag: string t } && t.Length > 0 ? [t] : [];
+        foreach (var (id, ticks) in _issueTicks) answers.Picks[id] = [.. ticks.Where(t => t.IsChecked == true).Select(t => (string)t.Tag)];
+        return answers;
+    }
 
     private void UpdateCreateButton()
     {
-        if (CreateIssueButton is null) return;
-        NewIssueNote.Text = string.Format(Strings.NewIssue_Note, IssueTexts.Label(Kind));
-        CreateIssueButton.IsEnabled = IssueTexts.IsComplete(Kind, IssueTitleBox.Text, IssueValues()) && !Shell.IsBusy;
+        if (CreateIssueButton is null || _choice is null) return;
+        NewIssueNote.Text = _choice.Labels.Count > 0 ? string.Format(Strings.NewIssue_Note, string.Join(", ", _choice.Labels)) : Strings.NewIssue_NoteNoLabel;
+        CreateIssueButton.IsEnabled = IssueTexts.IsComplete(_choice, IssueTitleBox.Text, IssueAnswersNow()) && !Shell.IsBusy;
     }
 
     /// <summary>Creates the issue with gh, puts it on the board so it lands in Todo, then reloads and selects it.</summary>
     private void CreateIssue_Click(object sender, RoutedEventArgs e)
     {
-        var kind = Kind;
+        if (_choice is not { } choice) return;
         var title = IssueTitleBox.Text.Trim();
-        var body = IssueTexts.Body(kind, IssueValues());
-        if (!IssueTexts.IsComplete(kind, title, IssueValues())) return;
+        var answers = IssueAnswersNow();
+        if (!IssueTexts.IsComplete(choice, title, answers)) return;
+        var body = IssueTexts.Body(choice, answers);
 
         _ = Shell.RunAsync(async ct =>
         {
-            var (number, url) = await Workspace.GitHub.CreateIssueAsync(Repo.OwnerAndName, title, body, IssueTexts.Label(kind), ct);
+            // GitHub's form skips a label the repository doesn't have, where gh issue create would fail, so only
+            // the labels the repository has are passed. If the labels can't be read, gh is left to say.
+            var labels = choice.Labels.ToList();
+            if (labels.Count > 0)
+            {
+                try
+                {
+                    var have = (await Workspace.GitHub.LabelsAsync(Repo.OwnerAndName, ct)).Select(l => l.Name).ToList();
+                    var (use, missing) = IssueTexts.SplitLabels(choice, have);
+                    foreach (var label in missing) Workspace.Runner.Note(string.Format(Strings.NewIssue_LabelMissing, label));
+                    labels = use;
+                }
+                catch (Services.CommandFailedException) { }
+            }
+            var (number, url) = await Workspace.GitHub.CreateIssueAsync(Repo.OwnerAndName, title, body, labels, ct);
             if (Workspace.Board is { } board && number > 0)
             {
                 try { await Workspace.GitHub.AddToBoardAsync(board, url, ct); }
                 catch (Services.CommandFailedException ex) { Workspace.Runner.Note(string.Format(Strings.NewIssue_BoardFailed, number, ex.Message)); }
             }
-            IssueTitleBox.Text = "";
-            foreach (var box in _issueBoxes.Values) box.Text = "";
+            IssueTitleBox.Text = choice.TitlePrefix;
+            BuildIssueFields(keep: false);
             await RefreshAsync(ct);
             SelectIssue(number);
             Shell.Announce(string.Format(Strings.NewIssue_Done, number));
