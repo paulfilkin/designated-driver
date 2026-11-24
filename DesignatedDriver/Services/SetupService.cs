@@ -404,7 +404,7 @@ public sealed partial class SetupService(Workspace workspace)
             string issueUrl;
             var existing = await GitHub.FindOpenIssueAsync(Name, IssueTitle, ct).ConfigureAwait(false);
             if (existing is not null) (issue, issueUrl) = (existing.Number, existing.Url);
-            else (issue, issueUrl) = await GitHub.CreateIssueAsync(Name, IssueTitle, IssueBodyText(), "chore", ct).ConfigureAwait(false);
+            else (issue, issueUrl) = await GitHub.CreateIssueAsync(Name, IssueTitle, IssueBodyText(), ["chore"], ct).ConfigureAwait(false);
             if (issue == 0) throw new InvalidOperationException(Strings.Setup_IssueNotCreated);
 
             if (_board is not null && issueUrl.Length > 0)

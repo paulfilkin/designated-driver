@@ -287,7 +287,14 @@ Go ahead?</value></data>
   <data name="NewIssue_Card" xml:space="preserve"><value>New issue</value></data>
   <data name="NewIssue_Show" xml:space="preserve"><value>Write one</value></data>
   <data name="NewIssue_Hide" xml:space="preserve"><value>Hide</value></data>
-  <data name="NewIssue_Intro" xml:space="preserve"><value>Write an issue with the same headings as the repository's issue forms, so it reads like one made on GitHub. It gets the label for its kind and goes onto the board, where GitHub puts it in Todo.</value></data>
+  <data name="NewIssue_Intro" xml:space="preserve"><value>Write an issue with the same fields as the repository's issue forms, so it reads like one made on GitHub. It gets its form's labels and goes onto the board, where GitHub puts it in Todo.</value></data>
+  <data name="NewIssue_FromForms" xml:space="preserve"><value>The choices and fields come from the repository's issue forms on GitHub, with Chore and Docs added where no form carries their label.</value></data>
+  <data name="NewIssue_BuiltIn" xml:space="preserve"><value>The repository has no issue forms on GitHub, so these are the built-in choices.</value></data>
+  <data name="NewIssue_FormsUnreadable" xml:space="preserve"><value>The repository's issue forms couldn't be read from GitHub, so these are the built-in choices. Refresh to try again.</value></data>
+  <data name="NewIssue_NoChoice" xml:space="preserve"><value>None</value></data>
+  <data name="NewIssue_RequiredTick" xml:space="preserve"><value>{0} (required)</value></data>
+  <data name="NewIssue_NoteNoLabel" xml:space="preserve"><value>No label. Create is enabled once the title and the required fields are filled.</value></data>
+  <data name="NewIssue_LabelMissing" xml:space="preserve"><value>The form's label "{0}" isn't in the repository, so the issue is created without it, as GitHub does.</value></data>
   <data name="NewIssue_Bug" xml:space="preserve"><value>Bug</value></data>
   <data name="NewIssue_Feature" xml:space="preserve"><value>Feature</value></data>
   <data name="NewIssue_Chore" xml:space="preserve"><value>Chore</value></data>

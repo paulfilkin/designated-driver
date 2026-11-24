@@ -691,6 +691,9 @@ public static class Strings
     /// <summary>Bug</summary>
     public static string NewIssue_Bug => Get("NewIssue_Bug");
 
+    /// <summary>The repository has no issue forms on GitHub, so these are the built-in choices.</summary>
+    public static string NewIssue_BuiltIn => Get("NewIssue_BuiltIn");
+
     /// <summary>New issue</summary>
     public static string NewIssue_Card => Get("NewIssue_Card");
 
@@ -712,17 +715,35 @@ public static class Strings
     /// <summary>Feature</summary>
     public static string NewIssue_Feature => Get("NewIssue_Feature");
 
+    /// <summary>The repository&apos;s issue forms couldn&apos;t be read from GitHub, so these are the built-in ch...</summary>
+    public static string NewIssue_FormsUnreadable => Get("NewIssue_FormsUnreadable");
+
+    /// <summary>The choices and fields come from the repository&apos;s issue forms on GitHub, with Chore and...</summary>
+    public static string NewIssue_FromForms => Get("NewIssue_FromForms");
+
     /// <summary>Hide</summary>
     public static string NewIssue_Hide => Get("NewIssue_Hide");
 
-    /// <summary>Write an issue with the same headings as the repository&apos;s issue forms, so it reads like...</summary>
+    /// <summary>Write an issue with the same fields as the repository&apos;s issue forms, so it reads like o...</summary>
     public static string NewIssue_Intro => Get("NewIssue_Intro");
+
+    /// <summary>The form&apos;s label &quot;{0}&quot; isn&apos;t in the repository, so the issue is created without it, as ...</summary>
+    public static string NewIssue_LabelMissing => Get("NewIssue_LabelMissing");
+
+    /// <summary>None</summary>
+    public static string NewIssue_NoChoice => Get("NewIssue_NoChoice");
 
     /// <summary>Labelled {0}. Create is enabled once the title and the required fields are filled.</summary>
     public static string NewIssue_Note => Get("NewIssue_Note");
 
+    /// <summary>No label. Create is enabled once the title and the required fields are filled.</summary>
+    public static string NewIssue_NoteNoLabel => Get("NewIssue_NoteNoLabel");
+
     /// <summary>{0} (optional)</summary>
     public static string NewIssue_Optional => Get("NewIssue_Optional");
+
+    /// <summary>{0} (required)</summary>
+    public static string NewIssue_RequiredTick => Get("NewIssue_RequiredTick");
 
     /// <summary>Write one</summary>
     public static string NewIssue_Show => Get("NewIssue_Show");
