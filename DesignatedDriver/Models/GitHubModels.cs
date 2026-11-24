@@ -84,7 +84,7 @@ public sealed class GhUser
     public string Type { get; set; } = "";
 }
 
-/// <summary>gh issue view / gh issue list --json number,title,labels,assignees,body,url</summary>
+/// <summary>gh issue view / gh issue list --json number,title,labels,assignees,body,url,state,author,createdAt</summary>
 public sealed class GhIssue
 {
     public int Number { get; set; }
@@ -94,6 +94,10 @@ public sealed class GhIssue
     public string State { get; set; } = "";
     public List<GhLabel> Labels { get; set; } = [];
     public List<GhUser> Assignees { get; set; } = [];
+    /// <summary>Who opened the issue, for Start work's issue card; null when not read.</summary>
+    public GhUser? Author { get; set; }
+    /// <summary>When the issue was opened, in UTC; default when not read.</summary>
+    public DateTime CreatedAt { get; set; }
 
     public IEnumerable<string> LabelNames => Labels.Select(l => l.Name);
 }

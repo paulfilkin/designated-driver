@@ -61,6 +61,7 @@ public static partial class SelfTestRunner
             ActivityRedactionChecks(Check);
             HeldReloadChecks(Check);
             IssueTextChecks(Check);
+            IssueBodyLayoutChecks(Check);
             RepositoryFilterChecks(Check);
             WindowPlacementChecks(Check);
             DialogFitChecks(Check);
